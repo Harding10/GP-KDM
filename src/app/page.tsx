@@ -60,39 +60,14 @@ export default function OnboardingPage() {
      <div className="flex flex-col h-full min-h-screen bg-background text-foreground">
        <AuthDialog open={isAuthDialogOpen} onOpenChange={setIsAuthDialogOpen} initialTab={authMode} />
         <div className="flex-1 flex flex-col">
-            <div className="relative h-3/5 bg-primary/10">
-                {/* This is a placeholder for the top part of the screen from Figma */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-[280px] h-[560px] rounded-3xl bg-white shadow-2xl p-4 border overflow-hidden">
-                        <div className="flex justify-between items-center mb-4">
-                           <svg
-                                className="h-6 w-6 text-primary"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                xmlns="http://www.w3.org/2000/svg"
-                                >
-                                <path d="M10.4,1.4c-3.1,0-5.7,2.5-5.7,5.7s2.5,5.7,5.7,5.7s5.7-2.5,5.7-5.7S13.5,1.4,10.4,1.4z M10.4,11.3c-2.3,0-4.2-1.9-4.2-4.2s1.9-4.2,4.2-4.2s4.2,1.9,4.2,4.2S12.7,11.3,10.4,11.3z" />
-                                <path d="M15.8,9.6c-0.6-1.1-1.5-2-2.6-2.6C12.7,6.8,12.2,6,12.2,5c0-1.1-0.9-2-2-2S8.2,3.9,8.2,5c0,1,0.5,1.8,1.1,2.2c1.1,0.6,2,1.5,2.6,2.6c0.6,1.1,0.6,2.4,0,3.5c-0.6,1.1-1.5,2-2.6,2.6c-0.6,0.4-1.1,1.2-1.1,2.2c0,1.1,0.9,2,2,2s2-0.9,2-2c0-1-0.5-1.8-1.1-2.2c-1.1-0.6-2-1.5-2.6-2.6C7.9,12,7.9,10.7,8.5,9.6z" />
-                                <path d="M20.6,1.4c-3.1,0-5.7,2.5-5.7,5.7s2.5,5.7,5.7,5.7s5.7-2.5,5.7-5.7S23.7,1.4,20.6,1.4z M20.6,11.3c-2.3,0-4.2-1.9-4.2-4.2s1.9-4.2,4.2-4.2s4.2,1.9,4.2,4.2S22.9,11.3,20.6,11.3z" />
-                            </svg>
-                            <p className="font-bold text-lg">Plantify</p>
-                            <div className="flex gap-2">
-                                <div className="h-6 w-6 rounded-full bg-gray-200"></div>
-                                <div className="h-6 w-6 rounded-full bg-gray-200"></div>
-                            </div>
-                        </div>
-                        <div className="h-8 w-full rounded-full bg-gray-100 mb-4"></div>
-                        <div className="h-4 w-1/2 rounded-full bg-gray-200 mb-2"></div>
-                        <div className="flex gap-4">
-                            <div className="w-1/2 h-32 rounded-lg bg-gray-200"></div>
-                            <div className="w-1/2 h-32 rounded-lg bg-gray-200"></div>
-                        </div>
-                    </div>
-                </div>
+            <div className="relative h-3/5 bg-primary/10 flex items-center justify-center">
+                <Image
+                  src={step.image}
+                  alt={step.imageAlt}
+                  width={300}
+                  height={400}
+                  className="object-cover rounded-3xl"
+                />
                  <div className="absolute bottom-0 left-0 w-full h-16 bg-background rounded-t-[100%]"></div>
             </div>
 
