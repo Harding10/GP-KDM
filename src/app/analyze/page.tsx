@@ -85,6 +85,10 @@ export default function AnalyzePage() {
               plantType: result.plantType,
               diseaseDetected: result.diseaseDetected,
               isHealthy: result.isHealthy,
+              probableCause: result.probableCause,
+              preventionAdvice: result.preventionAdvice,
+              biologicalTreatment: result.biologicalTreatment,
+              chemicalTreatment: result.chemicalTreatment,
               analysisDate: new Date().toISOString(),
             });
             toast({

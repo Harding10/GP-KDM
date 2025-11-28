@@ -57,9 +57,25 @@
           "type": "string",
           "description": "Name of the detected plant disease."
         },
-        "treatmentSuggestion": {
-          "type": "string",
-          "description": "Suggested treatment or remedy for the detected disease."
+        "isHealthy": {
+            "type": "boolean",
+            "description": "Whether the plant is healthy or not."
+        },
+        "probableCause": {
+            "type": "string",
+            "description": "The probable cause of the disease."
+        },
+        "preventionAdvice": {
+            "type": "string",
+            "description": "Advice to prevent the disease."
+        },
+        "biologicalTreatment": {
+            "type": "string",
+            "description": "Suggested biological treatment for the disease."
+        },
+        "chemicalTreatment": {
+            "type": "string",
+            "description": "Suggested chemical treatment for the disease."
         },
         "analysisDate": {
           "type": "string",
@@ -73,7 +89,6 @@
         "imageUri",
         "plantType",
         "diseaseDetected",
-        "treatmentSuggestion",
         "analysisDate"
       ]
     }
