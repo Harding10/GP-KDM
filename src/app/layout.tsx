@@ -3,6 +3,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
 import Header from "@/components/header";
+import { FirebaseClientProvider } from "@/firebase/client-provider";
 
 export const metadata: Metadata = {
   title: "AgriAide",
@@ -29,11 +30,13 @@ export default function RootLayout({
         />
       </head>
       <body className={cn("font-body antialiased h-full flex flex-col")}>
-        <Header />
-        <main className="flex-1">
-          {children}
-        </main>
-        <Toaster />
+        <FirebaseClientProvider>
+          <Header />
+          <main className="flex-1">
+            {children}
+          </main>
+          <Toaster />
+        </FirebaseClientProvider>
       </body>
     </html>
   );

@@ -1,5 +1,6 @@
 import { Leaf } from 'lucide-react';
 import Link from 'next/link';
+import UserAuthButton from './user-auth-button';
 
 export default function Header() {
   return (
@@ -12,6 +13,7 @@ export default function Header() {
               AgriAide
             </span>
           </Link>
+          <UserAuthButton />
         </div>
       </div>
     </header>

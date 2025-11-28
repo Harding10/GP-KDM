@@ -19,21 +19,15 @@
           "type": "string",
           "description": "User's display name."
         },
-        "oauthProvider": {
+        "photoURL": {
           "type": "string",
-          "description": "The OAuth provider used for authentication (e.g., 'Google')."
-        },
-        "oauthId": {
-          "type": "string",
-          "description": "The user ID provided by the OAuth provider."
+          "description": "URL of the user's profile picture."
         }
       },
       "required": [
         "id",
         "email",
-        "name",
-        "oauthProvider",
-        "oauthId"
+        "name"
       ]
     },
     "PlantAnalysis": {
@@ -81,8 +75,7 @@
   },
   "auth": {
     "providers": [
-      "password",
-      "anonymous"
+      "google.com"
     ]
   },
   "firestore": {

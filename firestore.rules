@@ -44,16 +44,21 @@ service cloud.firestore {
      * Ensures the creator is the owner and that the internal 'id' field matches the path.
      */
     function isCreatingValidUserAccount(userId) {
+      let data = request.resource.data;
       return isOwner(userId)
-        && request.resource.data.id == userId;
+        && data.id == userId
+        && data.name == request.auth.token.name
+        && data.email == request.auth.token.email;
     }
 
     /**
      * Validates a UserAccount document on update.
-     * Enforces the immutability of the 'id' field to prevent re-assigning ownership.
+     * Enforces the immutability of the 'id' and 'email' fields.
      */
     function isUpdatingValidUserAccount() {
-      return request.resource.data.id == resource.data.id;
+      let data = request.resource.data;
+      return data.id == resource.data.id
+        && data.email == resource.data.email;
     }
 
     /**
