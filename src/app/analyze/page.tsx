@@ -266,7 +266,7 @@ export default function AnalyzePage() {
   };
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col items-center justify-center min-h-[calc(100vh-10rem)]">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col items-center justify-center min-h-[calc(100vh-10rem)] animate-fade-in">
       {renderContent()}
     </div>
   );

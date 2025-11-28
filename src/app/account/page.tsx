@@ -231,7 +231,7 @@ export default function AccountPage() {
   };
 
   return (
-    <div className="container mx-auto max-w-3xl px-4 py-8 sm:py-12">
+    <div className="container mx-auto max-w-3xl px-4 py-8 sm:py-12 animate-fade-in">
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Mon Compte</h1>
         <p className="mt-2 text-lg text-muted-foreground">Gérez les informations de votre profil et votre mot de passe.</p>
@@ -338,5 +338,3 @@ export default function AccountPage() {
     </div>
   );
 }
-
-    

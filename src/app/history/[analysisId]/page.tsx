@@ -102,7 +102,7 @@ export default function AnalysisDetailPage() {
 
   return (
     <>
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 animate-fade-in">
           <div className="flex flex-wrap gap-4 items-center justify-between mb-8">
             <div>
               <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Détail de l'analyse</h1>
@@ -144,5 +144,3 @@ export default function AnalysisDetailPage() {
     </>
   );
 }
-
-    

@@ -141,5 +141,3 @@ export default function AnalysisDisplay({ result, imagePreview, onReset, shareUr
     </div>
   );
 }
-
-    
