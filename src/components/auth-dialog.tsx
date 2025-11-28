@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useFirebaseAuth } from '@/firebase/auth';
 import { Button } from '@/components/ui/button';
 import {
@@ -32,6 +32,7 @@ import { useToast } from '@/hooks/use-toast';
 interface AuthDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  initialTab?: 'signin' | 'signup';
 }
 
 const formSchema = z.object({
@@ -41,10 +42,15 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
+export default function AuthDialog({ open, onOpenChange, initialTab = 'signup' }: AuthDialogProps) {
   const { signInWithGoogle, signUpWithEmail, signInWithEmail, sendPasswordResetEmail } = useFirebaseAuth();
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState(initialTab);
+
+  useEffect(() => {
+    setActiveTab(initialTab);
+  }, [initialTab]);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -94,7 +100,6 @@ export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
         form.setError('email', { type: 'manual', message: 'Veuillez entrer votre e-mail pour réinitialiser le mot de passe.' });
         return;
     }
-    // Validate email before sending
     const emailValidation = z.string().email().safeParse(email);
     if (!emailValidation.success) {
         form.setError('email', { type: 'manual', message: 'Veuillez entrer une adresse e-mail valide.' });
@@ -109,7 +114,6 @@ export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
       });
       onOpenChange(false);
     } catch (err) {
-      // Don't reveal if user exists or not
       toast({
         title: 'E-mail envoyé',
         description: 'Si un compte existe, un e-mail de réinitialisation a été envoyé.',
@@ -176,13 +180,12 @@ export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-center">Bienvenue</DialogTitle>
-          <DialogDescription className="text-center">
-            Connectez-vous pour sauvegarder vos analyses
-          </DialogDescription>
+          <DialogTitle className="text-2xl font-bold text-center">
+            {activeTab === 'signup' ? 'Create an account' : 'Log in to your account'}
+          </DialogTitle>
         </DialogHeader>
         <div className="py-4">
-          <Tabs defaultValue="signin" className="w-full">
+          <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'signin' | 'signup')} className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="signin">Se connecter</TabsTrigger>
               <TabsTrigger value="signup">S'inscrire</TabsTrigger>

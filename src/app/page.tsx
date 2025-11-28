@@ -1,72 +1,92 @@
-
 'use client';
 
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { History, HeartPulse, Microscope, TestTube } from 'lucide-react';
+import { useState } from 'react';
 import Image from 'next/image';
+import AuthDialog from '@/components/auth-dialog';
+import { Button } from '@/components/ui/button';
+import { useFirebaseAuth } from '@/firebase/auth';
 
-const FeatureCard = ({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) => (
-  <Card className="text-center shadow-lg hover:shadow-primary/20 transition-shadow duration-300 border-0 rounded-2xl bg-card">
-    <CardHeader className="items-center">
-      <div className="bg-primary/10 p-4 rounded-full">
-        {icon}
-      </div>
-      <CardTitle className="pt-4 font-bold">{title}</CardTitle>
-    </CardHeader>
-    <CardContent>
-      <p className="text-muted-foreground">{description}</p>
-    </CardContent>
-  </Card>
-);
+const CustomLogo = () => (
+    <svg
+      className="h-16 w-16 text-primary"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M10 16.5c-3.14 0-5-2.5-5-5.5s1.86-5.5 5-5.5c2.75 0 4.25.9 5.5 2.5" />
+      <path d="M14 12c-1.25 1.6-2.75 2.5-5.5 2.5" />
+      <path d="M14 12c1.25-1.6 2.75-2.5 5.5-2.5" />
+      <path d="M19.5 16.5c3.14 0 5-2.5 5-5.5s-1.86-5.5-5-5.5c-2.75 0-4.25.9-5.5 2.5" />
+    </svg>
+  );
+
+export default function GetStartedPage() {
+  const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signup');
+  const { signInWithGoogle } = useFirebaseAuth();
+
+  const openDialog = (mode: 'signin' | 'signup') => {
+    setAuthMode(mode);
+    setIsAuthDialogOpen(true);
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithGoogle();
+      // The useUser hook will handle redirection or UI changes upon successful login
+    } catch (err) {
+      console.error(err); // Optionally, show a toast or error message
+    }
+  };
 
 
-export default function HomePage() {
   return (
-    <>
-      <section className="py-20 md:py-32 bg-gradient-to-b from-primary/5 to-transparent">
-        <div className="container mx-auto px-4 text-center">
-          <div className="bg-primary/10 inline-block px-4 py-1 rounded-full text-primary font-semibold text-sm mb-4">
-            Votre expert botaniste IA
-          </div>
-          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6">
-            Santé des plantes, simplifiée.
-          </h1>
-          <p className="max-w-2xl mx-auto text-lg md:text-xl text-muted-foreground mb-10">
-            Identifiez les maladies, obtenez des conseils de traitement et prenez soin de vos plantes avec notre assistant intelligent.
-          </p>
-          <Button asChild size="lg" className="font-bold text-lg">
-            <Link href="/analyze">Commencer l'analyse <Microscope className="ml-2" /></Link>
-          </Button>
-        </div>
-      </section>
+    <div className="flex flex-col h-full min-h-screen">
+       <AuthDialog open={isAuthDialogOpen} onOpenChange={setIsAuthDialogOpen} initialTab={authMode} />
+      <main className="flex-grow flex flex-col items-center justify-center p-4 bg-background">
+        <div className="w-full max-w-sm flex flex-col items-center text-center">
+            <div className="mb-8">
+                <CustomLogo />
+            </div>
 
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold">Comment ça marche ?</h2>
-            <p className="text-lg text-muted-foreground mt-2 max-w-2xl mx-auto">Obtenez un diagnostic complet en trois étapes simples.</p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            <FeatureCard 
-              icon={<TestTube className="h-8 w-8 text-primary" />}
-              title="1. Identifier"
-              description="Prenez une photo de la feuille de votre plante. Notre IA reconnaît l'espèce pour une analyse précise."
-            />
-            <FeatureCard 
-              icon={<HeartPulse className="h-8 w-8 text-primary" />}
-              title="2. Diagnostiquer"
-              description="L'IA analyse l'image pour détecter maladies, carences ou parasites et évalue la santé de la plante."
-            />
-            <FeatureCard 
-              icon={<History className="h-8 w-8 text-primary" />}
-              title="3. Traiter & Suivre"
-              description="Recevez des suggestions de traitements et conservez un historique de vos analyses pour un suivi facile."
-            />
-          </div>
+            <h1 className="text-4xl font-bold mb-2">Let's Get Started!</h1>
+            <p className="text-muted-foreground text-lg mb-10">Let's dive in into your account</p>
+
+            <div className="w-full space-y-4 mb-10">
+                <Button variant="outline" className="w-full h-12 text-base font-medium border-border" onClick={handleGoogleSignIn}>
+                     <Image 
+                        src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png" 
+                        width={20} 
+                        height={20} 
+                        alt="Google logo"
+                        className="mr-3"
+                      />
+                    Continue with Google
+                </Button>
+                {/* Add other social logins here if needed */}
+            </div>
+
+            <div className="w-full space-y-4">
+                 <Button className="w-full h-14 text-lg font-bold" onClick={() => openDialog('signup')}>
+                    Sign up
+                </Button>
+                <Button variant="secondary" className="w-full h-14 text-lg font-bold" onClick={() => openDialog('signin')}>
+                    Log in
+                </Button>
+            </div>
         </div>
-      </section>
-    </>
+      </main>
+      <footer className="py-6 px-4 text-center text-sm text-muted-foreground">
+        <p>
+            <a href="#" className="hover:underline">Privacy Policy</a>
+            <span className="mx-2">·</span>
+            <a href="#" className="hover:underline">Terms of Service</a>
+        </p>
+      </footer>
+    </div>
   );
 }

@@ -7,6 +7,8 @@ import Header from "@/components/header";
 import { FirebaseClientProvider } from "@/firebase/client-provider";
 import PwaInstallPrompt from "@/components/pwa-install-prompt";
 import { ThemeProvider } from "@/components/theme-provider";
+import { useUser } from "@/firebase";
+import AuthRedirect from "@/components/auth-redirect";
 
 export const metadata: Metadata = {
   title: "AgriAide",
@@ -46,12 +48,14 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <FirebaseClientProvider>
-            <Header />
-            <main className="flex-1">
-              {children}
-            </main>
-            <Toaster />
-            <PwaInstallPrompt />
+            <AuthRedirect>
+              <Header />
+              <main className="flex-1">
+                {children}
+              </main>
+              <Toaster />
+              <PwaInstallPrompt />
+            </AuthRedirect>
           </FirebaseClientProvider>
         </ThemeProvider>
       </body>
