@@ -64,7 +64,7 @@ export default function OnboardingPage() {
               {/* Phone Mockup */}
               <div className="relative mx-auto border-zinc-800 bg-zinc-800 border-[14px] rounded-[2.5rem] h-[500px] w-64 shadow-xl">
                 {/* Notch */}
-                <div className="w-[100px] h-[22px] bg-zinc-800 top-0 rounded-b-xl left-1/2 -translate-x-1/2 absolute"></div>
+                <div className="w-[100px] h-[22px] bg-zinc-800 top-0 rounded-b-xl left-1/2 -translate-x-1/2 absolute z-10"></div>
                 {/* Screen */}
                 <div className="h-full w-full bg-white rounded-[1.5rem] overflow-hidden">
                     <Image
