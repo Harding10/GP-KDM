@@ -1,14 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import ImageUploader from '@/components/image-uploader';
 import AnalysisDisplay from '@/components/analysis-display';
 import { Button } from '@/components/ui/button';
 import { analyzePlantImageAndDetectDisease } from '@/ai/flows/analyze-plant-image-and-detect-disease';
-import { LoaderCircle, X } from 'lucide-react';
+import { LoaderCircle, X, Camera, SwitchCamera } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 type AnalysisResult = {
   diseaseDetected: string;
@@ -22,6 +23,40 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    if (isCameraOpen) {
+      const getCameraPermission = async () => {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+          setHasCameraPermission(true);
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+          }
+        } catch (error) {
+          console.error('Error accessing camera:', error);
+          setHasCameraPermission(false);
+          toast({
+            variant: 'destructive',
+            title: 'Accès à la caméra refusé',
+            description: 'Veuillez autoriser l\'accès à la caméra dans les paramètres de votre navigateur.',
+          });
+          setIsCameraOpen(false);
+        }
+      };
+      getCameraPermission();
+    } else {
+      if (videoRef.current && videoRef.current.srcObject) {
+        const stream = videoRef.current.srcObject as MediaStream;
+        stream.getTracks().forEach(track => track.stop());
+        videoRef.current.srcObject = null;
+      }
+    }
+  }, [isCameraOpen, toast]);
 
   const handleImageSelect = (file: File) => {
     if (file) {
@@ -66,9 +101,54 @@ export default function Home() {
     setAnalysisResult(null);
     setIsLoading(false);
     setError(null);
+    setIsCameraOpen(false);
+  };
+  
+  const handleCapture = () => {
+    if (videoRef.current && canvasRef.current) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const context = canvas.getContext('2d');
+      if (context) {
+        context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+        const dataUri = canvas.toDataURL('image/jpeg');
+        setImagePreview(dataUri);
+        setIsCameraOpen(false);
+      }
+    }
   };
 
   const renderContent = () => {
+     if (isCameraOpen) {
+      return (
+        <Card className="w-full max-w-lg overflow-hidden shadow-lg">
+          <CardContent className="p-6 text-center">
+            <div className="relative">
+              <video ref={videoRef} className="w-full aspect-video rounded-md bg-muted" autoPlay muted playsInline />
+              <canvas ref={canvasRef} className="hidden" />
+              {hasCameraPermission === false && (
+                <Alert variant="destructive" className="mt-4">
+                  <AlertTitle>Accès à la caméra requis</AlertTitle>
+                  <AlertDescription>
+                    Veuillez autoriser l'accès à la caméra pour utiliser cette fonctionnalité.
+                  </AlertDescription>
+                </Alert>
+              )}
+            </div>
+            <div className="mt-4 flex justify-center gap-4">
+              <Button onClick={() => setIsCameraOpen(false)} variant="outline">Annuler</Button>
+              <Button onClick={handleCapture} disabled={hasCameraPermission !== true} size="lg">
+                <Camera className="mr-2" />
+                Capturer
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      );
+    }
+
     if (isLoading) {
       return (
         <div className="flex flex-col items-center justify-center gap-4 text-center">
@@ -106,7 +186,7 @@ export default function Home() {
       );
     }
 
-    return <ImageUploader onImageSelect={handleImageSelect} />;
+    return <ImageUploader onImageSelect={handleImageSelect} onCameraClick={() => setIsCameraOpen(true)} />;
   };
 
   return (

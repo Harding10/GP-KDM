@@ -1,16 +1,17 @@
 'use client';
 
 import { useRef, useState, type ChangeEvent, type DragEvent } from 'react';
-import { UploadCloud, Leaf } from 'lucide-react';
+import { UploadCloud, Leaf, Camera } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
 
 interface ImageUploaderProps {
   onImageSelect: (file: File) => void;
+  onCameraClick: () => void;
 }
 
-export default function ImageUploader({ onImageSelect }: ImageUploaderProps) {
+export default function ImageUploader({ onImageSelect, onCameraClick }: ImageUploaderProps) {
   const [isDragActive, setIsDragActive] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -54,7 +55,7 @@ export default function ImageUploader({ onImageSelect }: ImageUploaderProps) {
           Détection des maladies des plantes
         </CardTitle>
         <CardDescription className="pt-2">
-          Téléchargez une image claire d'une feuille de plante pour vérifier les maladies.
+          Téléchargez une image claire d'une feuille de plante ou utilisez votre appareil photo.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -73,10 +74,16 @@ export default function ImageUploader({ onImageSelect }: ImageUploaderProps) {
           <div className="flex flex-col items-center gap-4 text-muted-foreground">
             <UploadCloud className="h-12 w-12" />
             <p className="font-semibold">Glissez-déposez une image ici</p>
-            <p>ou</p>
-            <Button type="button" onClick={onButtonClick} variant="outline">
-              Parcourir les fichiers
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button type="button" onClick={onButtonClick} variant="outline">
+                Parcourir
+              </Button>
+              <span className="text-sm">ou</span>
+              <Button type="button" onClick={onCameraClick} variant="outline">
+                 <Camera className="mr-2 h-4 w-4" />
+                Prendre une photo
+              </Button>
+            </div>
             <p className="text-sm mt-2">Formats supportés : PNG, JPG, JPEG, WEBP</p>
           </div>
         </div>
