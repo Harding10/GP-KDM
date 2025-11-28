@@ -6,7 +6,9 @@ import ImageUploader from '@/components/image-uploader';
 import AnalysisDisplay from '@/components/analysis-display';
 import { Button } from '@/components/ui/button';
 import { analyzePlantImageAndDetectDisease, AnalyzePlantImageAndDetectDiseaseOutput } from '@/ai/flows/analyze-plant-image-and-detect-disease';
-import { LoaderCircle, X, Camera } from 'lucide-react';
+import { AiOutlineLoading3Quarters } from 'react-icons/ai';
+import { IoClose } from 'react-icons/io5';
+import { FiCamera } from 'react-icons/fi';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
@@ -180,7 +182,7 @@ export default function AnalyzePage() {
             <div className="mt-4 flex justify-center gap-4">
               <Button onClick={() => setIsCameraOpen(false)} variant="outline">Annuler</Button>
               <Button onClick={handleCapture} disabled={hasCameraPermission !== true} size="lg">
-                <Camera className="mr-2" />
+                <FiCamera className="mr-2" />
                 Capturer
               </Button>
             </div>
@@ -197,7 +199,7 @@ export default function AnalyzePage() {
               <Image src={imagePreview} alt="Feuille de plante pour analyse" width={250} height={250} className="object-cover rounded-2xl shadow-lg opacity-30" />
             )}
             <div className="absolute inset-0 flex items-center justify-center bg-background/50 rounded-2xl">
-              <LoaderCircle className="h-16 w-16 animate-spin text-primary" />
+              <AiOutlineLoading3Quarters className="h-16 w-16 animate-spin text-primary" />
             </div>
           </div>
           <h2 className="text-2xl font-semibold mt-6">Analyse en cours...</h2>
@@ -217,7 +219,7 @@ export default function AnalyzePage() {
             <div className="relative mb-4 group">
               <Image src={imagePreview} alt="Feuille de plante sélectionnée" width={400} height={400} className="rounded-lg object-contain mx-auto max-h-[50vh]" />
               <Button variant="destructive" size="icon" className="absolute top-2 right-2 opacity-50 group-hover:opacity-100 rounded-full h-8 w-8" onClick={() => { setImageFile(null); setImagePreview(null); }}>
-                <X className="h-4 w-4" />
+                <IoClose className="h-4 w-4" />
               </Button>
             </div>
             <h2 className="text-xl font-semibold mb-2">Prêt pour l'analyse</h2>

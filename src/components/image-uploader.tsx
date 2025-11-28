@@ -1,7 +1,9 @@
+
 'use client';
 
 import { useRef, useState, type ChangeEvent, type DragEvent } from 'react';
-import { UploadCloud, Leaf, Camera } from 'lucide-react';
+import { FiUploadCloud, FiCamera } from 'react-icons/fi';
+import { IoLeafOutline } from 'react-icons/io5';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
@@ -51,7 +53,7 @@ export default function ImageUploader({ onImageSelect, onCameraClick }: ImageUpl
     <Card className="w-full max-w-xl text-center shadow-2xl shadow-primary/10 animate-fade-in rounded-2xl border-0">
       <CardHeader className="pt-10">
         <CardTitle className="font-bold text-4xl flex items-center justify-center gap-3">
-          <Leaf className="text-primary h-10 w-10"/>
+          <IoLeafOutline className="text-primary h-10 w-10"/>
           AgriAide
         </CardTitle>
         <CardDescription className="pt-2 text-lg">
@@ -72,7 +74,7 @@ export default function ImageUploader({ onImageSelect, onCameraClick }: ImageUpl
         >
           <input ref={inputRef} type="file" id="file-upload" className="hidden" accept="image/*" onChange={handleChange} />
           <div className="flex flex-col items-center gap-4 text-muted-foreground">
-            <UploadCloud className="h-16 w-16 text-primary/70" />
+            <FiUploadCloud className="h-16 w-16 text-primary/70" />
             <p className="font-semibold text-lg">Glissez-déposez une image ici</p>
             <p className="text-sm">ou</p>
             <div className="flex flex-col sm:flex-row items-center gap-4 w-full">
@@ -80,7 +82,7 @@ export default function ImageUploader({ onImageSelect, onCameraClick }: ImageUpl
                 Parcourir les fichiers
               </Button>
               <Button type="button" onClick={onCameraClick} variant="outline" size="lg" className="w-full sm:w-auto">
-                 <Camera className="mr-2 h-5 w-5" />
+                 <FiCamera className="mr-2 h-5 w-5" />
                 Prendre une photo
               </Button>
             </div>

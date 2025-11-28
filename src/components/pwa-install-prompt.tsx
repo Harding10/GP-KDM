@@ -1,9 +1,10 @@
+
 'use client';
 
 import { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from './ui/button';
-import { Download } from 'lucide-react';
+import { FiDownload } from 'react-icons/fi';
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -45,7 +46,7 @@ export default function PwaInstallPrompt() {
         <Button 
           onClick={() => handleInstallClick(promptEvent)}
         >
-          <Download className="mr-2 h-4 w-4" />
+          <FiDownload className="mr-2 h-4 w-4" />
           Installer
         </Button>
       ),

@@ -4,7 +4,8 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Check, Leaf, HeartPulse, History, Microscope } from 'lucide-react';
+import { FaHistory, FaHeartbeat } from 'react-icons/fa';
+import { GiMicroscope, GiPlantSeed } from "react-icons/gi";
 import Image from 'next/image';
 
 const FeatureCard = ({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) => (
@@ -37,7 +38,7 @@ export default function HomePage() {
             Prenez une photo, et notre intelligence artificielle identifie la plante, détecte les maladies et vous propose des solutions de traitement. C'est simple, rapide et efficace.
           </p>
           <Button asChild size="lg" className="rounded-full font-bold text-lg">
-            <Link href="/analyze">Commencer l'analyse <Microscope className="ml-2" /></Link>
+            <Link href="/analyze">Commencer l'analyse <GiMicroscope className="ml-2" /></Link>
           </Button>
         </div>
       </section>
@@ -50,17 +51,17 @@ export default function HomePage() {
           </div>
           <div className="grid md:grid-cols-3 gap-8">
             <FeatureCard 
-              icon={<Leaf className="h-8 w-8 text-primary" />}
+              icon={<GiPlantSeed className="h-8 w-8 text-primary" />}
               title="1. Identifiez"
               description="Prenez ou téléchargez une photo de la feuille de votre plante. Notre IA identifie l'espèce pour une analyse précise."
             />
             <FeatureCard 
-              icon={<HeartPulse className="h-8 w-8 text-primary" />}
+              icon={<FaHeartbeat className="h-8 w-8 text-primary" />}
               title="2. Diagnostiquez"
               description="L'IA analyse l'image pour détecter toute maladie, carence ou parasite, et évalue la santé globale de la plante."
             />
             <FeatureCard 
-              icon={<History className="h-8 w-8 text-primary" />}
+              icon={<FaHistory className="h-8 w-8 text-primary" />}
               title="3. Traitez & Suivez"
               description="Recevez des conseils de traitements biologiques et chimiques, et conservez un historique de vos analyses."
             />

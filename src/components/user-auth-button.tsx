@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useUser } from '@/firebase';
@@ -12,7 +13,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { LogIn, LogOut, History } from 'lucide-react';
+import { FiLogIn, FiLogOut } from 'react-icons/fi';
+import { FaHistory } from 'react-icons/fa';
 import { Skeleton } from './ui/skeleton';
 import AuthDialog from './auth-dialog';
 import { useState } from 'react';
@@ -31,7 +33,7 @@ export default function UserAuthButton() {
     return (
       <>
         <Button onClick={() => setIsAuthDialogOpen(true)} variant="outline">
-          <LogIn className="mr-2 h-4 w-4" />
+          <FiLogIn className="mr-2 h-4 w-4" />
           Connexion
         </Button>
         <AuthDialog open={isAuthDialogOpen} onOpenChange={setIsAuthDialogOpen} />
@@ -68,13 +70,13 @@ export default function UserAuthButton() {
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <Link href="/history">
-            <History className="mr-2 h-4 w-4" />
+            <FaHistory className="mr-2 h-4 w-4" />
             <span>Mon historique</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={signOut}>
-          <LogOut className="mr-2 h-4 w-4" />
+          <FiLogOut className="mr-2 h-4 w-4" />
           <span>Déconnexion</span>
         </DropdownMenuItem>
       </DropdownMenuContent>

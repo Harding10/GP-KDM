@@ -8,7 +8,9 @@ import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { LoaderCircle, AlertTriangle, Leaf, Sprout, CheckCircle2 } from 'lucide-react';
+import { AiOutlineLoading3Quarters } from 'react-icons/ai';
+import { IoAlertTriangleOutline, IoLeafOutline, IoCheckmarkCircleOutline } from 'react-icons/io5';
+import { GiSprout } from 'react-icons/gi';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
@@ -36,7 +38,7 @@ export default function HistoryPage() {
     if (isUserLoading || isLoading) {
       return (
         <div className="flex flex-col items-center justify-center gap-4 text-center h-64">
-          <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
+          <AiOutlineLoading3Quarters className="h-12 w-12 animate-spin text-primary" />
           <h2 className="text-2xl font-semibold">Chargement de votre historique...</h2>
         </div>
       );
@@ -45,7 +47,7 @@ export default function HistoryPage() {
     if (!user) {
         return (
             <div className="text-center py-16">
-                <Leaf className="mx-auto h-12 w-12 text-muted-foreground" />
+                <IoLeafOutline className="mx-auto h-12 w-12 text-muted-foreground" />
                 <h2 className="mt-4 text-2xl font-bold tracking-tight">Connectez-vous pour voir votre historique</h2>
                 <p className="mt-2 text-muted-foreground">Votre historique d'analyses apparaîtra ici une fois que vous serez connecté.</p>
                  <Button asChild className="mt-6" size="lg">
@@ -58,7 +60,7 @@ export default function HistoryPage() {
     if (error) {
       return (
         <div className="text-center py-16 bg-destructive/10 rounded-lg">
-          <AlertTriangle className="mx-auto h-12 w-12 text-destructive" />
+          <IoAlertTriangleOutline className="mx-auto h-12 w-12 text-destructive" />
           <h2 className="mt-4 text-2xl font-bold tracking-tight text-destructive">Une erreur est survenue</h2>
           <p className="mt-2 text-muted-foreground">Impossible de charger votre historique pour le moment.</p>
         </div>
@@ -68,7 +70,7 @@ export default function HistoryPage() {
     if (analyses && analyses.length === 0) {
         return (
             <div className="text-center py-16">
-                <Leaf className="mx-auto h-12 w-12 text-muted-foreground" />
+                <IoLeafOutline className="mx-auto h-12 w-12 text-muted-foreground" />
                 <h2 className="mt-4 text-2xl font-bold tracking-tight">Aucune analyse trouvée</h2>
                 <p className="mt-2 text-muted-foreground">Votre historique est vide. Commencez par analyser une plante !</p>
                 <Button asChild className="mt-6" size="lg">
@@ -90,7 +92,7 @@ export default function HistoryPage() {
                                 </div>
                                 <div className="absolute top-2 right-2">
                                     <Badge variant={analysis.isHealthy ? "default" : "destructive"} className="font-bold rounded-full text-xs py-1 px-3 shadow-md">
-                                        {analysis.isHealthy ? <CheckCircle2 className="h-4 w-4 mr-1.5"/> : <AlertTriangle className="h-4 w-4 mr-1.5"/>}
+                                        {analysis.isHealthy ? <IoCheckmarkCircleOutline className="h-4 w-4 mr-1.5"/> : <IoAlertTriangleOutline className="h-4 w-4 mr-1.5"/>}
                                         {analysis.isHealthy ? 'Sain' : 'Malade'}
                                     </Badge>
                                 </div>
