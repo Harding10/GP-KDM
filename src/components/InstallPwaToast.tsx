@@ -11,13 +11,9 @@ export default function InstallPwaToast() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
+    // Si l'application est installable, afficher immédiatement la bannière.
     if (canInstall) {
-      // Use a timeout to delay the appearance of the toast,
-      // making it less intrusive on page load.
-      const timer = setTimeout(() => {
-        setIsVisible(true);
-      }, 3000); // 3-second delay
-      return () => clearTimeout(timer);
+      setIsVisible(true);
     } else {
       setIsVisible(false);
     }
@@ -25,7 +21,7 @@ export default function InstallPwaToast() {
   
   const handleInstallClick = () => {
     promptInstall();
-    setIsVisible(false); // Hide toast after prompting
+    setIsVisible(false); // Cacher la bannière après avoir lancé l'invite
   }
 
   if (!isVisible) {
