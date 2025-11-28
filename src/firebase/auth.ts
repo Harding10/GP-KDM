@@ -5,6 +5,8 @@ import {
   GoogleAuthProvider,
   signOut as firebaseSignOut,
   User,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
 } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { setDocumentNonBlocking } from './non-blocking-updates';
@@ -16,33 +18,37 @@ export function useFirebaseAuth() {
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
-    try {
-      const result = await signInWithPopup(auth, provider);
-      await createUserProfile(result.user);
-    } catch (error) {
-      console.error("Erreur lors de la connexion avec Google:", error);
-    }
+    const result = await signInWithPopup(auth, provider);
+    await createUserProfile(result.user);
+  };
+
+  const signUpWithEmail = async (email: string, password: string) => {
+    const result = await createUserWithEmailAndPassword(auth, email, password);
+    await createUserProfile(result.user, {email});
+  };
+
+  const signInWithEmail = async (email: string, password: string) => {
+    await signInWithEmailAndPassword(auth, email, password);
   };
 
   const signOut = async () => {
-    try {
-      await firebaseSignOut(auth);
-    } catch (error) {
-      console.error("Erreur lors de la déconnexion:", error);
-    }
+    await firebaseSignOut(auth);
   };
 
-  const createUserProfile = async (user: User) => {
+  const createUserProfile = async (user: User, additionalData: any = {}) => {
     if (!user) return;
     const userRef = doc(firestore, `users/${user.uid}`);
     const userProfile = {
       id: user.uid,
-      name: user.displayName,
+      name: user.displayName || additionalData.name,
       email: user.email,
       photoURL: user.photoURL,
+      ...additionalData
     };
+    // Make sure to remove undefined values
+    Object.keys(userProfile).forEach(key => userProfile[key as keyof typeof userProfile] === undefined && delete userProfile[key as keyof typeof userProfile]);
     setDocumentNonBlocking(userRef, userProfile, { merge: true });
   };
 
-  return { signInWithGoogle, signOut };
+  return { signInWithGoogle, signOut, signUpWithEmail, signInWithEmail };
 }

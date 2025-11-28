@@ -14,10 +14,13 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { LogIn, LogOut, User as UserIcon } from 'lucide-react';
 import { Skeleton } from './ui/skeleton';
+import AuthDialog from './auth-dialog';
+import { useState } from 'react';
 
 export default function UserAuthButton() {
   const { user, isUserLoading } = useUser();
-  const { signInWithGoogle, signOut } = useFirebaseAuth();
+  const { signOut } = useFirebaseAuth();
+  const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
 
   if (isUserLoading) {
     return <Skeleton className="h-10 w-10 rounded-full" />;
@@ -25,10 +28,13 @@ export default function UserAuthButton() {
 
   if (!user) {
     return (
-      <Button onClick={signInWithGoogle} variant="outline">
-        <LogIn className="mr-2 h-4 w-4" />
-        Connexion
-      </Button>
+      <>
+        <Button onClick={() => setIsAuthDialogOpen(true)} variant="outline">
+          <LogIn className="mr-2 h-4 w-4" />
+          Connexion
+        </Button>
+        <AuthDialog open={isAuthDialogOpen} onOpenChange={setIsAuthDialogOpen} />
+      </>
     );
   }
 
