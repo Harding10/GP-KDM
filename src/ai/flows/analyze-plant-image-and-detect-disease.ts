@@ -14,14 +14,14 @@ const AnalyzePlantImageAndDetectDiseaseInputSchema = z.object({
   plantImageDataUri: z
     .string()
     .describe(
-      "A photo of a plant leaf, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
+      "Une photo d'une feuille de plante, sous forme d'URI de données qui doit inclure un type MIME et utiliser un encodage Base64. Format attendu : 'data:<mimetype>;base64,<encoded_data>'."
     ),
 });
 export type AnalyzePlantImageAndDetectDiseaseInput = z.infer<typeof AnalyzePlantImageAndDetectDiseaseInputSchema>;
 
 const AnalyzePlantImageAndDetectDiseaseOutputSchema = z.object({
-  diseaseDetected: z.string().describe('The disease detected in the plant leaf, or null if no disease is detected.'),
-  treatmentSuggestion: z.string().describe('A suggestion for treating the detected disease.'),
+  diseaseDetected: z.string().describe('La maladie détectée dans la feuille de la plante, ou null si aucune maladie n\'est détectée.'),
+  treatmentSuggestion: z.string().describe('Une suggestion pour traiter la maladie détectée.'),
 });
 export type AnalyzePlantImageAndDetectDiseaseOutput = z.infer<typeof AnalyzePlantImageAndDetectDiseaseOutputSchema>;
 
@@ -35,13 +35,13 @@ const prompt = ai.definePrompt({
   name: 'analyzePlantImageAndDetectDiseasePrompt',
   input: {schema: AnalyzePlantImageAndDetectDiseaseInputSchema},
   output: {schema: AnalyzePlantImageAndDetectDiseaseOutputSchema},
-  prompt: `You are an expert in plant diseases. Analyze the image of the plant leaf and detect any potential diseases. If no disease is detected, indicate that no disease is found. Then, suggest possible treatments or remedies for the detected plant disease.
+  prompt: `Vous êtes un expert en maladies des plantes. Analysez l'image de la feuille de la plante et détectez toute maladie potentielle. Si aucune maladie n'est détectée, indiquez qu'aucune maladie n'est trouvée. Ensuite, suggérez des traitements ou des remèdes possibles pour la maladie végétale détectée.
 
-Plant Leaf Image: {{media url=plantImageDataUri}}
+Image de la feuille de plante : {{media url=plantImageDataUri}}
 
-Respond with a disease detected string, and a treatment suggestion string.
-Disease Detected:
-Treatment Suggestion: `,
+Répondez avec une chaîne de caractères pour la maladie détectée et une chaîne de caractères pour la suggestion de traitement.
+Maladie détectée :
+Suggestion de traitement :`,
 });
 
 const analyzePlantImageAndDetectDiseaseFlow = ai.defineFlow(

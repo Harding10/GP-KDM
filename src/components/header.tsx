@@ -9,7 +9,7 @@ export default function Header() {
           <Link href="/" className="flex items-center gap-2">
             <Leaf className="h-7 w-7 text-primary" />
             <span className="text-xl font-bold text-foreground font-headline">
-              AgriAssist
+              AgriAide
             </span>
           </Link>
         </div>

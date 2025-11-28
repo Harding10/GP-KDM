@@ -5,8 +5,8 @@ import { cn } from "@/lib/utils";
 import Header from "@/components/header";
 
 export const metadata: Metadata = {
-  title: "AgriAssist",
-  description: "AI-powered plant disease detection and treatment suggestions.",
+  title: "AgriAide",
+  description: "Détection des maladies des plantes et suggestions de traitement basées sur l'IA.",
 };
 
 export default function RootLayout({
@@ -15,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full">
+    <html lang="fr" className="h-full">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link

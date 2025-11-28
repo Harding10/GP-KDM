@@ -12,15 +12,15 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const SuggestTreatmentsInputSchema = z.object({
-  diseaseName: z.string().describe('The name of the detected plant disease.'),
-  plantType: z.string().describe('The type of plant affected by the disease.'),
+  diseaseName: z.string().describe('Le nom de la maladie de la plante détectée.'),
+  plantType: z.string().describe('Le type de plante affectée par la maladie.'),
 });
 export type SuggestTreatmentsInput = z.infer<typeof SuggestTreatmentsInputSchema>;
 
 const SuggestTreatmentsOutputSchema = z.object({
   treatments: z
     .array(z.string())
-    .describe('A list of suggested treatments or remedies for the disease.'),
+    .describe('Une liste de traitements ou de remèdes suggérés pour la maladie.'),
 });
 export type SuggestTreatmentsOutput = z.infer<typeof SuggestTreatmentsOutputSchema>;
 
@@ -32,12 +32,12 @@ const prompt = ai.definePrompt({
   name: 'suggestTreatmentsPrompt',
   input: {schema: SuggestTreatmentsInputSchema},
   output: {schema: SuggestTreatmentsOutputSchema},
-  prompt: `You are an expert in plant diseases and their treatments. Given the name of a plant disease and the type of plant affected, suggest possible treatments or remedies.
+  prompt: `Vous êtes un expert en maladies des plantes et leurs traitements. Compte tenu du nom d'une maladie végétale et du type de plante affectée, suggérez des traitements ou des remèdes possibles.
 
-Disease Name: {{{diseaseName}}}
-Plant Type: {{{plantType}}}
+Nom de la maladie : {{{diseaseName}}}
+Type de plante : {{{plantType}}}
 
-Suggest treatments:
+Suggérer des traitements:
 `,
 });
 

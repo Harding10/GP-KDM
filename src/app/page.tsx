@@ -45,14 +45,14 @@ export default function Home() {
       if (result) {
         setAnalysisResult(result);
       } else {
-        throw new Error('Analysis failed to return a result.');
+        throw new Error('L\'analyse n\'a pas renvoyé de résultat.');
       }
     } catch (e) {
-      const errorMessage = e instanceof Error ? e.message : 'An unknown error occurred.';
+      const errorMessage = e instanceof Error ? e.message : 'Une erreur inconnue est survenue.';
       setError(errorMessage);
       toast({
         variant: 'destructive',
-        title: 'Analysis Failed',
+        title: 'L\'analyse a échoué',
         description: errorMessage,
       });
     } finally {
@@ -73,10 +73,10 @@ export default function Home() {
       return (
         <div className="flex flex-col items-center justify-center gap-4 text-center">
           <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
-          <h2 className="text-2xl font-semibold">Analyzing...</h2>
-          <p className="text-muted-foreground">Our AI is examining your plant leaf. Please wait a moment.</p>
+          <h2 className="text-2xl font-semibold">Analyse en cours...</h2>
+          <p className="text-muted-foreground">Notre IA examine votre feuille de plante. Veuillez patienter un instant.</p>
           {imagePreview && (
-            <Image src={imagePreview} alt="Plant leaf for analysis" width={200} height={200} className="mt-4 rounded-lg object-cover shadow-lg" />
+            <Image src={imagePreview} alt="Feuille de plante pour analyse" width={200} height={200} className="mt-4 rounded-lg object-cover shadow-lg" />
           )}
         </div>
       );
@@ -91,15 +91,15 @@ export default function Home() {
         <Card className="w-full max-w-lg overflow-hidden shadow-lg">
           <CardContent className="p-6 text-center">
             <div className="relative mb-4 group">
-              <Image src={imagePreview} alt="Selected plant leaf" width={400} height={400} className="rounded-lg object-contain mx-auto max-h-[50vh]" />
+              <Image src={imagePreview} alt="Feuille de plante sélectionnée" width={400} height={400} className="rounded-lg object-contain mx-auto max-h-[50vh]" />
               <Button variant="destructive" size="icon" className="absolute top-2 right-2 opacity-70 group-hover:opacity-100" onClick={() => { setImageFile(null); setImagePreview(null); }}>
                 <X className="h-4 w-4" />
               </Button>
             </div>
-            <h2 className="text-xl font-semibold mb-2 font-headline">Ready for Analysis</h2>
-            <p className="text-muted-foreground mb-4">Click the button below to detect potential diseases.</p>
+            <h2 className="text-xl font-semibold mb-2 font-headline">Prêt pour l'analyse</h2>
+            <p className="text-muted-foreground mb-4">Cliquez sur le bouton ci-dessous pour détecter les maladies potentielles.</p>
             <Button onClick={handleAnalyze} size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
-              Analyze Plant
+              Analyser la plante
             </Button>
           </CardContent>
         </Card>

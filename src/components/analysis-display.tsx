@@ -14,19 +14,19 @@ interface AnalysisDisplayProps {
 }
 
 export default function AnalysisDisplay({ result, imagePreview, onReset }: AnalysisDisplayProps) {
-  const isDiseaseFound = result.diseaseDetected && !result.diseaseDetected.toLowerCase().includes('no disease');
+  const isDiseaseFound = result.diseaseDetected && !result.diseaseDetected.toLowerCase().includes('aucune maladie');
 
   return (
     <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8 animate-fade-in">
       <div className="flex flex-col gap-4">
          <Card>
             <CardContent className="p-4">
-                <Image src={imagePreview} alt="Analyzed plant leaf" width={500} height={500} className="rounded-lg object-contain w-full max-h-[50vh]" />
+                <Image src={imagePreview} alt="Feuille de plante analysée" width={500} height={500} className="rounded-lg object-contain w-full max-h-[50vh]" />
             </CardContent>
          </Card>
          <Button onClick={onReset} variant="outline" size="lg">
             <RefreshCcw className="mr-2 h-4 w-4" />
-            Analyze Another Image
+            Analyser une autre image
          </Button>
       </div>
 
@@ -35,12 +35,12 @@ export default function AnalysisDisplay({ result, imagePreview, onReset }: Analy
           <CardHeader>
             <CardTitle className="flex items-center gap-2 font-headline">
                 {isDiseaseFound ? <AlertTriangle className="h-6 w-6 text-destructive" /> : <CheckCircle2 className="h-6 w-6 text-primary" />}
-                Analysis Result
+                Résultat de l'analyse
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              <p className="font-semibold text-lg">Detected Condition:</p>
+              <p className="font-semibold text-lg">Condition détectée :</p>
               <Badge variant={isDiseaseFound ? "destructive" : "default"} className="text-base px-4 py-1">
                 {result.diseaseDetected}
               </Badge>
@@ -53,7 +53,7 @@ export default function AnalysisDisplay({ result, imagePreview, onReset }: Analy
             <CardHeader>
                 <CardTitle className="flex items-center gap-2 font-headline">
                     <Sparkles className="h-6 w-6 text-accent" />
-                    Treatment Suggestion
+                    Suggestion de traitement
                 </CardTitle>
             </CardHeader>
             <CardContent>

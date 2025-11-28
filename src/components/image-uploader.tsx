@@ -51,10 +51,10 @@ export default function ImageUploader({ onImageSelect }: ImageUploaderProps) {
       <CardHeader>
         <CardTitle className="font-headline text-3xl flex items-center justify-center gap-2">
           <Leaf className="text-primary"/>
-          Plant Disease Detection
+          Détection des maladies des plantes
         </CardTitle>
         <CardDescription className="pt-2">
-          Upload a clear image of a plant leaf to check for diseases.
+          Téléchargez une image claire d'une feuille de plante pour vérifier les maladies.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -72,12 +72,12 @@ export default function ImageUploader({ onImageSelect }: ImageUploaderProps) {
           <input ref={inputRef} type="file" id="file-upload" className="hidden" accept="image/*" onChange={handleChange} />
           <div className="flex flex-col items-center gap-4 text-muted-foreground">
             <UploadCloud className="h-12 w-12" />
-            <p className="font-semibold">Drag & drop an image here</p>
-            <p>or</p>
+            <p className="font-semibold">Glissez-déposez une image ici</p>
+            <p>ou</p>
             <Button type="button" onClick={onButtonClick} variant="outline">
-              Browse Files
+              Parcourir les fichiers
             </Button>
-            <p className="text-sm mt-2">Supports: PNG, JPG, JPEG, WEBP</p>
+            <p className="text-sm mt-2">Formats supportés : PNG, JPG, JPEG, WEBP</p>
           </div>
         </div>
       </CardContent>
