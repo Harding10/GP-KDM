@@ -34,6 +34,12 @@ const nextConfig: NextConfig = {
         hostname: 'www.google.com',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        port: '',
+        pathname: '/**',
       }
     ],
   },

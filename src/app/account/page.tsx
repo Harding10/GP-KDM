@@ -62,8 +62,8 @@ export default function AccountPage() {
     const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
     const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 
-    if (!uploadPreset || !cloudName) {
-        throw new Error("Les variables d'environnement Cloudinary ne sont pas configurées.");
+    if (!uploadPreset || !cloudName || uploadPreset === 'your_upload_preset') {
+        throw new Error("Les variables d'environnement Cloudinary ne sont pas configurées. Veuillez les ajouter dans le fichier .env");
     }
     
     formData.append('upload_preset', uploadPreset);
@@ -86,46 +86,53 @@ export default function AccountPage() {
     setIsSavingProfile(true);
   
     try {
-      let newPhotoURL = photoPreview;
+      let newPhotoURL = userProfile?.photoURL || user.photoURL;
   
       // Only upload if a new file is selected
       if (photoFile) {
         newPhotoURL = await uploadToCloudinary(photoFile);
       }
   
-      const fullProfileData: UserProfile = {
-        id: user.uid,
-        email: user.email!,
-        name: displayName,
-        photoURL: newPhotoURL || undefined,
-      };
+      const firestoreUpdates: Partial<UserProfile> = {};
 
-      // Also update the auth user profile for consistency
-      await updateProfile(user, {
-        displayName: displayName,
-        photoURL: newPhotoURL || undefined,
-      });
-  
-      setDoc(userDocRef, fullProfileData)
-        .then(() => {
+      const currentName = userProfile?.name ?? user.displayName ?? '';
+      if(displayName !== currentName){
+        firestoreUpdates.name = displayName;
+      }
+      
+      const currentPhoto = userProfile?.photoURL ?? user.photoURL ?? null;
+      if (newPhotoURL && newPhotoURL !== currentPhoto) {
+        firestoreUpdates.photoURL = newPhotoURL;
+      }
+
+      if (Object.keys(firestoreUpdates).length > 0) {
+          // Also update the auth user profile for consistency
+          await updateProfile(user, {
+            displayName: firestoreUpdates.name || displayName,
+            photoURL: firestoreUpdates.photoURL || newPhotoURL,
+          });
+
+          // And update firestore document
+          const fullProfileData: UserProfile = {
+            id: user.uid,
+            email: user.email!,
+            name: firestoreUpdates.name || displayName,
+            photoURL: firestoreUpdates.photoURL || newPhotoURL || undefined,
+          };
+      
+          await setDoc(userDocRef, fullProfileData);
+      
           toast({
             title: 'Profil mis à jour',
             description: 'Vos informations de profil ont été mises à jour.',
           });
           setPhotoFile(null); // Clear the file input state
-        })
-        .catch(async (error) => {
-          console.error("Firestore setDoc error:", error);
-          const permissionError = new FirestorePermissionError({
-            path: userDocRef.path,
-            operation: 'update',
-            requestResourceData: fullProfileData,
-          });
-          errorEmitter.emit('permission-error', permissionError);
-        })
-        .finally(() => {
-          setIsSavingProfile(false);
+      } else {
+        toast({
+            title: 'Aucun changement',
+            description: 'Aucune modification détectée.',
         });
+      }
   
     } catch (error: any) {
       console.error("Error during profile save:", error);
@@ -134,7 +141,8 @@ export default function AccountPage() {
         title: 'Erreur',
         description: error.message || 'Impossible de mettre à jour le profil.',
       });
-      setIsSavingProfile(false);
+    } finally {
+        setIsSavingProfile(false);
     }
   };
 

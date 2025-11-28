@@ -82,8 +82,8 @@ export default function AnalyzePage() {
     const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
     const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 
-    if (!uploadPreset || !cloudName) {
-        throw new Error("Les variables d'environnement Cloudinary ne sont pas configurées.");
+    if (!uploadPreset || !cloudName || uploadPreset === 'your_upload_preset') {
+        throw new Error("Les variables d'environnement Cloudinary ne sont pas configurées. Veuillez les ajouter dans le fichier .env");
     }
     
     formData.append('upload_preset', uploadPreset);
@@ -106,7 +106,7 @@ export default function AnalyzePage() {
             const userAnalysesRef = collection(firestore, `users/${user.uid}/analyses`);
             await addDoc(userAnalysesRef, {
               userId: user.uid,
-              imageUri: imageUrl,
+              imageUri: imageUrl, // Storing the Cloudinary URL
               plantType: result.plantType,
               diseaseDetected: result.diseaseDetected,
               isHealthy: result.isHealthy,
@@ -136,16 +136,18 @@ export default function AnalyzePage() {
     setIsLoading(true);
     setError(null);
     try {
-      // First, upload the image to Cloudinary
+      // First, upload the image to Cloudinary to get a URL
       const imageUrl = await uploadToCloudinary(imageFile);
 
-      // Then, run the analysis with the data URI
+      // Then, run the analysis using the original image data (as data URI)
       const result = await analyzePlantImageAndDetectDisease({ plantImageDataUri: imagePreview });
       
       if (result) {
         setAnalysisResult(result);
-        // Save the analysis with the Cloudinary URL
-        await saveAnalysis(result, imageUrl);
+        // After analysis, save the result along with the Cloudinary URL to Firestore
+        if (user) {
+            await saveAnalysis(result, imageUrl);
+        }
       } else {
         throw new Error('L\'analyse n\'a pas renvoyé de résultat.');
       }
@@ -238,6 +240,7 @@ export default function AnalyzePage() {
     }
 
     if (analysisResult) {
+      // The imagePreview for the display is now the Cloudinary URL if available, otherwise fallback.
       return <AnalysisDisplay result={analysisResult} imagePreview={imagePreview!} onReset={handleReset} />;
     }
 
@@ -270,5 +273,3 @@ export default function AnalyzePage() {
     </div>
   );
 }
-
-    
