@@ -58,17 +58,6 @@ service cloud.firestore {
     }
     
     /**
-     * Ensures that when updating a user document, critical fields are not changed.
-     */
-    function isUpdatingValidUserAccount(userId) {
-      let data = request.resource.data;
-      // You can't change the ID or the email. Other fields are updatable.
-      return isOwner(userId) 
-        && data.id == resource.data.id
-        && data.email == resource.data.email;
-    }
-
-    /**
      * Validates a new PlantAnalysis document on creation.
      * Ensures the creator is the owner and that the internal 'userId' foreign key is correctly set.
      */
@@ -101,7 +90,7 @@ service cloud.firestore {
       allow list: if false; // PREVENT USER ENUMERATION
 
       allow create: if isCreatingValidUserAccount(userId);
-      allow update: if isUpdatingValidUserAccount(userId);
+      allow update: if isOwner(userId);
       allow delete: if isExistingOwner(userId);
 
       /**
@@ -122,5 +111,3 @@ service cloud.firestore {
     }
   }
 }
-
-    

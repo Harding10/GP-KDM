@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useUser, useFirestore, useDoc, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
+import { useUser, useFirestore, useDoc, useMemoFirebase, FirestorePermissionError, errorEmitter } from '@/firebase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Loader, User, KeyRound } from 'lucide-react';
 import Link from 'next/link';
 import { doc, setDoc } from 'firebase/firestore';
-import { updatePassword, updateProfile } from 'firebase/auth';
+import { updatePassword } from 'firebase/auth';
 import { useFirebaseAuth } from '@/firebase/auth';
 
 interface UserProfile {
@@ -42,12 +42,11 @@ export default function AccountPage() {
   const [isSavingPassword, setIsSavingPassword] = useState(false);
   
   useEffect(() => {
-    if (userProfile) {
-      setDisplayName(userProfile.name || user?.displayName || '');
-      setPhotoPreview(userProfile.photoURL || user?.photoURL || null);
-    } else if (user) {
-        setDisplayName(user.displayName || '');
-        setPhotoPreview(user.photoURL || null);
+    if (user) {
+        const currentName = userProfile?.name ?? user.displayName ?? '';
+        const currentPhoto = userProfile?.photoURL ?? user.photoURL ?? null;
+        setDisplayName(currentName);
+        setPhotoPreview(currentPhoto);
     }
   }, [userProfile, user]);
 
@@ -84,22 +83,25 @@ export default function AccountPage() {
     setIsSavingProfile(true);
   
     try {
-      let newPhotoURL = photoPreview || userProfile?.photoURL || user.photoURL;
+      let newPhotoURL = photoPreview;
   
       if (photoFile) {
         newPhotoURL = await uploadToCloudinary(photoFile);
       }
   
-      const firestoreUpdates: { name: string; photoURL: string | null } = {
-        name: displayName,
-        photoURL: newPhotoURL,
-      };
-
-      // Ensure we don't save with old values if no changes were made
       const currentName = userProfile?.name ?? user.displayName ?? '';
       const currentPhoto = userProfile?.photoURL ?? user.photoURL ?? null;
+  
+      const firestoreUpdates: { name?: string; photoURL?: string } = {};
 
-      if (displayName === currentName && newPhotoURL === currentPhoto) {
+      if (displayName !== currentName) {
+        firestoreUpdates.name = displayName;
+      }
+      if (newPhotoURL && newPhotoURL !== currentPhoto) {
+        firestoreUpdates.photoURL = newPhotoURL;
+      }
+
+      if (Object.keys(firestoreUpdates).length === 0) {
         toast({
           title: 'Aucun changement',
           description: 'Vos informations de profil sont déjà à jour.',
@@ -109,13 +111,7 @@ export default function AccountPage() {
       }
   
       setDoc(userDocRef, firestoreUpdates, { merge: true })
-        .then(async () => {
-           if (auth.currentUser) {
-                await updateProfile(auth.currentUser, {
-                    displayName: firestoreUpdates.name,
-                    photoURL: firestoreUpdates.photoURL,
-                });
-            }
+        .then(() => {
           toast({
             title: 'Profil mis à jour',
             description: 'Vos informations de profil ont été mises à jour.',
@@ -125,7 +121,7 @@ export default function AccountPage() {
           }
           setPhotoFile(null);
         })
-        .catch(async (serverError) => {
+        .catch(async () => {
           const permissionError = new FirestorePermissionError({
             path: userDocRef.path,
             operation: 'update',
@@ -330,5 +326,3 @@ export default function AccountPage() {
     </div>
   );
 }
-
-    
