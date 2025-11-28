@@ -62,11 +62,11 @@ export default function OnboardingPage() {
         <div className="flex-1 flex flex-col">
             <div className="relative h-3/5 bg-primary/10 flex items-center justify-center">
               {/* Phone Mockup */}
-              <div className="relative mx-auto border-zinc-800 bg-zinc-800 border-[14px] rounded-[2.5rem] h-[500px] w-64 shadow-xl">
+              <div className="relative mx-auto border-zinc-800 dark:border-zinc-800 bg-zinc-800 border-[14px] rounded-[2.5rem] h-[500px] w-64 shadow-xl">
                 {/* Notch */}
-                <div className="w-[100px] h-[22px] bg-zinc-800 top-0 rounded-b-xl left-1/2 -translate-x-1/2 absolute z-10"></div>
+                <div className="w-[100px] h-[22px] bg-zinc-800 dark:bg-zinc-800 top-0 rounded-b-xl left-1/2 -translate-x-1/2 absolute z-10"></div>
                 {/* Screen */}
-                <div className="h-full w-full bg-white rounded-[1.5rem] overflow-hidden">
+                <div className="h-full w-full bg-white dark:bg-zinc-800 rounded-[1.5rem] overflow-hidden">
                     <Image
                       src={step.image}
                       alt={step.imageAlt}
