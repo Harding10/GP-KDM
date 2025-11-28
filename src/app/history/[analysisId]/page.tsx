@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc, deleteDoc } from 'firebase/firestore';
@@ -34,6 +34,14 @@ export default function AnalysisDetailPage() {
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [currentUrl, setCurrentUrl] = useState('');
+
+  useEffect(() => {
+    // Ensure window is defined (runs only on client)
+    if (typeof window !== 'undefined') {
+      setCurrentUrl(window.location.href);
+    }
+  }, []);
 
   const analysisDocRef = useMemoFirebase(() => {
     if (!user || !firestore || !analysisId) return null;
@@ -89,8 +97,7 @@ export default function AnalysisDetailPage() {
   }
   
   const handleReset = () => {
-    // This function is required by AnalysisDisplay but not used here.
-    // A better implementation would be to separate the display logic from the reset logic.
+    router.push('/analyze');
   }
 
   return (
@@ -114,7 +121,7 @@ export default function AnalysisDetailPage() {
               </Button>
             </div>
           </div>
-        <AnalysisDisplay result={analysis} imagePreview={analysis.imageUri} onReset={handleReset} />
+        <AnalysisDisplay result={analysis} imagePreview={analysis.imageUri} onReset={handleReset} shareUrl={currentUrl} />
       </div>
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
