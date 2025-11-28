@@ -2,8 +2,8 @@
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { IoCheckmarkCircleOutline, IoAlertTriangleOutline, IoInformationCircleOutline } from 'react-icons/io5';
-import { FiRefreshCcw, FiShield, FiPackage } from 'react-icons/fi';
+import { IoCheckmarkCircleOutline, IoAlertTriangle, IoInformationCircleOutline } from 'react-icons/io5';
+import { FiRefreshCcw, FiShield } from 'react-icons/fi';
 import { GiSprout } from 'react-icons/gi';
 import { FaBug, FaFlask } from 'react-icons/fa';
 import { Badge } from './ui/badge';
@@ -63,7 +63,7 @@ export default function AnalysisDisplay({ result, imagePreview, onReset }: Analy
         <Card className="shadow-lg rounded-2xl">
           <CardHeader>
             <CardTitle className="flex items-center gap-3 font-bold text-2xl">
-                {isHealthy ? <IoCheckmarkCircleOutline className="h-8 w-8 text-primary" /> : <IoAlertTriangleOutline className="h-8 w-8 text-destructive" />}
+                {isHealthy ? <IoCheckmarkCircleOutline className="h-8 w-8 text-primary" /> : <IoAlertTriangle className="h-8 w-8 text-destructive" />}
                 Résultat de l'analyse
             </CardTitle>
           </CardHeader>
@@ -74,7 +74,7 @@ export default function AnalysisDisplay({ result, imagePreview, onReset }: Analy
                     <span className="font-bold text-primary">{plantType}</span>
                 </div>
                  <div className="flex items-center gap-3 text-lg">
-                    {isHealthy ? <IoCheckmarkCircleOutline className="h-6 w-6 text-primary" /> : <IoAlertTriangleOutline className="h-6 w-6 text-destructive" />}
+                    {isHealthy ? <IoCheckmarkCircleOutline className="h-6 w-6 text-primary" /> : <IoAlertTriangle className="h-6 w-6 text-destructive" />}
                     <p className="font-semibold">Diagnostic :</p>
                     <Badge variant={isHealthy ? "default" : "destructive"} className="text-base font-bold px-4 py-1.5 rounded-full">
                         {diseaseDetected}

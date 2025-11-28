@@ -9,8 +9,7 @@ import Image from 'next/image';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
-import { IoAlertTriangleOutline, IoLeafOutline, IoCheckmarkCircleOutline } from 'react-icons/io5';
-import { GiSprout } from 'react-icons/gi';
+import { IoAlertTriangle, IoLeafOutline, IoCheckmarkCircleOutline } from 'react-icons/io5';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
@@ -60,7 +59,7 @@ export default function HistoryPage() {
     if (error) {
       return (
         <div className="text-center py-16 bg-destructive/10 rounded-lg">
-          <IoAlertTriangleOutline className="mx-auto h-12 w-12 text-destructive" />
+          <IoAlertTriangle className="mx-auto h-12 w-12 text-destructive" />
           <h2 className="mt-4 text-2xl font-bold tracking-tight text-destructive">Une erreur est survenue</h2>
           <p className="mt-2 text-muted-foreground">Impossible de charger votre historique pour le moment.</p>
         </div>
@@ -92,7 +91,7 @@ export default function HistoryPage() {
                                 </div>
                                 <div className="absolute top-2 right-2">
                                     <Badge variant={analysis.isHealthy ? "default" : "destructive"} className="font-bold rounded-full text-xs py-1 px-3 shadow-md">
-                                        {analysis.isHealthy ? <IoCheckmarkCircleOutline className="h-4 w-4 mr-1.5"/> : <IoAlertTriangleOutline className="h-4 w-4 mr-1.5"/>}
+                                        {analysis.isHealthy ? <IoCheckmarkCircleOutline className="h-4 w-4 mr-1.5"/> : <IoAlertTriangle className="h-4 w-4 mr-1.5"/>}
                                         {analysis.isHealthy ? 'Sain' : 'Malade'}
                                     </Badge>
                                 </div>

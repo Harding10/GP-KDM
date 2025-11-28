@@ -7,7 +7,7 @@ import { doc } from 'firebase/firestore';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { IoCheckmarkCircleOutline, IoAlertTriangleOutline, IoArrowBack, IoLeafOutline } from 'react-icons/io5';
+import { IoAlertTriangle, IoArrowBack } from 'react-icons/io5';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import Link from 'next/link';
 import AnalysisDisplay from '@/components/analysis-display';
@@ -38,7 +38,7 @@ export default function AnalysisDetailPage() {
   if (error || !analysis) {
     return (
       <div className="text-center py-16">
-        <IoAlertTriangleOutline className="mx-auto h-12 w-12 text-destructive" />
+        <IoAlertTriangle className="mx-auto h-12 w-12 text-destructive" />
         <h2 className="mt-4 text-2xl font-bold tracking-tight text-destructive">Analyse introuvable</h2>
         <p className="mt-2 text-muted-foreground">Impossible de charger cette analyse. Elle n'existe peut-être pas ou vous n'y avez pas accès.</p>
         <Button asChild className="mt-6" size="lg" variant="outline">
