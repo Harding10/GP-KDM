@@ -58,7 +58,6 @@ export function PwaInstallProvider({ children }: { children: ReactNode }) {
 
   const promptInstall = useCallback(async () => {
     if (!installPromptEvent) {
-      console.log('Installation cannot be prompted at this time.');
       return;
     }
     
@@ -69,9 +68,9 @@ export function PwaInstallProvider({ children }: { children: ReactNode }) {
     const { outcome } = await installPromptEvent.userChoice;
 
     if (outcome === 'accepted') {
-      console.log('User accepted the install prompt');
+      // User accepted the install prompt
     } else {
-      console.log('User dismissed the install prompt');
+      // User dismissed the install prompt
     }
     // We can only use the prompt once. After that, we need to clear it.
     setInstallPromptEvent(null);

@@ -39,7 +39,6 @@ export default function AnalyzePage() {
             videoRef.current.srcObject = stream;
           }
         } catch (error) {
-          console.error('Error accessing camera:', error);
           setHasCameraPermission(false);
           toast({
             variant: 'destructive',
@@ -82,8 +81,8 @@ export default function AnalyzePage() {
     const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
     const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 
-    if (!uploadPreset || !cloudName || uploadPreset === 'your_upload_preset') {
-        throw new Error("Les variables d'environnement Cloudinary ne sont pas configurées. Veuillez les ajouter dans le fichier .env");
+    if (!uploadPreset || !cloudName || uploadPreset === 'your_upload_preset' || cloudName === 'your_cloud_name') {
+        throw new Error("Les variables d'environnement Cloudinary ne sont pas configurées. Veuillez les ajouter dans le fichier .env.production");
     }
     
     formData.append('upload_preset', uploadPreset);
@@ -121,7 +120,6 @@ export default function AnalyzePage() {
                 description: "Votre analyse a été ajoutée à votre historique.",
             })
           } catch (error) {
-              console.error("Error saving analysis: ", error);
               toast({
                   variant: "destructive",
                   title: "Sauvegarde échouée",

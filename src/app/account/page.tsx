@@ -62,8 +62,8 @@ export default function AccountPage() {
     const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
     const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 
-    if (!uploadPreset || !cloudName || uploadPreset === 'your_upload_preset') {
-        throw new Error("Les variables d'environnement Cloudinary ne sont pas configurées. Veuillez les ajouter dans le fichier .env");
+    if (!uploadPreset || !cloudName || uploadPreset === 'your_upload_preset' || cloudName === 'your_cloud_name') {
+        throw new Error("Les variables d'environnement Cloudinary ne sont pas configurées. Veuillez les ajouter dans le fichier .env.production");
     }
     
     formData.append('upload_preset', uploadPreset);
@@ -135,7 +135,6 @@ export default function AccountPage() {
       }
   
     } catch (error: any) {
-      console.error("Error during profile save:", error);
       toast({
         variant: 'destructive',
         title: 'Erreur',
