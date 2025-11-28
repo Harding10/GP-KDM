@@ -49,6 +49,14 @@ export default function AuthDialog({ open, onOpenChange, initialTab = 'signup' }
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState(initialTab);
 
+  const form = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
+
   useEffect(() => {
     setActiveTab(initialTab);
   }, [initialTab]);
@@ -59,14 +67,6 @@ export default function AuthDialog({ open, onOpenChange, initialTab = 'signup' }
       form.reset();
     }
   }, [open, form]);
-
-  const form = useForm<FormData>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-    },
-  });
 
   const handleGoogleSignIn = async () => {
     setError(null);
