@@ -8,12 +8,12 @@
   "theme_color": "#16a34a",
   "icons": [
     {
-      "src": "icon-192x192.png",
+      "src": "https://res.cloudinary.com/dlhbpswom/image/upload/v1717769586/icon-192x192_m1vj3t.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icon-512x512.png",
+      "src": "https://res.cloudinary.com/dlhbpswom/image/upload/v1717769586/icon-512x512_q6z8ab.png",
       "sizes": "512x512",
       "type": "image/png"
     }
