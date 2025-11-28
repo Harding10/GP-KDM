@@ -66,25 +66,28 @@ export function useFirebaseAuth() {
         throw new Error("Utilisateur non authentifié ou service Firestore non disponible.");
     }
 
-    let photoURL: string | undefined = auth.currentUser.photoURL ?? undefined;
-    if (photoFile) {
-        photoURL = await toDataURL(photoFile);
-    }
-
+    const currentUser = auth.currentUser;
     const profileUpdates: { displayName?: string, photoURL?: string } = {};
-    if (displayName) profileUpdates.displayName = displayName;
-    if (photoURL) profileUpdates.photoURL = photoURL;
+
+    if (displayName && displayName !== currentUser.displayName) {
+        profileUpdates.displayName = displayName;
+    }
     
-    // Update Firebase Auth profile
-    await updateProfile(auth.currentUser, profileUpdates);
+    if (photoFile) {
+        profileUpdates.photoURL = await toDataURL(photoFile);
+    }
     
-    // Update Firestore user document
-    const userRef = doc(firestore, `users/${auth.currentUser.uid}`);
-    const dataToUpdate = { ...profileUpdates };
-    // remove undefined values
-    Object.keys(dataToUpdate).forEach(key => (dataToUpdate as any)[key] === undefined && delete (dataToUpdate as any)[key]);
+    // Update Firebase Auth profile if there are changes
+    if (Object.keys(profileUpdates).length > 0) {
+        await updateProfile(currentUser, profileUpdates);
+    }
     
-    await setDoc(userRef, dataToUpdate, { merge: true });
+    // Update Firestore user document with the same changes
+    const userRef = doc(firestore, `users/${currentUser.uid}`);
+    // Use the same profileUpdates object, as it only contains the changed fields
+    if (Object.keys(profileUpdates).length > 0) {
+        await setDoc(userRef, profileUpdates, { merge: true });
+    }
   };
   
   const createUserProfile = async (user: User, additionalData: any = {}) => {
