@@ -8,6 +8,7 @@ import { FirebaseClientProvider } from "@/firebase/client-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import AuthRedirect from "@/components/auth-redirect";
 import { PwaInstallProvider } from "@/components/pwa-install-provider";
+import InstallPwaToast from "@/components/InstallPwaToast";
 
 export const metadata: Metadata = {
   title: "AgriAide",
@@ -46,6 +47,7 @@ export default function RootLayout({
                   {children}
                 </main>
                 <Toaster />
+                <InstallPwaToast />
               </AuthRedirect>
             </PwaInstallProvider>
           </FirebaseClientProvider>
