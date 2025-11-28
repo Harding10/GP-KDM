@@ -12,17 +12,28 @@ import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Loader, User, KeyRound } from 'lucide-react';
 import Link from 'next/link';
-import { doc } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
+import { updateProfile, updatePassword } from 'firebase/auth';
 
 interface UserProfile {
     name?: string;
     photoURL?: string;
 }
 
+// Helper to convert file to data URI
+const toDataURL = (file: File): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
+
 export default function AccountPage() {
   const { user, isUserLoading: isAuthLoading } = useUser();
   const firestore = useFirestore();
-  const { updateUserProfile, updateUserPassword } = useFirebaseAuth();
+  const { auth } = useFirebaseAuth(); // We only need the auth instance
   const { toast } = useToast();
 
   const userDocRef = useMemoFirebase(() => {
@@ -51,6 +62,42 @@ export default function AccountPage() {
   }, [userProfile, user]);
 
   const isLoading = isAuthLoading || isProfileLoading;
+
+  const updateUserProfile = async (displayName?: string, photoFile?: File | null) => {
+    if (!auth.currentUser || !firestore) {
+        throw new Error("Utilisateur non authentifié ou service Firestore non disponible.");
+    }
+
+    const currentUser = auth.currentUser;
+    const authProfileUpdates: { displayName?: string } = {};
+    const firestoreUpdates: { name?: string, photoURL?: string } = {};
+
+    if (displayName && displayName !== (userProfile?.name || currentUser.displayName)) {
+        authProfileUpdates.displayName = displayName;
+        firestoreUpdates.name = displayName;
+    }
+    
+    if (photoFile) {
+        firestoreUpdates.photoURL = await toDataURL(photoFile);
+    }
+    
+    if (Object.keys(authProfileUpdates).length > 0) {
+        await updateProfile(currentUser, authProfileUpdates);
+    }
+    
+    const userRef = doc(firestore, `users/${currentUser.uid}`);
+    if (Object.keys(firestoreUpdates).length > 0) {
+        await setDoc(userRef, firestoreUpdates, { merge: true });
+    }
+  };
+
+  const updateUserPassword = async (newPassword: string) => {
+    if (!auth.currentUser) {
+        throw new Error("Utilisateur non authentifié.");
+    }
+    await updatePassword(auth.currentUser, newPassword);
+  }
+
 
   if (isLoading) {
     return (
@@ -154,6 +201,8 @@ export default function AccountPage() {
       setIsSavingPassword(false);
     }
   };
+  
+  const currentPhoto = photoPreview || userProfile?.photoURL || user.photoURL;
 
   return (
     <div className="container mx-auto max-w-3xl px-4 py-12">
@@ -172,7 +221,7 @@ export default function AccountPage() {
             <form onSubmit={handleProfileSave} className="space-y-6">
               <div className="flex items-center gap-6">
                 <Avatar className="h-20 w-20">
-                  <AvatarImage src={photoPreview || undefined} />
+                  <AvatarImage src={currentPhoto || undefined} />
                   <AvatarFallback className="text-2xl">
                     {getInitials(displayName)}
                   </AvatarFallback>
@@ -251,3 +300,5 @@ export default function AccountPage() {
     </div>
   );
 }
+
+    

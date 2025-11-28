@@ -1,7 +1,6 @@
 
 'use client';
 import {
-  Auth,
   signInWithPopup,
   GoogleAuthProvider,
   signOut as firebaseSignOut,
@@ -10,20 +9,9 @@ import {
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
   updateProfile,
-  updatePassword,
 } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { useAuth, useFirestore } from '.';
-
-// Helper to convert file to data URI
-const toDataURL = (file: File): Promise<string> =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-
 
 export function useFirebaseAuth() {
   const auth = useAuth();
@@ -55,45 +43,6 @@ export function useFirebaseAuth() {
   const sendPasswordReset = async (email: string) => {
     await sendPasswordResetEmail(auth, email);
   }
-
-  const updateUserPassword = async (newPassword: string) => {
-    if (!auth.currentUser) {
-        throw new Error("Utilisateur non authentifié.");
-    }
-    await updatePassword(auth.currentUser, newPassword);
-  }
-
-  const updateUserProfile = async (displayName?: string, photoFile?: File | null) => {
-    if (!auth.currentUser || !firestore) {
-        throw new Error("Utilisateur non authentifié ou service Firestore non disponible.");
-    }
-
-    const currentUser = auth.currentUser;
-    const authProfileUpdates: { displayName?: string } = {};
-    const firestoreUpdates: { name?: string, photoURL?: string } = {};
-
-    // Prepare Auth update only for display name
-    if (displayName && displayName !== currentUser.displayName) {
-        authProfileUpdates.displayName = displayName;
-        firestoreUpdates.name = displayName;
-    }
-    
-    // Prepare Firestore update for photo
-    if (photoFile) {
-        firestoreUpdates.photoURL = await toDataURL(photoFile);
-    }
-    
-    // 1. Update Firebase Auth profile (only with displayName)
-    if (Object.keys(authProfileUpdates).length > 0) {
-        await updateProfile(currentUser, authProfileUpdates);
-    }
-    
-    // 2. Update Firestore user document with all changes (name and/or photo)
-    const userRef = doc(firestore, `users/${currentUser.uid}`);
-    if (Object.keys(firestoreUpdates).length > 0) {
-        await setDoc(userRef, firestoreUpdates, { merge: true });
-    }
-  };
   
   const createUserProfile = async (user: User, additionalData: any = {}) => {
     if (!user || !firestore) return;
@@ -117,12 +66,13 @@ export function useFirebaseAuth() {
   };
 
   return { 
+    auth,
     signInWithGoogle, 
     signOut, 
     signUpWithEmail, 
     signInWithEmail, 
     sendPasswordResetEmail: sendPasswordReset,
-    updateUserProfile,
-    updateUserPassword,
    };
 }
+
+    
