@@ -4,25 +4,13 @@
 import { useUser } from '@/firebase';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { Loader } from 'lucide-react';
+import { Loader, Leaf } from 'lucide-react';
 
 const AUTH_PAGES = ['/']; // Pages accessible without auth
 const APP_PAGES = ['/analyze', '/history', '/account']; // Pages requiring auth
 
 export const SplashLogo = ({className}: {className?: string}) => (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-    >
-        <path d="M12 22c-2 0-3.8-1-5-2.5-1.2-1.5-2-3.5-2-5.5 0-4.5 3.5-8 8-8s8 3.5 8 8c0 2-1 4-2.5 5.5S14 22 12 22z" fill="currentColor"></path>
-        <path d="M7.5 10.5c1-2.5 3-4.5 5.5-5.5" stroke="hsl(var(--background))" strokeWidth="1.5"></path>
-    </svg>
+    <Leaf className={className} />
 );
 
 
