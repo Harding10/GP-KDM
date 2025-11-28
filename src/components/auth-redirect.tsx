@@ -20,8 +20,8 @@ export const SplashLogo = ({className}: {className?: string}) => (
       strokeLinejoin="round"
       className={className}
     >
-      <path d="M12 22c-2 0-3.8-1-5-2.5-1.2-1.5-2-3.5-2-5.5 0-4.5 3.5-8 8-8s8 3.5 8 8c0 2-1 4-2.5 5.5S14 22 12 22z" fill="currentColor"></path>
-      <path d="M7.5 10.5c1-2.5 3-4.5 5.5-5.5" stroke="hsl(var(--primary))" strokeWidth="1.5"></path>
+        <path d="M12 22c-2 0-3.8-1-5-2.5-1.2-1.5-2-3.5-2-5.5 0-4.5 3.5-8 8-8s8 3.5 8 8c0 2-1 4-2.5 5.5S14 22 12 22z" fill="currentColor"></path>
+        <path d="M7.5 10.5c1-2.5 3-4.5 5.5-5.5" stroke="hsl(var(--background))" strokeWidth="1.5"></path>
     </svg>
 );
 
