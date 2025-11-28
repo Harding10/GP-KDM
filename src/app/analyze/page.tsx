@@ -223,9 +223,9 @@ export default function AnalyzePage() {
     if (isLoading) {
       return (
         <div className="flex flex-col items-center justify-center gap-4 text-center">
-          <div className="relative">
+          <div className="relative w-full max-w-xs sm:max-w-sm">
             {imagePreview && (
-              <Image src={imagePreview} alt="Feuille de plante pour analyse" width={250} height={250} className="object-cover rounded-2xl shadow-lg opacity-30" />
+              <Image src={imagePreview} alt="Feuille de plante pour analyse" width={250} height={250} className="object-cover w-full rounded-2xl shadow-lg opacity-30 aspect-square" />
             )}
             <div className="absolute inset-0 flex items-center justify-center bg-background/50 rounded-2xl">
               <Loader className="h-16 w-16 animate-spin text-primary" />
@@ -245,7 +245,7 @@ export default function AnalyzePage() {
     if (imagePreview) {
       return (
         <Card className="w-full max-w-lg overflow-hidden shadow-lg rounded-xl animate-fade-in">
-          <CardContent className="p-6 text-center">
+          <CardContent className="p-4 sm:p-6 text-center">
             <div className="relative mb-4 group">
               <Image src={imagePreview} alt="Feuille de plante sélectionnée" width={400} height={400} className="rounded-lg object-contain mx-auto max-h-[50vh]" />
               <Button variant="destructive" size="icon" className="absolute top-2 right-2 opacity-50 group-hover:opacity-100 rounded-full h-8 w-8" onClick={() => { setImageFile(null); setImagePreview(null); }}>

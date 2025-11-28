@@ -79,7 +79,7 @@ export default function OnboardingPage() {
               <div className="absolute bottom-0 left-0 w-full h-16 bg-background rounded-t-[100%]"></div>
             </div>
 
-            <div className="flex-1 flex flex-col justify-between p-8 pt-4 bg-background">
+            <div className="flex-1 flex flex-col justify-between p-4 sm:p-8 pt-4 bg-background">
                 <div className="text-center">
                     <h1 className="text-3xl font-bold mb-4 tracking-tight leading-tight">{step.title}</h1>
                     <p className="text-muted-foreground text-base leading-relaxed max-w-sm mx-auto">{step.description}</p>

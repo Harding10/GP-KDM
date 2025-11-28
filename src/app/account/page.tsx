@@ -231,9 +231,9 @@ export default function AccountPage() {
   };
 
   return (
-    <div className="container mx-auto max-w-3xl px-4 py-12">
+    <div className="container mx-auto max-w-3xl px-4 py-8 sm:py-12">
       <div className="mb-8">
-        <h1 className="text-4xl font-bold tracking-tight">Mon Compte</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">Mon Compte</h1>
         <p className="text-muted-foreground text-lg mt-2">Gérez les informations de votre profil et votre mot de passe.</p>
       </div>
       
@@ -245,7 +245,7 @@ export default function AccountPage() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleProfileSave} className="space-y-6">
-              <div className="flex items-center gap-6">
+              <div className="flex items-center flex-wrap gap-6">
                 <Avatar className="h-20 w-20">
                   <AvatarImage src={photoPreview || undefined} />
                   <AvatarFallback className="text-2xl">

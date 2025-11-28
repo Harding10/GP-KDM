@@ -37,8 +37,8 @@ interface PlantAnalysis {
 
 const AnalysisCardSkeleton = () => (
   <Card className="overflow-hidden rounded-2xl flex flex-col h-full">
-    <Skeleton className="h-48 w-full" />
-    <CardContent className="p-4 flex flex-col flex-grow">
+    <Skeleton className="h-40 sm:h-48 w-full" />
+    <CardContent className="p-3 sm:p-4 flex flex-col flex-grow">
       <div className="flex-grow">
         <Skeleton className="h-6 w-3/4 mb-2" />
         <Skeleton className="h-4 w-1/2" />
@@ -180,7 +180,7 @@ export default function HistoryPage() {
                                     </Badge>
                                 </div>
                             </CardHeader>
-                            <CardContent className="p-3 flex flex-col flex-grow">
+                            <CardContent className="p-3 sm:p-4 flex flex-col flex-grow">
                                 <div className='flex-grow'>
                                     <p className="font-bold text-base text-foreground truncate">{analysis.plantType}</p>
                                     <p className="text-xs text-muted-foreground font-medium line-clamp-1">
@@ -217,7 +217,7 @@ export default function HistoryPage() {
     <>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold tracking-tight">Mon historique</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">Mon historique</h1>
           <p className="text-muted-foreground text-lg mt-2">Retrouvez ici toutes vos analyses de plantes passées.</p>
         </div>
 

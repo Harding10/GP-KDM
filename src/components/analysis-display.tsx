@@ -78,11 +78,11 @@ export default function AnalysisDisplay({ result, imagePreview, onReset, shareUr
   );
 
   return (
-    <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 animate-fade-in">
+    <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-in">
       <div className="flex flex-col gap-6">
          <Card className="overflow-hidden rounded-2xl shadow-lg">
             <CardContent className="p-0">
-                <Image src={imagePreview} alt="Feuille de plante analysée" width={600} height={600} className="object-contain w-full max-h-[60vh] lg:max-h-[70vh]" />
+                <Image src={imagePreview} alt="Feuille de plante analysée" width={600} height={600} className="object-contain w-full max-h-[60vh]" />
             </CardContent>
          </Card>
          
@@ -101,17 +101,19 @@ export default function AnalysisDisplay({ result, imagePreview, onReset, shareUr
 
       <div className="flex flex-col gap-6">
         <Card className="shadow-lg rounded-2xl">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="flex items-center gap-3 font-bold text-2xl">
+          <CardHeader className="flex flex-row items-center justify-between p-4 sm:p-6">
+            <CardTitle className="flex items-center gap-3 font-bold text-xl sm:text-2xl">
                 {isHealthy ? <CheckCircle className="h-8 w-8 text-primary" /> : <AlertTriangle className="h-8 w-8 text-destructive" />}
-                Résultat de l'analyse
+                Résultat
             </CardTitle>
-            <Button onClick={handleShare} variant="outline" size="icon" className="rounded-full">
-              <Share2 className="h-5 w-5" />
-              <span className="sr-only">Partager</span>
-            </Button>
+            {shareUrl && (
+              <Button onClick={handleShare} variant="outline" size="icon" className="rounded-full">
+                <Share2 className="h-5 w-5" />
+                <span className="sr-only">Partager</span>
+              </Button>
+            )}
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 px-4 sm:px-6 pb-4 sm:pb-6">
                 <div className="flex items-center gap-3 text-lg">
                     <Leaf className="h-6 w-6 text-muted-foreground" />
                     <p className="font-semibold">Plante :</p>

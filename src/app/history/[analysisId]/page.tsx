@@ -82,7 +82,7 @@ export default function AnalysisDetailPage() {
 
   if (error || !analysis) {
     return (
-      <div className="text-center py-16">
+      <div className="text-center py-16 px-4">
         <AlertTriangle className="mx-auto h-12 w-12 text-destructive" />
         <h2 className="mt-4 text-2xl font-bold tracking-tight text-destructive">Analyse introuvable</h2>
         <p className="mt-2 text-muted-foreground">Impossible de charger cette analyse. Elle n'existe peut-être pas ou vous n'y avez pas accès.</p>
@@ -102,20 +102,20 @@ export default function AnalysisDetailPage() {
 
   return (
     <>
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           <div className="flex flex-wrap gap-4 items-center justify-between mb-8">
             <div>
-              <h1 className="text-4xl font-bold tracking-tight">Détail de l'analyse</h1>
-              <p className="text-muted-foreground text-lg mt-2">Voici le rapport complet pour votre plante.</p>
+              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">Détail de l'analyse</h1>
+              <p className="text-muted-foreground text-base sm:text-lg mt-2">Voici le rapport complet pour votre plante.</p>
             </div>
-            <div className="flex gap-2">
-               <Button asChild variant="outline">
+            <div className="flex gap-2 w-full sm:w-auto">
+               <Button asChild variant="outline" className="flex-1 sm:flex-none">
                   <Link href="/history">
                       <ArrowLeft className="mr-2 h-4 w-4" />
                       Retour
                   </Link>
               </Button>
-              <Button variant="destructive" onClick={() => setIsDeleteDialogOpen(true)} disabled={isDeleting}>
+              <Button variant="destructive" onClick={() => setIsDeleteDialogOpen(true)} disabled={isDeleting} className="flex-1 sm:flex-none">
                 <Trash2 className="mr-2 h-4 w-4" />
                 Supprimer
               </Button>
