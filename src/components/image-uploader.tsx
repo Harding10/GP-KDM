@@ -48,43 +48,43 @@ export default function ImageUploader({ onImageSelect, onCameraClick }: ImageUpl
   };
 
   return (
-    <Card className="w-full max-w-lg text-center shadow-lg animate-fade-in">
-      <CardHeader>
-        <CardTitle className="font-headline text-3xl flex items-center justify-center gap-2">
-          <Leaf className="text-primary"/>
-          Détection des maladies des plantes
+    <Card className="w-full max-w-xl text-center shadow-2xl shadow-primary/10 animate-fade-in rounded-2xl border-0">
+      <CardHeader className="pt-10">
+        <CardTitle className="font-bold text-4xl flex items-center justify-center gap-3">
+          <Leaf className="text-primary h-10 w-10"/>
+          AgriAide
         </CardTitle>
-        <CardDescription className="pt-2">
-          Téléchargez une image claire d'une feuille de plante ou utilisez votre appareil photo.
+        <CardDescription className="pt-2 text-lg">
+          Votre assistant IA pour la santé des plantes
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-8">
         <div
           onDragEnter={handleDrag}
           onDragOver={handleDrag}
           onDragLeave={handleDrag}
           onDrop={handleDrop}
           className={cn(
-            'border-2 border-dashed rounded-lg p-12 transition-colors',
+            'border-2 border-dashed rounded-xl p-12 transition-colors',
             'border-border',
-            isDragActive ? 'border-primary bg-primary/10' : ''
+            isDragActive ? 'border-primary bg-primary/5' : ''
           )}
         >
           <input ref={inputRef} type="file" id="file-upload" className="hidden" accept="image/*" onChange={handleChange} />
           <div className="flex flex-col items-center gap-4 text-muted-foreground">
-            <UploadCloud className="h-12 w-12" />
-            <p className="font-semibold">Glissez-déposez une image ici</p>
-            <div className="flex items-center gap-2">
-              <Button type="button" onClick={onButtonClick} variant="outline">
-                Parcourir
+            <UploadCloud className="h-16 w-16 text-primary/70" />
+            <p className="font-semibold text-lg">Glissez-déposez une image ici</p>
+            <p className="text-sm">ou</p>
+            <div className="flex items-center gap-4">
+              <Button type="button" onClick={onButtonClick} size="lg">
+                Parcourir les fichiers
               </Button>
-              <span className="text-sm">ou</span>
-              <Button type="button" onClick={onCameraClick} variant="outline">
-                 <Camera className="mr-2 h-4 w-4" />
+              <Button type="button" onClick={onCameraClick} variant="outline" size="lg">
+                 <Camera className="mr-2 h-5 w-5" />
                 Prendre une photo
               </Button>
             </div>
-            <p className="text-sm mt-2">Formats supportés : PNG, JPG, JPEG, WEBP</p>
+            <p className="text-xs mt-4">Formats supportés : PNG, JPG, JPEG, WEBP</p>
           </div>
         </div>
       </CardContent>

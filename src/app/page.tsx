@@ -142,7 +142,7 @@ export default function Home() {
   const renderContent = () => {
      if (isCameraOpen) {
       return (
-        <Card className="w-full max-w-lg overflow-hidden shadow-lg">
+        <Card className="w-full max-w-lg overflow-hidden shadow-lg rounded-xl">
           <CardContent className="p-6 text-center">
             <div className="relative">
               <video ref={videoRef} className="w-full aspect-video rounded-md bg-muted" autoPlay muted playsInline />
@@ -175,7 +175,9 @@ export default function Home() {
           <h2 className="text-2xl font-semibold">Analyse en cours...</h2>
           <p className="text-muted-foreground">Notre IA examine votre feuille de plante. Veuillez patienter un instant.</p>
           {imagePreview && (
-            <Image src={imagePreview} alt="Feuille de plante pour analyse" width={200} height={200} className="mt-4 rounded-lg object-cover shadow-lg" />
+            <div className="mt-4 rounded-lg overflow-hidden shadow-lg">
+              <Image src={imagePreview} alt="Feuille de plante pour analyse" width={200} height={200} className="object-cover" />
+            </div>
           )}
         </div>
       );
@@ -187,17 +189,17 @@ export default function Home() {
 
     if (imagePreview) {
       return (
-        <Card className="w-full max-w-lg overflow-hidden shadow-lg">
+        <Card className="w-full max-w-lg overflow-hidden shadow-lg rounded-xl">
           <CardContent className="p-6 text-center">
             <div className="relative mb-4 group">
               <Image src={imagePreview} alt="Feuille de plante sélectionnée" width={400} height={400} className="rounded-lg object-contain mx-auto max-h-[50vh]" />
-              <Button variant="destructive" size="icon" className="absolute top-2 right-2 opacity-70 group-hover:opacity-100" onClick={() => { setImageFile(null); setImagePreview(null); }}>
+              <Button variant="destructive" size="icon" className="absolute top-2 right-2 opacity-50 group-hover:opacity-100 rounded-full h-8 w-8" onClick={() => { setImageFile(null); setImagePreview(null); }}>
                 <X className="h-4 w-4" />
               </Button>
             </div>
             <h2 className="text-xl font-semibold mb-2 font-headline">Prêt pour l'analyse</h2>
             <p className="text-muted-foreground mb-4">Cliquez sur le bouton ci-dessous pour détecter les maladies potentielles.</p>
-            <Button onClick={handleAnalyze} size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
+            <Button onClick={handleAnalyze} size="lg">
               Analyser la plante
             </Button>
           </CardContent>

@@ -69,7 +69,7 @@ export default function HistoryPage() {
                 <Leaf className="mx-auto h-12 w-12 text-muted-foreground" />
                 <h2 className="mt-4 text-2xl font-bold tracking-tight">Aucune analyse trouvée</h2>
                 <p className="mt-2 text-muted-foreground">Votre historique est vide. Commencez par analyser une plante !</p>
-                <Button asChild className="mt-6">
+                <Button asChild className="mt-6" size="lg">
                     <Link href="/">Analyser une plante</Link>
                 </Button>
             </div>
@@ -77,30 +77,32 @@ export default function HistoryPage() {
     }
 
     return (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {sortedAnalyses?.map((analysis) => {
                 return (
-                    <Card key={analysis.id} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
+                    <Card key={analysis.id} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow rounded-xl group">
                         <CardHeader className="p-0">
-                             <Image src={analysis.imageUri} alt="Analyse de plante" width={400} height={300} className="object-cover w-full h-48" />
+                             <div className="overflow-hidden">
+                                <Image src={analysis.imageUri} alt="Analyse de plante" width={400} height={300} className="object-cover w-full h-48 group-hover:scale-105 transition-transform duration-300" />
+                             </div>
                         </CardHeader>
                         <CardContent className="p-4">
-                            <div className='flex justify-between items-start'>
-                                <Badge variant={!analysis.isHealthy ? "destructive" : "default"} className="mb-2">
+                            <div className='flex justify-between items-start mb-2'>
+                                <Badge variant={!analysis.isHealthy ? "destructive" : "default"} className="font-bold rounded-full">
                                     {analysis.diseaseDetected}
                                 </Badge>
                                 {analysis.plantType && (
-                                    <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                                    <div className="flex items-center gap-1.5 text-sm text-muted-foreground font-medium">
                                         <Sprout className="h-4 w-4" />
                                         <span>{analysis.plantType}</span>
                                     </div>
                                 )}
                             </div>
-                            <p className="text-sm text-muted-foreground mt-1">
+                            <p className="text-sm text-muted-foreground font-medium">
                                 {format(new Date(analysis.analysisDate), "d MMMM yyyy 'à' HH:mm", { locale: fr })}
                             </p>
-                            <CardDescription className="mt-2 line-clamp-3">
-                                {!analysis.isHealthy ? `Une analyse détaillée est disponible.` : 'Votre plante semble être en bonne santé.'}
+                            <CardDescription className="mt-2 line-clamp-2 text-foreground/80">
+                                {!analysis.isHealthy ? `Une analyse détaillée et des traitements sont disponibles.` : 'Votre plante semble être en bonne santé.'}
                             </CardDescription>
                         </CardContent>
                     </Card>
@@ -111,8 +113,11 @@ export default function HistoryPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold mb-6 font-headline">Mon historique d'analyses</h1>
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold">Mon historique d'analyses</h1>
+        <p className="text-muted-foreground text-lg mt-2">Retrouvez ici toutes vos analyses de plantes passées.</p>
+      </div>
       {renderContent()}
     </div>
   );
