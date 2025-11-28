@@ -1,21 +1,23 @@
 {
-  "name": "AgriAide",
+  "name": "AgriAide - Diagnostic de Plantes",
   "short_name": "AgriAide",
-  "description": "Détection des maladies des plantes et suggestions de traitement basées sur l'IA.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#16a34a",
+  "description": "Votre assistant IA pour la santé des plantes. Identifiez les maladies et obtenez des conseils de traitement.",
   "icons": [
     {
       "src": "https://play-lh.googleusercontent.com/OocMG8bjiq6hNmg2LMNrdcSlZgBfqc6b-0erv4IE8wlR88MgCWPZS_Te42iR5UV7sA",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "https://play-lh.googleusercontent.com/OocMG8bjiq6hNmg2LMNrdcSlZgBfqc6b-0erv4IE8wlR88MgCWPZS_Te42iR5UV7sA",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
