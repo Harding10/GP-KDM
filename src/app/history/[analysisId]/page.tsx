@@ -1,22 +1,39 @@
 
 'use client';
 
-import { useParams } from 'next/navigation';
+import { useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
-import { doc } from 'firebase/firestore';
+import { doc, deleteDoc } from 'firebase/firestore';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, ArrowLeft, Loader } from 'lucide-react';
+import { AlertTriangle, ArrowLeft, Loader, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import AnalysisDisplay from '@/components/analysis-display';
 import { AnalyzePlantImageAndDetectDiseaseOutput } from '@/ai/flows/analyze-plant-image-and-detect-disease';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { useToast } from '@/hooks/use-toast';
 
 export default function AnalysisDetailPage() {
   const params = useParams();
+  const router = useRouter();
+  const { toast } = useToast();
   const analysisId = params.analysisId as string;
   const { user } = useUser();
   const firestore = useFirestore();
+
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const analysisDocRef = useMemoFirebase(() => {
     if (!user || !firestore || !analysisId) return null;
@@ -24,6 +41,27 @@ export default function AnalysisDetailPage() {
   }, [user, firestore, analysisId]);
 
   const { data: analysis, isLoading, error } = useDoc<AnalyzePlantImageAndDetectDiseaseOutput & { imageUri: string }>(analysisDocRef);
+
+  const handleDeleteAnalysis = async () => {
+    if (!analysisDocRef) return;
+
+    setIsDeleting(true);
+    try {
+      await deleteDoc(analysisDocRef);
+      toast({
+        title: 'Analyse supprimée',
+        description: "L'analyse a été retirée de votre historique.",
+      });
+      router.push('/history');
+    } catch (err) {
+      toast({
+        variant: 'destructive',
+        title: 'Erreur',
+        description: "Impossible de supprimer l'analyse.",
+      });
+      setIsDeleting(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -56,18 +94,46 @@ export default function AnalysisDetailPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="mb-8">
-            <Button asChild variant="outline" className="mb-4">
-                <Link href="/history">
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Retour à l'historique
-                </Link>
-            </Button>
-            <h1 className="text-4xl font-bold tracking-tight">Détail de l'analyse</h1>
-             <p className="text-muted-foreground text-lg mt-2">Voici le rapport complet pour votre plante.</p>
-        </div>
-      <AnalysisDisplay result={analysis} imagePreview={analysis.imageUri} onReset={handleReset} />
-    </div>
+    <>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="flex flex-wrap gap-4 items-center justify-between mb-8">
+            <div>
+              <h1 className="text-4xl font-bold tracking-tight">Détail de l'analyse</h1>
+              <p className="text-muted-foreground text-lg mt-2">Voici le rapport complet pour votre plante.</p>
+            </div>
+            <div className="flex gap-2">
+               <Button asChild variant="outline">
+                  <Link href="/history">
+                      <ArrowLeft className="mr-2 h-4 w-4" />
+                      Retour
+                  </Link>
+              </Button>
+              <Button variant="destructive" onClick={() => setIsDeleteDialogOpen(true)} disabled={isDeleting}>
+                <Trash2 className="mr-2 h-4 w-4" />
+                Supprimer
+              </Button>
+            </div>
+          </div>
+        <AnalysisDisplay result={analysis} imagePreview={analysis.imageUri} onReset={handleReset} />
+      </div>
+
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Êtes-vous sûr de vouloir supprimer cette analyse ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Cette action est irréversible. L'analyse sera définitivement supprimée de votre historique.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Annuler</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteAnalysis} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
+              {isDeleting && <Loader className="mr-2 h-4 w-4 animate-spin" />}
+              Supprimer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
