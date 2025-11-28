@@ -17,8 +17,9 @@ import { Skeleton } from './ui/skeleton';
 import AuthDialog from './auth-dialog';
 import { useState } from 'react';
 import Link from 'next/link';
-import { LogIn, LogOut, History, User as UserIcon } from 'lucide-react';
+import { LogIn, LogOut, History, User as UserIcon, Download } from 'lucide-react';
 import { doc } from 'firebase/firestore';
+import { usePwaInstall } from './pwa-install-provider';
 
 interface UserProfile {
   name: string;
@@ -31,6 +32,7 @@ export default function UserAuthButton() {
   const { signOut } = useFirebaseAuth();
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const firestore = useFirestore();
+  const { canInstall, promptInstall } = usePwaInstall();
 
   const userDocRef = useMemoFirebase(() => {
     if (!user || !firestore) return null;
@@ -96,6 +98,12 @@ export default function UserAuthButton() {
             <span>Mon historique</span>
           </Link>
         </DropdownMenuItem>
+        {canInstall && (
+          <DropdownMenuItem onClick={promptInstall}>
+            <Download className="mr-2 h-4 w-4" />
+            <span>Installer l'application</span>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={signOut}>
           <LogOut className="mr-2 h-4 w-4" />

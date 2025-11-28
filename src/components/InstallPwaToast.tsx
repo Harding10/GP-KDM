@@ -46,7 +46,7 @@ export default function InstallPwaToast() {
                             Installer
                         </Button>
                          <Button onClick={() => setIsVisible(false)} size="sm" variant="ghost">
-                            Plus tard
+                            Fermer
                         </Button>
                     </div>
                 </div>
