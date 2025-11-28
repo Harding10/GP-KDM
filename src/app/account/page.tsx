@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Loader, User, KeyRound } from 'lucide-react';
 import Link from 'next/link';
 import { doc, setDoc } from 'firebase/firestore';
-import { updatePassword } from 'firebase/auth';
+import { updatePassword, updateProfile } from 'firebase/auth';
 import { useFirebaseAuth } from '@/firebase/auth';
 
 interface UserProfile {
@@ -82,58 +82,61 @@ export default function AccountPage() {
     e.preventDefault();
     if (!user || !firestore || !userDocRef) return;
     setIsSavingProfile(true);
-
+  
     try {
-      let newPhotoURL: string | undefined = undefined;
-
+      let newPhotoURL = photoPreview || userProfile?.photoURL || user.photoURL;
+  
       if (photoFile) {
         newPhotoURL = await uploadToCloudinary(photoFile);
       }
+  
+      const firestoreUpdates: { name: string; photoURL: string | null } = {
+        name: displayName,
+        photoURL: newPhotoURL,
+      };
 
-      const firestoreUpdates: { name?: string; photoURL?: string } = {};
-      
+      // Ensure we don't save with old values if no changes were made
       const currentName = userProfile?.name ?? user.displayName ?? '';
-      if (displayName !== currentName) {
-        firestoreUpdates.name = displayName;
-      }
-      
       const currentPhoto = userProfile?.photoURL ?? user.photoURL ?? null;
-      if (newPhotoURL && newPhotoURL !== currentPhoto) {
-          firestoreUpdates.photoURL = newPhotoURL;
-      }
 
-
-      if (Object.keys(firestoreUpdates).length > 0) {
-        setDoc(userDocRef, firestoreUpdates, { merge: true })
-          .then(() => {
-            toast({
-              title: 'Profil mis à jour',
-              description: 'Vos informations de profil ont été mises à jour.',
-            });
-            if (firestoreUpdates.photoURL) {
-                setPhotoPreview(firestoreUpdates.photoURL);
-            }
-            setPhotoFile(null);
-          })
-          .catch(async (serverError) => {
-            const permissionError = new FirestorePermissionError({
-              path: userDocRef.path,
-              operation: 'update',
-              requestResourceData: firestoreUpdates,
-            });
-            errorEmitter.emit('permission-error', permissionError);
-          })
-          .finally(() => {
-            setIsSavingProfile(false);
-          });
-      } else {
+      if (displayName === currentName && newPhotoURL === currentPhoto) {
         toast({
-            title: 'Aucun changement',
-            description: 'Vos informations de profil sont déjà à jour.',
+          title: 'Aucun changement',
+          description: 'Vos informations de profil sont déjà à jour.',
         });
         setIsSavingProfile(false);
+        return;
       }
-
+  
+      setDoc(userDocRef, firestoreUpdates, { merge: true })
+        .then(async () => {
+           if (auth.currentUser) {
+                await updateProfile(auth.currentUser, {
+                    displayName: firestoreUpdates.name,
+                    photoURL: firestoreUpdates.photoURL,
+                });
+            }
+          toast({
+            title: 'Profil mis à jour',
+            description: 'Vos informations de profil ont été mises à jour.',
+          });
+          if (firestoreUpdates.photoURL) {
+            setPhotoPreview(firestoreUpdates.photoURL);
+          }
+          setPhotoFile(null);
+        })
+        .catch(async (serverError) => {
+          const permissionError = new FirestorePermissionError({
+            path: userDocRef.path,
+            operation: 'update',
+            requestResourceData: firestoreUpdates,
+          });
+          errorEmitter.emit('permission-error', permissionError);
+        })
+        .finally(() => {
+          setIsSavingProfile(false);
+        });
+  
     } catch (error: any) {
       console.error("Error during profile save preparation:", error);
       toast({
@@ -327,3 +330,5 @@ export default function AccountPage() {
     </div>
   );
 }
+
+    
