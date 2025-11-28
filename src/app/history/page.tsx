@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, orderBy, query, doc, deleteDoc } from 'firebase/firestore';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { Loader, AlertTriangle, CheckCircle, Leaf, Trash2 } from 'lucide-react';
+import { Loader, AlertTriangle, CheckCircle, Leaf, Trash2, Search } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Input } from '@/components/ui/input';
 
 interface PlantAnalysis {
   id: string;
@@ -54,6 +55,7 @@ export default function HistoryPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
 
+  const [searchQuery, setSearchQuery] = useState('');
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [analysisToDelete, setAnalysisToDelete] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -64,6 +66,16 @@ export default function HistoryPage() {
   }, [user, firestore]);
 
   const { data: analyses, isLoading, error } = useCollection<PlantAnalysis>(userAnalysesQuery);
+
+  const filteredAnalyses = useMemo(() => {
+    if (!analyses) return [];
+    if (!searchQuery) return analyses;
+
+    return analyses.filter(analysis =>
+      analysis.plantType.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      analysis.diseaseDetected.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [analyses, searchQuery]);
 
   const openDeleteDialog = (analysisId: string) => {
     setAnalysisToDelete(analysisId);
@@ -141,9 +153,19 @@ export default function HistoryPage() {
         )
     }
 
+    if (filteredAnalyses.length === 0) {
+        return (
+            <div className="text-center py-16">
+                <Search className="mx-auto h-12 w-12 text-muted-foreground" />
+                <h2 className="mt-4 text-2xl font-bold tracking-tight">Aucun résultat</h2>
+                <p className="mt-2 text-muted-foreground">Votre recherche n'a retourné aucun résultat. Essayez d'autres mots-clés.</p>
+            </div>
+        )
+    }
+
     return (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {analyses?.map((analysis) => {
+            {filteredAnalyses.map((analysis) => {
                 return (
                     <Card key={analysis.id} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-2xl group flex flex-col h-full">
                         <Link href={`/history/${analysis.id}`} className="block h-full flex flex-col">
@@ -198,6 +220,22 @@ export default function HistoryPage() {
           <h1 className="text-4xl font-bold tracking-tight">Mon historique</h1>
           <p className="text-muted-foreground text-lg mt-2">Retrouvez ici toutes vos analyses de plantes passées.</p>
         </div>
+
+        {analyses && analyses.length > 0 && (
+          <div className="mb-8 max-w-md">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Rechercher par plante ou maladie..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 h-11 text-base"
+              />
+            </div>
+          </div>
+        )}
+
         {renderContent()}
       </div>
 
