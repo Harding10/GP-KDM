@@ -58,13 +58,12 @@ service cloud.firestore {
 
     /**
      * Validates a UserAccount document on update.
-     * Enforces that only 'name' and 'photoURL' can be changed.
-     * The 'id' and 'email' fields are immutable.
+     * Enforces that the 'id' and 'email' fields are immutable. Allows other fields to be changed.
      */
     function isUpdatingValidUserAccount() {
-      let incomingKeys = request.resource.data.keys();
-      // Allow only 'name' and 'photoURL' to be in the update request.
-      return incomingKeys.hasAll(['name', 'photoURL']) || incomingKeys.hasAny(['name', 'photoURL']);
+      // The incoming data cannot contain 'id' or 'email' fields.
+      let incomingData = request.resource.data;
+      return !('id' in incomingData) && !('email' in incomingData);
     }
 
     /**
