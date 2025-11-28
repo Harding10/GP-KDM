@@ -8,6 +8,7 @@ import { FirebaseClientProvider } from "@/firebase/client-provider";
 export const metadata: Metadata = {
   title: "AgriAide",
   description: "Détection des maladies des plantes et suggestions de traitement basées sur l'IA.",
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({
@@ -28,6 +29,7 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
+        <meta name="theme-color" content="#16a34a" />
       </head>
       <body className={cn("font-body antialiased h-full flex flex-col")}>
         <FirebaseClientProvider>
