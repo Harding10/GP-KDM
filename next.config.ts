@@ -40,6 +40,12 @@ const nextConfig: NextConfig = {
         hostname: 'res.cloudinary.com',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.mos.cms.futurecdn.net',
+        port: '',
+        pathname: '/**',
       }
     ],
   },
