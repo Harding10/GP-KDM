@@ -15,7 +15,7 @@ interface PlantAnalysis {
   id: string;
   imageUri: string;
   diseaseDetected: string;
-  treatmentSuggestion: string;
+  isHealthy: boolean;
   analysisDate: string;
 }
 
@@ -78,21 +78,20 @@ export default function HistoryPage() {
     return (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {sortedAnalyses?.map((analysis) => {
-                const isDiseaseFound = analysis.diseaseDetected && !analysis.diseaseDetected.toLowerCase().includes('aucune maladie');
                 return (
                     <Card key={analysis.id} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
                         <CardHeader className="p-0">
                              <Image src={analysis.imageUri} alt="Analyse de plante" width={400} height={300} className="object-cover w-full h-48" />
                         </CardHeader>
                         <CardContent className="p-4">
-                            <Badge variant={isDiseaseFound ? "destructive" : "default"} className="mb-2">
+                            <Badge variant={!analysis.isHealthy ? "destructive" : "default"} className="mb-2">
                                 {analysis.diseaseDetected}
                             </Badge>
                             <p className="text-sm text-muted-foreground">
                                 {format(new Date(analysis.analysisDate), "d MMMM yyyy 'à' HH:mm", { locale: fr })}
                             </p>
                             <CardDescription className="mt-2 line-clamp-3">
-                                {isDiseaseFound ? analysis.treatmentSuggestion : 'Votre plante semble être en bonne santé.'}
+                                {!analysis.isHealthy ? `Une analyse détaillée est disponible.` : 'Votre plante semble être en bonne santé.'}
                             </CardDescription>
                         </CardContent>
                     </Card>

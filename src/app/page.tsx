@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import ImageUploader from '@/components/image-uploader';
 import AnalysisDisplay from '@/components/analysis-display';
 import { Button } from '@/components/ui/button';
-import { analyzePlantImageAndDetectDisease } from '@/ai/flows/analyze-plant-image-and-detect-disease';
+import { analyzePlantImageAndDetectDisease, AnalyzePlantImageAndDetectDiseaseOutput } from '@/ai/flows/analyze-plant-image-and-detect-disease';
 import { LoaderCircle, X, Camera } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
@@ -13,15 +13,10 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { useUser, useFirestore, addDocumentNonBlocking } from '@/firebase';
 import { collection } from 'firebase/firestore';
 
-type AnalysisResult = {
-  diseaseDetected: string;
-  treatmentSuggestion: string;
-};
-
 export default function Home() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
+  const [analysisResult, setAnalysisResult] = useState<AnalyzePlantImageAndDetectDiseaseOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
@@ -89,7 +84,11 @@ export default function Home() {
               userId: user.uid,
               imageUri: imagePreview,
               diseaseDetected: result.diseaseDetected,
-              treatmentSuggestion: result.treatmentSuggestion,
+              isHealthy: result.isHealthy,
+              probableCause: result.probableCause,
+              preventionAdvice: result.preventionAdvice,
+              biologicalTreatment: result.biologicalTreatment,
+              chemicalTreatment: result.chemicalTreatment,
               analysisDate: new Date().toISOString(),
             };
             addDocumentNonBlocking(userAnalysesRef, analysisData);

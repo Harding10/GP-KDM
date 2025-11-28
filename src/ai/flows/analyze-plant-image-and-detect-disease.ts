@@ -20,8 +20,12 @@ const AnalyzePlantImageAndDetectDiseaseInputSchema = z.object({
 export type AnalyzePlantImageAndDetectDiseaseInput = z.infer<typeof AnalyzePlantImageAndDetectDiseaseInputSchema>;
 
 const AnalyzePlantImageAndDetectDiseaseOutputSchema = z.object({
-  diseaseDetected: z.string().describe('La maladie détectée dans la feuille de la plante, ou null si aucune maladie n\'est détectée.'),
-  treatmentSuggestion: z.string().describe('Une suggestion pour traiter la maladie détectée.'),
+  diseaseDetected: z.string().describe('Le nom de la maladie détectée dans la feuille de la plante. Si la plante est saine, retourner "Aucune maladie détectée".'),
+  isHealthy: z.boolean().describe('Indique si la plante est considérée comme saine.'),
+  probableCause: z.string().describe('La cause la plus probable de la maladie détectée. Laissez vide si la plante est saine.'),
+  preventionAdvice: z.string().describe("Conseils de prévention pour éviter que la maladie ne se reproduise. Laissez vide si la plante est saine."),
+  biologicalTreatment: z.string().describe("Suggestion de traitement biologique pour la maladie. Laissez vide si la plante est saine."),
+  chemicalTreatment: z.string().describe("Suggestion de traitement chimique pour la maladie. Laissez vide si la plante est saine."),
 });
 export type AnalyzePlantImageAndDetectDiseaseOutput = z.infer<typeof AnalyzePlantImageAndDetectDiseaseOutputSchema>;
 
@@ -35,13 +39,19 @@ const prompt = ai.definePrompt({
   name: 'analyzePlantImageAndDetectDiseasePrompt',
   input: {schema: AnalyzePlantImageAndDetectDiseaseInputSchema},
   output: {schema: AnalyzePlantImageAndDetectDiseaseOutputSchema},
-  prompt: `Vous êtes un expert en maladies des plantes. Analysez l'image de la feuille de la plante et détectez toute maladie potentielle. Si aucune maladie n'est détectée, indiquez qu'aucune maladie n'est trouvée. Ensuite, suggérez des traitements ou des remèdes possibles pour la maladie végétale détectée.
+  prompt: `Vous êtes un botaniste expert de renommée mondiale, spécialisé dans le diagnostic des maladies des plantes. Votre objectif est de fournir une analyse complète et exploitable.
 
-Image de la feuille de plante : {{media url=plantImageDataUri}}
+Analysez l'image de la feuille de la plante fournie et suivez ces étapes :
+1.  Identifiez toute maladie potentielle. Si la plante semble saine, indiquez clairement "Aucune maladie détectée" et définissez isHealthy sur true.
+2.  Si une maladie est détectée, définissez isHealthy sur false.
+3.  Pour toute maladie détectée, décrivez la cause probable (par exemple, champignon, bactérie, carence nutritionnelle, ravageur).
+4.  Fournissez des conseils de prévention clairs et concis pour éviter que ce problème ne se reproduise.
+5.  Suggérez au moins un traitement biologique (par exemple, savon insecticide, huile de neem, introduction d'insectes bénéfiques).
+6.  Suggérez au moins un traitement chimique (par exemple, un fongicide ou un pesticide spécifique).
 
-Répondez avec une chaîne de caractères pour la maladie détectée et une chaîne de caractères pour la suggestion de traitement.
-Maladie détectée :
-Suggestion de traitement :`,
+Fournissez une réponse structurée en utilisant le schéma de sortie JSON.
+
+Image de la feuille de plante : {{media url=plantImageDataUri}}`,
 });
 
 const analyzePlantImageAndDetectDiseaseFlow = ai.defineFlow(
