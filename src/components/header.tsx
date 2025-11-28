@@ -48,7 +48,7 @@ export default function Header() {
           </Link>
           <div className="flex items-center gap-4">
             {canInstall && (
-              <Button onClick={promptInstall} size="sm" variant="outline">
+              <Button onClick={promptInstall} size="sm" variant="outline" className="hidden sm:inline-flex">
                 <Download className="mr-2 h-4 w-4" />
                 Installer
               </Button>
@@ -59,4 +59,3 @@ export default function Header() {
       </div>
     </header>
   );
-}
