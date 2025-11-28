@@ -27,6 +27,7 @@ import {
 } from './ui/form';
 import { Mail, Key } from 'lucide-react';
 import Image from 'next/image';
+import { useToast } from '@/hooks/use-toast';
 
 interface AuthDialogProps {
   open: boolean;
@@ -41,8 +42,9 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
-  const { signInWithGoogle, signUpWithEmail, signInWithEmail } = useFirebaseAuth();
+  const { signInWithGoogle, signUpWithEmail, signInWithEmail, sendPasswordResetEmail } = useFirebaseAuth();
   const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -82,6 +84,37 @@ export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
       onOpenChange(false);
     } catch (err: any) {
       setError('Adresse e-mail ou mot de passe incorrect.');
+    }
+  };
+  
+  const handlePasswordReset = async () => {
+    setError(null);
+    const email = form.getValues('email');
+    if (!email) {
+        form.setError('email', { type: 'manual', message: 'Veuillez entrer votre e-mail pour réinitialiser le mot de passe.' });
+        return;
+    }
+    // Validate email before sending
+    const emailValidation = z.string().email().safeParse(email);
+    if (!emailValidation.success) {
+        form.setError('email', { type: 'manual', message: 'Veuillez entrer une adresse e-mail valide.' });
+        return;
+    }
+
+    try {
+      await sendPasswordResetEmail(email);
+      toast({
+        title: 'E-mail envoyé',
+        description: 'Si un compte existe, un e-mail de réinitialisation a été envoyé.',
+      });
+      onOpenChange(false);
+    } catch (err) {
+      // Don't reveal if user exists or not
+      toast({
+        title: 'E-mail envoyé',
+        description: 'Si un compte existe, un e-mail de réinitialisation a été envoyé.',
+      });
+      onOpenChange(false);
     }
   };
 
@@ -124,6 +157,13 @@ export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
             </FormItem>
           )}
         />
+        {!isSignUp && (
+            <div className="text-right">
+                <Button type="button" variant="link" className="p-0 h-auto text-xs" onClick={handlePasswordReset}>
+                    Mot de passe oublié ?
+                </Button>
+            </div>
+        )}
          {error && <p className="text-sm text-destructive">{error}</p>}
         <Button type="submit" className="w-full">
           {isSignUp ? "Créer un compte" : "Se connecter"}

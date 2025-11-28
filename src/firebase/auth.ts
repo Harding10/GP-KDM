@@ -1,3 +1,4 @@
+
 'use client';
 import {
   Auth,
@@ -7,6 +8,7 @@ import {
   User,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  sendPasswordResetEmail,
   updateProfile,
 } from 'firebase/auth';
 import { doc } from 'firebase/firestore';
@@ -40,6 +42,10 @@ export function useFirebaseAuth() {
     await firebaseSignOut(auth);
   };
 
+  const sendPasswordReset = async (email: string) => {
+    await sendPasswordResetEmail(auth, email);
+  }
+
   const createUserProfile = async (user: User, additionalData: any = {}) => {
     if (!user) return;
     const userRef = doc(firestore, `users/${user.uid}`);
@@ -61,5 +67,5 @@ export function useFirebaseAuth() {
     setDocumentNonBlocking(userRef, userProfile, { merge: true });
   };
 
-  return { signInWithGoogle, signOut, signUpWithEmail, signInWithEmail };
+  return { signInWithGoogle, signOut, signUpWithEmail, signInWithEmail, sendPasswordResetEmail: sendPasswordReset };
 }
