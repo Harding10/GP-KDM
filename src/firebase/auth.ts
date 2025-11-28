@@ -38,7 +38,9 @@ export function useFirebaseAuth() {
   const signUpWithEmail = async (email: string, password: string) => {
     const result = await createUserWithEmailAndPassword(auth, email, password);
     const name = email.split('@')[0];
+    // We need to update the auth profile first to get a display name
     await updateProfile(result.user, { displayName: name });
+    // Then create the firestore document with the correct name
     await createUserProfile(result.user, { name, email });
   };
 
@@ -68,12 +70,12 @@ export function useFirebaseAuth() {
 
     const currentUser = auth.currentUser;
     const authProfileUpdates: { displayName?: string } = {};
-    const firestoreUpdates: { displayName?: string, photoURL?: string } = {};
+    const firestoreUpdates: { name?: string, photoURL?: string } = {};
 
     // Prepare Auth update only for display name
     if (displayName && displayName !== currentUser.displayName) {
         authProfileUpdates.displayName = displayName;
-        firestoreUpdates.displayName = displayName;
+        firestoreUpdates.name = displayName;
     }
     
     // Prepare Firestore update for photo
@@ -81,12 +83,12 @@ export function useFirebaseAuth() {
         firestoreUpdates.photoURL = await toDataURL(photoFile);
     }
     
-    // Update Firebase Auth profile if there are changes
+    // 1. Update Firebase Auth profile (only with displayName)
     if (Object.keys(authProfileUpdates).length > 0) {
         await updateProfile(currentUser, authProfileUpdates);
     }
     
-    // Update Firestore user document with all changes
+    // 2. Update Firestore user document with all changes (name and/or photo)
     const userRef = doc(firestore, `users/${currentUser.uid}`);
     if (Object.keys(firestoreUpdates).length > 0) {
         await setDoc(userRef, firestoreUpdates, { merge: true });
