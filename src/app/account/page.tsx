@@ -1,8 +1,8 @@
 
 'use client';
 
-import { useState } from 'react';
-import { useUser } from '@/firebase';
+import { useState, useEffect } from 'react';
+import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { useFirebaseAuth } from '@/firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,23 +10,49 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Loader, User, KeyRound, Image as ImageIcon } from 'lucide-react';
+import { Loader, User, KeyRound } from 'lucide-react';
 import Link from 'next/link';
+import { doc } from 'firebase/firestore';
+
+interface UserProfile {
+    name?: string;
+    photoURL?: string;
+}
 
 export default function AccountPage() {
-  const { user, isUserLoading } = useUser();
+  const { user, isUserLoading: isAuthLoading } = useUser();
+  const firestore = useFirestore();
   const { updateUserProfile, updateUserPassword } = useFirebaseAuth();
   const { toast } = useToast();
 
-  const [displayName, setDisplayName] = useState(user?.displayName || '');
+  const userDocRef = useMemoFirebase(() => {
+    if (!user || !firestore) return null;
+    return doc(firestore, `users/${user.uid}`);
+  }, [user, firestore]);
+
+  const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfile>(userDocRef);
+
+  const [displayName, setDisplayName] = useState('');
   const [photoFile, setPhotoFile] = useState<File | null>(null);
-  const [photoPreview, setPhotoPreview] = useState<string | null>(user?.photoURL || null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [isSavingPassword, setIsSavingPassword] = useState(false);
+  
+  useEffect(() => {
+    if (userProfile) {
+      setDisplayName(userProfile.name || user?.displayName || '');
+      setPhotoPreview(userProfile.photoURL || user?.photoURL || null);
+    } else if (user) {
+        setDisplayName(user.displayName || '');
+        setPhotoPreview(user.photoURL || null);
+    }
+  }, [userProfile, user]);
 
-  if (isUserLoading) {
+  const isLoading = isAuthLoading || isProfileLoading;
+
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full">
         <Loader className="h-12 w-12 animate-spin text-primary" />
@@ -78,6 +104,7 @@ export default function AccountPage() {
         title: 'Profil mis à jour',
         description: 'Votre nom et votre photo de profil ont été mis à jour.',
       });
+      setPhotoFile(null); // Reset file input after save
     } catch (error) {
       toast({
         variant: 'destructive',

@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useUser } from '@/firebase';
+import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { useFirebaseAuth } from '@/firebase/auth';
 import {
   DropdownMenu,
@@ -18,13 +18,30 @@ import AuthDialog from './auth-dialog';
 import { useState } from 'react';
 import Link from 'next/link';
 import { LogIn, LogOut, History, User as UserIcon } from 'lucide-react';
+import { doc } from 'firebase/firestore';
+
+interface UserProfile {
+  name: string;
+  email: string;
+  photoURL?: string;
+}
 
 export default function UserAuthButton() {
-  const { user, isUserLoading } = useUser();
+  const { user, isUserLoading: isAuthLoading } = useUser();
   const { signOut } = useFirebaseAuth();
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
+  const firestore = useFirestore();
 
-  if (isUserLoading) {
+  const userDocRef = useMemoFirebase(() => {
+    if (!user || !firestore) return null;
+    return doc(firestore, `users/${user.uid}`);
+  }, [user, firestore]);
+
+  const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfile>(userDocRef);
+
+  const isLoading = isAuthLoading || (user && isProfileLoading);
+
+  if (isLoading) {
     return <Skeleton className="h-10 w-10 rounded-full" />;
   }
 
@@ -42,28 +59,28 @@ export default function UserAuthButton() {
 
   const getInitials = (name?: string | null) => {
     if (!name) return '';
-    const names = name.split(' ');
-    return names
-      .map((n) => n[0])
-      .slice(0, 2)
-      .join('');
+    return name.split(' ').map((n) => n[0]).slice(0, 2).join('');
   };
+  
+  const displayName = userProfile?.name || user.displayName;
+  const displayEmail = userProfile?.email || user.email;
+  const displayPhotoURL = userProfile?.photoURL || user.photoURL;
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-10 w-10 rounded-full">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={user.photoURL ?? undefined} alt={user.displayName ?? 'Utilisateur'} />
-            <AvatarFallback>{getInitials(user.displayName)}</AvatarFallback>
+            <AvatarImage src={displayPhotoURL ?? undefined} alt={displayName ?? 'Utilisateur'} />
+            <AvatarFallback>{getInitials(displayName)}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user.displayName}</p>
-            <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+            <p className="text-sm font-medium leading-none">{displayName}</p>
+            <p className="text-xs leading-none text-muted-foreground">{displayEmail}</p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
