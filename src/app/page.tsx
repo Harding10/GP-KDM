@@ -12,21 +12,21 @@ import { useFirebaseAuth } from '@/firebase/auth';
 const onboardingSteps = [
   {
     image: '/onboarding-1.png',
-    imageAlt: 'Succulents in a pot',
-    title: 'Identify the Green World Around You',
-    description: 'Turn your smartphone into a plant expert. Scan any plant using your camera and let AgriAide identify it for you.',
+    imageAlt: 'Succulentes dans un pot',
+    title: 'Identifiez le monde végétal qui vous entoure',
+    description: 'Transformez votre smartphone en un expert des plantes. Scannez n\'importe quelle plante avec votre appareil photo et laissez AgriAide l\'identifier pour vous.',
   },
   {
     image: '/onboarding-2.png',
-    imageAlt: 'Person holding a plant',
-    title: 'Get Care Instructions',
-    description: 'Learn how to care for your plants with our detailed guides and reminders for watering, fertilizing, and more.',
+    imageAlt: 'Personne tenant une plante',
+    title: 'Obtenez des instructions d\'entretien',
+    description: 'Apprenez à prendre soin de vos plantes grâce à nos guides détaillés et nos rappels pour l\'arrosage, la fertilisation, et plus encore.',
   },
   {
     image: '/onboarding-3.png',
-    imageAlt: 'Smartphone showing plant diagnosis',
-    title: 'Diagnose Plant Problems',
-    description: 'Is your plant sick? Take a photo and our AI will help you diagnose the problem and suggest solutions.',
+    imageAlt: 'Smartphone affichant un diagnostic de plante',
+    title: 'Diagnostiquez les problèmes des plantes',
+    description: 'Votre plante est malade ? Prenez une photo et notre IA vous aidera à diagnostiquer le problème et à suggérer des solutions.',
   },
 ];
 
@@ -117,10 +117,10 @@ export default function OnboardingPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                     <Button variant="secondary" onClick={handleSkip} className="h-14 text-lg font-bold rounded-full">
-                        Skip
+                        Passer
                     </Button>
                     <Button onClick={handleContinue} className="h-14 text-lg font-bold rounded-full">
-                        Continue
+                        Continuer
                     </Button>
                 </div>
             </div>
@@ -128,4 +128,3 @@ export default function OnboardingPage() {
     </div>
   );
 }
-
