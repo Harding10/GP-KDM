@@ -11,7 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Loader, User, KeyRound } from 'lucide-react';
 import Link from 'next/link';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, updateDoc } from 'firebase/firestore';
 import { updatePassword } from 'firebase/auth';
 import { useFirebaseAuth } from '@/firebase/auth';
 
@@ -81,66 +81,66 @@ export default function AccountPage() {
     e.preventDefault();
     if (!user || !firestore || !userDocRef) return;
     setIsSavingProfile(true);
-  
+
     try {
-      let newPhotoURL = userProfile?.photoURL ?? user.photoURL ?? null;
-  
-      if (photoFile) {
-        newPhotoURL = await uploadToCloudinary(photoFile);
-      }
-  
-      const currentName = userProfile?.name ?? user.displayName ?? '';
-      const currentPhoto = userProfile?.photoURL ?? user.photoURL ?? null;
-  
-      const firestoreUpdates: { name?: string; photoURL?: string } = {};
+        let newPhotoURL = userProfile?.photoURL ?? user.photoURL ?? null;
 
-      if (displayName !== currentName) {
-        firestoreUpdates.name = displayName;
-      }
-      if (newPhotoURL && newPhotoURL !== currentPhoto) {
-        firestoreUpdates.photoURL = newPhotoURL;
-      }
+        if (photoFile) {
+            newPhotoURL = await uploadToCloudinary(photoFile);
+        }
 
-      if (Object.keys(firestoreUpdates).length === 0) {
+        const currentName = userProfile?.name ?? user.displayName ?? '';
+        const currentPhoto = userProfile?.photoURL ?? user.photoURL ?? null;
+
+        const firestoreUpdates: { name?: string; photoURL?: string } = {};
+
+        if (displayName !== currentName) {
+            firestoreUpdates.name = displayName;
+        }
+        if (newPhotoURL && newPhotoURL !== currentPhoto) {
+            firestoreUpdates.photoURL = newPhotoURL;
+        }
+
+        if (Object.keys(firestoreUpdates).length === 0) {
+            toast({
+                title: 'Aucun changement',
+                description: 'Vos informations de profil sont déjà à jour.',
+            });
+            setIsSavingProfile(false);
+            return;
+        }
+
+        updateDoc(userDocRef, firestoreUpdates)
+            .then(() => {
+                toast({
+                    title: 'Profil mis à jour',
+                    description: 'Vos informations de profil ont été mises à jour.',
+                });
+                if (firestoreUpdates.photoURL) {
+                    setPhotoPreview(firestoreUpdates.photoURL);
+                }
+                setPhotoFile(null);
+            })
+            .catch(async () => {
+                const permissionError = new FirestorePermissionError({
+                    path: userDocRef.path,
+                    operation: 'update',
+                    requestResourceData: firestoreUpdates,
+                });
+                errorEmitter.emit('permission-error', permissionError);
+            })
+            .finally(() => {
+                setIsSavingProfile(false);
+            });
+
+    } catch (error: any) {
+        console.error("Error during profile save preparation:", error);
         toast({
-          title: 'Aucun changement',
-          description: 'Vos informations de profil sont déjà à jour.',
+            variant: 'destructive',
+            title: 'Erreur',
+            description: error.message || 'Impossible de préparer la mise à jour du profil.',
         });
         setIsSavingProfile(false);
-        return;
-      }
-  
-      setDoc(userDocRef, firestoreUpdates, { merge: true })
-        .then(() => {
-          toast({
-            title: 'Profil mis à jour',
-            description: 'Vos informations de profil ont été mises à jour.',
-          });
-          if (firestoreUpdates.photoURL) {
-            setPhotoPreview(firestoreUpdates.photoURL);
-          }
-          setPhotoFile(null);
-        })
-        .catch(async () => {
-          const permissionError = new FirestorePermissionError({
-            path: userDocRef.path,
-            operation: 'update',
-            requestResourceData: firestoreUpdates,
-          });
-          errorEmitter.emit('permission-error', permissionError);
-        })
-        .finally(() => {
-          setIsSavingProfile(false);
-        });
-  
-    } catch (error: any) {
-      console.error("Error during profile save preparation:", error);
-      toast({
-        variant: 'destructive',
-        title: 'Erreur',
-        description: error.message || 'Impossible de préparer la mise à jour du profil.',
-      });
-      setIsSavingProfile(false);
     }
   };
 

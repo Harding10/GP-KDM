@@ -10,7 +10,7 @@ import {
   sendPasswordResetEmail,
   updateProfile,
 } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { useAuth, useFirestore } from '.';
 
 export function useFirebaseAuth() {
@@ -47,6 +47,7 @@ export function useFirebaseAuth() {
   const createUserProfile = async (user: User, additionalData: any = {}) => {
     if (!user || !firestore) return;
     const userRef = doc(firestore, `users/${user.uid}`);
+    
     const userProfile: { [key: string]: any } = {
       id: user.uid,
       name: user.displayName,
@@ -61,8 +62,15 @@ export function useFirebaseAuth() {
         delete userProfile[key];
       }
     });
-    
-    await setDoc(userRef, userProfile, { merge: true });
+
+    const docSnap = await getDoc(userRef);
+    if (docSnap.exists()) {
+        // Document exists, perform an update
+        await updateDoc(userRef, userProfile);
+    } else {
+        // Document doesn't exist, create it
+        await setDoc(userRef, userProfile);
+    }
   };
 
   return { 
@@ -74,5 +82,3 @@ export function useFirebaseAuth() {
     sendPasswordResetEmail: sendPasswordReset,
    };
 }
-
-    
