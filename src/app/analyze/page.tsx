@@ -74,14 +74,39 @@ export default function AnalyzePage() {
       setError(null);
     }
   };
+
+  const uploadToCloudinary = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+
+    if (!uploadPreset || !cloudName) {
+        throw new Error("Les variables d'environnement Cloudinary ne sont pas configurées.");
+    }
+    
+    formData.append('upload_preset', uploadPreset);
+
+    const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+        method: 'POST',
+        body: formData,
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+        throw new Error(data.error.message || "Échec du téléversement sur Cloudinary.");
+    }
+    return data.secure_url;
+  }
   
-  const saveAnalysis = async (result: AnalyzePlantImageAndDetectDiseaseOutput) => {
-      if (user && firestore && imagePreview) {
+  const saveAnalysis = async (result: AnalyzePlantImageAndDetectDiseaseOutput, imageUrl: string) => {
+      if (user && firestore) {
           try {
             const userAnalysesRef = collection(firestore, `users/${user.uid}/analyses`);
             await addDoc(userAnalysesRef, {
               userId: user.uid,
-              imageUri: imagePreview,
+              imageUri: imageUrl,
               plantType: result.plantType,
               diseaseDetected: result.diseaseDetected,
               isHealthy: result.isHealthy,
@@ -107,14 +132,20 @@ export default function AnalyzePage() {
   }
 
   const handleAnalyze = async () => {
-    if (!imagePreview) return;
+    if (!imagePreview || !imageFile) return;
     setIsLoading(true);
     setError(null);
     try {
+      // First, upload the image to Cloudinary
+      const imageUrl = await uploadToCloudinary(imageFile);
+
+      // Then, run the analysis with the data URI
       const result = await analyzePlantImageAndDetectDisease({ plantImageDataUri: imagePreview });
+      
       if (result) {
         setAnalysisResult(result);
-        await saveAnalysis(result);
+        // Save the analysis with the Cloudinary URL
+        await saveAnalysis(result, imageUrl);
       } else {
         throw new Error('L\'analyse n\'a pas renvoyé de résultat.');
       }
@@ -239,3 +270,5 @@ export default function AnalyzePage() {
     </div>
   );
 }
+
+    
