@@ -105,8 +105,8 @@ export default function AnalysisDetailPage() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           <div className="flex flex-wrap gap-4 items-center justify-between mb-8">
             <div>
-              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">Détail de l'analyse</h1>
-              <p className="text-muted-foreground text-base sm:text-lg mt-2">Voici le rapport complet pour votre plante.</p>
+              <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Détail de l'analyse</h1>
+              <p className="mt-2 text-base text-muted-foreground sm:text-lg">Voici le rapport complet pour votre plante.</p>
             </div>
             <div className="flex gap-2 w-full sm:w-auto">
                <Button asChild variant="outline" className="flex-1 sm:flex-none">
@@ -144,3 +144,5 @@ export default function AnalysisDetailPage() {
     </>
   );
 }
+
+    

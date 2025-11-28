@@ -180,7 +180,7 @@ export default function AuthDialog({ open, onOpenChange, initialTab = 'signup' }
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-center">
+          <DialogTitle className="text-center text-xl font-bold sm:text-2xl">
             {activeTab === 'signup' ? 'Create an account' : 'Log in to your account'}
           </DialogTitle>
         </DialogHeader>
@@ -224,3 +224,5 @@ export default function AuthDialog({ open, onOpenChange, initialTab = 'signup' }
     </Dialog>
   );
 }
+
+    

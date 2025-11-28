@@ -81,7 +81,7 @@ export default function OnboardingPage() {
 
             <div className="flex-1 flex flex-col justify-between p-4 sm:p-8 pt-4 bg-background">
                 <div className="text-center">
-                    <h1 className="text-3xl font-bold mb-4 tracking-tight leading-tight">{step.title}</h1>
+                    <h1 className="text-2xl font-bold mb-4 tracking-tight leading-tight sm:text-3xl">{step.title}</h1>
                     <p className="text-muted-foreground text-base leading-relaxed max-w-sm mx-auto">{step.description}</p>
                 </div>
 
@@ -99,10 +99,10 @@ export default function OnboardingPage() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                    <Button variant="secondary" onClick={handleSkip} className="h-14 text-lg font-bold">
+                    <Button variant="secondary" onClick={handleSkip} className="h-14 text-base font-bold sm:text-lg">
                         Passer
                     </Button>
-                    <Button onClick={handleContinue} className="h-14 text-lg font-bold">
+                    <Button onClick={handleContinue} className="h-14 text-base font-bold sm:text-lg">
                         Continuer
                     </Button>
                 </div>
@@ -111,3 +111,5 @@ export default function OnboardingPage() {
     </div>
   );
 }
+
+    

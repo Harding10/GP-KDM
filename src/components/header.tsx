@@ -42,7 +42,7 @@ export default function Header() {
         <div className="flex h-16 items-center justify-between">
           <Link href="/analyze" className="flex items-center gap-2">
             <CustomLogo />
-            <span className="text-2xl font-bold text-foreground">
+            <span className="text-xl font-bold text-foreground sm:text-2xl">
               AgriAide
             </span>
           </Link>
@@ -59,3 +59,6 @@ export default function Header() {
       </div>
     </header>
   );
+}
+
+    

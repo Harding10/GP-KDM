@@ -217,8 +217,8 @@ export default function HistoryPage() {
     <>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">Mon historique</h1>
-          <p className="text-muted-foreground text-lg mt-2">Retrouvez ici toutes vos analyses de plantes passées.</p>
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Mon historique</h1>
+          <p className="mt-2 text-lg text-muted-foreground">Retrouvez ici toutes vos analyses de plantes passées.</p>
         </div>
 
         {analyses && analyses.length > 0 && (
@@ -259,3 +259,5 @@ export default function HistoryPage() {
     </>
   );
 }
+
+    

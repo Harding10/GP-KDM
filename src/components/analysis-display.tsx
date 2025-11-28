@@ -64,7 +64,7 @@ export default function AnalysisDisplay({ result, imagePreview, onReset, shareUr
     content ? (
         <Card className="rounded-xl bg-background/50">
             <AccordionItem value={value} className="border-b-0">
-                <AccordionTrigger className="p-4 md:p-6 font-bold text-lg hover:no-underline">
+                <AccordionTrigger className="p-4 font-bold text-base hover:no-underline md:p-6 md:text-lg">
                     <div className="flex items-center gap-3">
                         {icon} {title}
                     </div>
@@ -122,7 +122,7 @@ export default function AnalysisDisplay({ result, imagePreview, onReset, shareUr
                  <div className="flex items-center gap-3 text-lg">
                     {isHealthy ? <CheckCircle className="h-6 w-6 text-primary" /> : <AlertTriangle className="h-6 w-6 text-destructive" />}
                     <p className="font-semibold">Diagnostic :</p>
-                    <Badge variant={isHealthy ? "default" : "destructive"} className="text-base font-bold px-4 py-1.5 rounded-full">
+                    <Badge variant={isHealthy ? "default" : "destructive"} className="px-4 py-1.5 rounded-full text-sm font-bold sm:text-base">
                         {diseaseDetected}
                     </Badge>
                 </div>
@@ -141,3 +141,5 @@ export default function AnalysisDisplay({ result, imagePreview, onReset, shareUr
     </div>
   );
 }
+
+    

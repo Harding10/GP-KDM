@@ -52,11 +52,11 @@ export default function ImageUploader({ onImageSelect, onCameraClick }: ImageUpl
   return (
     <Card className="w-full max-w-xl text-center shadow-2xl shadow-primary/10 animate-fade-in rounded-2xl border-0">
       <CardHeader className="pt-10">
-        <CardTitle className="font-bold text-4xl flex items-center justify-center gap-3">
+        <CardTitle className="flex items-center justify-center gap-3 text-3xl font-bold sm:text-4xl">
           <Leaf className="text-primary h-10 w-10"/>
           AgriAide
         </CardTitle>
-        <CardDescription className="pt-2 text-lg">
+        <CardDescription className="pt-2 text-base sm:text-lg">
           Votre assistant IA pour la santé des plantes
         </CardDescription>
       </CardHeader>
@@ -93,3 +93,5 @@ export default function ImageUploader({ onImageSelect, onCameraClick }: ImageUpl
     </Card>
   );
 }
+
+    
