@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
 import Header from "@/components/header";
 import { FirebaseClientProvider } from "@/firebase/client-provider";
+import PwaInstallPrompt from "@/components/pwa-install-prompt";
 
 export const metadata: Metadata = {
   title: "AgriAide",
@@ -20,6 +21,9 @@ export default function RootLayout({
     <html lang="fr" className="h-full">
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/icon-192x192.png" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/icon-512x512.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
@@ -39,6 +43,7 @@ export default function RootLayout({
             {children}
           </main>
           <Toaster />
+          <PwaInstallPrompt />
         </FirebaseClientProvider>
       </body>
     </html>
