@@ -12,8 +12,9 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Loader, User, KeyRound } from 'lucide-react';
 import Link from 'next/link';
 import { doc, setDoc } from 'firebase/firestore';
-import { updatePassword } from 'firebase/auth';
+import { updatePassword, updateProfile } from 'firebase/auth';
 import { useFirebaseAuth } from '@/firebase/auth';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 interface UserProfile {
     id?: string;
@@ -83,58 +84,57 @@ export default function AccountPage() {
     e.preventDefault();
     if (!user || !firestore || !userDocRef) return;
     setIsSavingProfile(true);
-
+  
     try {
-        let newPhotoURL = userProfile?.photoURL ?? user.photoURL ?? photoPreview;
+      let newPhotoURL = photoPreview;
+  
+      // Only upload if a new file is selected
+      if (photoFile) {
+        newPhotoURL = await uploadToCloudinary(photoFile);
+      }
+  
+      const fullProfileData: UserProfile = {
+        id: user.uid,
+        email: user.email!,
+        name: displayName,
+        photoURL: newPhotoURL || undefined,
+      };
 
-        if (photoFile) {
-            newPhotoURL = await uploadToCloudinary(photoFile);
-        }
-
-        const fullProfileData: UserProfile = {
-            id: user.uid,
-            email: user.email!,
-            name: displayName,
-            photoURL: newPhotoURL,
-        };
-        
-        // Remove null or undefined photoURL
-        if (!fullProfileData.photoURL) {
-            delete fullProfileData.photoURL;
-        }
-
-        setDoc(userDocRef, fullProfileData)
-            .then(() => {
-                toast({
-                    title: 'Profil mis à jour',
-                    description: 'Vos informations de profil ont été mises à jour.',
-                });
-                if (newPhotoURL) {
-                    setPhotoPreview(newPhotoURL);
-                }
-                setPhotoFile(null);
-            })
-            .catch(async (error) => {
-                console.error("Firestore setDoc error:", error);
-                const permissionError = new FirestorePermissionError({
-                    path: userDocRef.path,
-                    operation: 'update', // conceptually an update
-                    requestResourceData: fullProfileData,
-                });
-                errorEmitter.emit('permission-error', permissionError);
-            })
-            .finally(() => {
-                setIsSavingProfile(false);
-            });
-
-    } catch (error: any) {
-        console.error("Error during profile save preparation:", error);
-        toast({
-            variant: 'destructive',
-            title: 'Erreur',
-            description: error.message || 'Impossible de préparer la mise à jour du profil.',
+      // Also update the auth user profile for consistency
+      await updateProfile(user, {
+        displayName: displayName,
+        photoURL: newPhotoURL || undefined,
+      });
+  
+      setDoc(userDocRef, fullProfileData)
+        .then(() => {
+          toast({
+            title: 'Profil mis à jour',
+            description: 'Vos informations de profil ont été mises à jour.',
+          });
+          setPhotoFile(null); // Clear the file input state
+        })
+        .catch(async (error) => {
+          console.error("Firestore setDoc error:", error);
+          const permissionError = new FirestorePermissionError({
+            path: userDocRef.path,
+            operation: 'update',
+            requestResourceData: fullProfileData,
+          });
+          errorEmitter.emit('permission-error', permissionError);
+        })
+        .finally(() => {
+          setIsSavingProfile(false);
         });
-        setIsSavingProfile(false);
+  
+    } catch (error: any) {
+      console.error("Error during profile save:", error);
+      toast({
+        variant: 'destructive',
+        title: 'Erreur',
+        description: error.message || 'Impossible de mettre à jour le profil.',
+      });
+      setIsSavingProfile(false);
     }
   };
 
@@ -222,8 +222,6 @@ export default function AccountPage() {
     }
   };
 
-  const currentPhoto = photoPreview || userProfile?.photoURL || user.photoURL;
-
   return (
     <div className="container mx-auto max-w-3xl px-4 py-12">
       <div className="mb-8">
@@ -241,7 +239,7 @@ export default function AccountPage() {
             <form onSubmit={handleProfileSave} className="space-y-6">
               <div className="flex items-center gap-6">
                 <Avatar className="h-20 w-20">
-                  <AvatarImage src={currentPhoto || undefined} />
+                  <AvatarImage src={photoPreview || undefined} />
                   <AvatarFallback className="text-2xl">
                     {getInitials(displayName)}
                   </AvatarFallback>
@@ -269,6 +267,18 @@ export default function AccountPage() {
                 Enregistrer le profil
               </Button>
             </form>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Apparence</CardTitle>
+            <CardDescription>
+              Choisissez comment l'application s'affiche.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ThemeToggle />
           </CardContent>
         </Card>
 
@@ -320,5 +330,3 @@ export default function AccountPage() {
     </div>
   );
 }
-
-    

@@ -1,3 +1,4 @@
+
 import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
@@ -5,6 +6,7 @@ import { cn } from "@/lib/utils";
 import Header from "@/components/header";
 import { FirebaseClientProvider } from "@/firebase/client-provider";
 import PwaInstallPrompt from "@/components/pwa-install-prompt";
+import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata: Metadata = {
   title: "AgriAide",
@@ -18,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className="h-full">
+    <html lang="fr" className="h-full" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -37,14 +39,21 @@ export default function RootLayout({
         <meta name="theme-color" content="#16a34a" />
       </head>
       <body className={cn("font-body antialiased h-full flex flex-col")}>
-        <FirebaseClientProvider>
-          <Header />
-          <main className="flex-1">
-            {children}
-          </main>
-          <Toaster />
-          <PwaInstallPrompt />
-        </FirebaseClientProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <FirebaseClientProvider>
+            <Header />
+            <main className="flex-1">
+              {children}
+            </main>
+            <Toaster />
+            <PwaInstallPrompt />
+          </FirebaseClientProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
