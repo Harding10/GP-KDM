@@ -61,15 +61,20 @@ export default function OnboardingPage() {
        <AuthDialog open={isAuthDialogOpen} onOpenChange={setIsAuthDialogOpen} initialTab={authMode} />
         <div className="flex-1 flex flex-col">
             <div className="relative h-3/5 bg-primary/10 flex items-center justify-center">
-              <div className="relative w-64 h-[500px] bg-zinc-800 rounded-[40px] border-[12px] border-zinc-800 shadow-2xl overflow-hidden">
-                <Image
-                  src={step.image}
-                  alt={step.imageAlt}
-                  fill
-                  className="object-cover"
-                  data-ai-hint="plant phone"
-                />
-                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/3 h-5 bg-zinc-800 rounded-b-lg"></div>
+              {/* Phone Mockup */}
+              <div className="relative mx-auto border-zinc-800 bg-zinc-800 border-[14px] rounded-[2.5rem] h-[500px] w-64 shadow-xl">
+                {/* Notch */}
+                <div className="w-[100px] h-[22px] bg-zinc-800 top-0 rounded-b-xl left-1/2 -translate-x-1/2 absolute"></div>
+                {/* Screen */}
+                <div className="h-full w-full bg-white rounded-[1.5rem] overflow-hidden">
+                    <Image
+                      src={step.image}
+                      alt={step.imageAlt}
+                      fill
+                      className="object-cover"
+                      data-ai-hint="plant phone"
+                    />
+                </div>
               </div>
               <div className="absolute bottom-0 left-0 w-full h-16 bg-background rounded-t-[100%]"></div>
             </div>
