@@ -6,24 +6,10 @@ import UserAuthButton from './user-auth-button';
 import { useUser } from '@/firebase';
 import { usePwaInstall } from '@/components/pwa-install-provider';
 import { Button } from './ui/button';
-import { Download } from 'lucide-react';
+import { Download, Leaf } from 'lucide-react';
 
 const CustomLogo = () => (
-    <svg
-      className="h-10 w-10 text-primary"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path d="M10 16.5c-3.14 0-5-2.5-5-5.5s1.86-5.5 5-5.5c2.75 0 4.25.9 5.5 2.5" />
-      <path d="M14 12c-1.25 1.6-2.75 2.5-5.5 2.5" />
-      <path d="M14 12c1.25-1.6 2.75-2.5 5.5-2.5" />
-      <path d="M19.5 16.5c3.14 0 5-2.5 5-5.5s-1.86-5.5-5-5.5c-2.75 0-4.25.9-5.5 2.5" />
-    </svg>
+    <Leaf className="h-8 w-8 text-primary" />
   );
 
 export default function Header() {
