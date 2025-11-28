@@ -11,7 +11,7 @@ import { useFirebaseAuth } from '@/firebase/auth';
 
 const onboardingSteps = [
   {
-    image: 'https://cdn.mos.cms.futurecdn.net/v2/t:0,l:546,cw:1407,ch:1407,q:80,w:1407/NwWMUGgzoSE4Ga5eWzv3D5.jpg',
+    image: 'https://images.unsplash.com/photo-1620574328574-12d3b5b31e32?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     imageAlt: 'Personne prenant en photo une plante avec un téléphone',
     title: 'Identifiez le monde végétal qui vous entoure',
     description: 'Transformez votre smartphone en un expert des plantes. Scannez n\'importe quelle plante avec votre appareil photo et laissez AgriAide l\'identifier pour vous.',
