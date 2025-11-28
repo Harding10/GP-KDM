@@ -84,35 +84,35 @@ export default function AccountPage() {
     setIsSavingProfile(true);
 
     try {
-      let newPhotoURL: string | undefined = photoPreview || undefined;
+      let newPhotoURL: string | undefined = undefined;
 
       if (photoFile) {
         newPhotoURL = await uploadToCloudinary(photoFile);
       }
 
       const firestoreUpdates: { name?: string; photoURL?: string } = {};
-      let hasChanges = false;
       
-      // Check for name change
-      if (displayName !== (userProfile?.name || user.displayName)) {
+      const currentName = userProfile?.name ?? user.displayName ?? '';
+      if (displayName !== currentName) {
         firestoreUpdates.name = displayName;
-        hasChanges = true;
       }
       
-      // Check for photo change
-      if (newPhotoURL && newPhotoURL !== (userProfile?.photoURL || user.photoURL)) {
+      const currentPhoto = userProfile?.photoURL ?? user.photoURL ?? null;
+      if (newPhotoURL && newPhotoURL !== currentPhoto) {
           firestoreUpdates.photoURL = newPhotoURL;
-          hasChanges = true;
       }
 
 
-      if (hasChanges) {
+      if (Object.keys(firestoreUpdates).length > 0) {
         setDoc(userDocRef, firestoreUpdates, { merge: true })
           .then(() => {
             toast({
               title: 'Profil mis à jour',
               description: 'Vos informations de profil ont été mises à jour.',
             });
+            if (firestoreUpdates.photoURL) {
+                setPhotoPreview(firestoreUpdates.photoURL);
+            }
             setPhotoFile(null);
           })
           .catch(async (serverError) => {
@@ -127,6 +127,10 @@ export default function AccountPage() {
             setIsSavingProfile(false);
           });
       } else {
+        toast({
+            title: 'Aucun changement',
+            description: 'Vos informations de profil sont déjà à jour.',
+        });
         setIsSavingProfile(false);
       }
 
@@ -323,3 +327,5 @@ export default function AccountPage() {
     </div>
   );
 }
+
+    
