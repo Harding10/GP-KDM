@@ -77,11 +77,11 @@ export default function ImageUploader({ onImageSelect, onCameraClick }: ImageUpl
             <UploadCloud className="h-16 w-16 text-primary/70" />
             <p className="font-semibold text-lg">Glissez-déposez une image ici</p>
             <p className="text-sm">ou</p>
-            <div className="flex flex-col sm:flex-row items-center gap-4 w-full">
-              <Button type="button" onClick={onButtonClick} size="lg" className="w-full sm:w-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+              <Button type="button" onClick={onButtonClick} size="lg" className="w-full">
                 Parcourir les fichiers
               </Button>
-              <Button type="button" onClick={onCameraClick} variant="outline" size="lg" className="w-full sm:w-auto">
+              <Button type="button" onClick={onCameraClick} variant="outline" size="lg" className="w-full">
                  <Camera className="mr-2 h-5 w-5" />
                 Prendre une photo
               </Button>
