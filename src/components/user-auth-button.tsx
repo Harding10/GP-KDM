@@ -13,12 +13,11 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { FiLogIn, FiLogOut } from 'react-icons/fi';
-import { FaHistory } from 'react-icons/fa';
 import { Skeleton } from './ui/skeleton';
 import AuthDialog from './auth-dialog';
 import { useState } from 'react';
 import Link from 'next/link';
+import { LogIn, LogOut, History } from 'lucide-react';
 
 export default function UserAuthButton() {
   const { user, isUserLoading } = useUser();
@@ -33,7 +32,7 @@ export default function UserAuthButton() {
     return (
       <>
         <Button onClick={() => setIsAuthDialogOpen(true)} variant="outline">
-          <FiLogIn className="mr-2 h-4 w-4" />
+          <LogIn className="mr-2 h-4 w-4" />
           Connexion
         </Button>
         <AuthDialog open={isAuthDialogOpen} onOpenChange={setIsAuthDialogOpen} />
@@ -70,13 +69,13 @@ export default function UserAuthButton() {
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <Link href="/history">
-            <FaHistory className="mr-2 h-4 w-4" />
+            <History className="mr-2 h-4 w-4" />
             <span>Mon historique</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={signOut}>
-          <FiLogOut className="mr-2 h-4 w-4" />
+          <LogOut className="mr-2 h-4 w-4" />
           <span>Déconnexion</span>
         </DropdownMenuItem>
       </DropdownMenuContent>

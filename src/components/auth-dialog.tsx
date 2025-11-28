@@ -14,7 +14,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { FiLogIn, FiMail, FiKey } from 'react-icons/fi';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -26,6 +25,7 @@ import {
   FormLabel,
   FormMessage,
 } from './ui/form';
+import { Mail, Key } from 'lucide-react';
 
 interface AuthDialogProps {
   open: boolean;
@@ -99,7 +99,7 @@ export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
               <FormLabel>E-mail</FormLabel>
               <FormControl>
                 <div className="relative">
-                   <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                    <Input placeholder="nom@exemple.com" {...field} className="pl-9" />
                 </div>
               </FormControl>
@@ -115,7 +115,7 @@ export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
               <FormLabel>Mot de passe</FormLabel>
                <FormControl>
                 <div className="relative">
-                   <FiKey className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                   <Key className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input type="password" placeholder="********" {...field} className="pl-9"/>
                 </div>
               </FormControl>

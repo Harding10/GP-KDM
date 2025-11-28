@@ -2,14 +2,11 @@
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { IoCheckmarkCircleOutline, IoAlertTriangle, IoInformationCircleOutline } from 'react-icons/io5';
-import { FiRefreshCcw, FiShield } from 'react-icons/fi';
-import { GiSprout } from 'react-icons/gi';
-import { FaBug, FaFlask } from 'react-icons/fa';
 import { Badge } from './ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import type { AnalyzePlantImageAndDetectDiseaseOutput } from '@/ai/flows/analyze-plant-image-and-detect-disease';
 import Link from 'next/link';
+import { CheckCircle, AlertTriangle, Info, Shield, RefreshCcw, Bug, FlaskConical, Leaf } from 'lucide-react';
 
 interface AnalysisDisplayProps {
   result: AnalyzePlantImageAndDetectDiseaseOutput;
@@ -48,7 +45,7 @@ export default function AnalysisDisplay({ result, imagePreview, onReset }: Analy
          
         <div className="flex flex-col sm:flex-row gap-4">
              <Button onClick={onReset} variant="outline" size="lg" className="rounded-full flex-1">
-                <FiRefreshCcw className="mr-2 h-4 w-4" />
+                <RefreshCcw className="mr-2 h-4 w-4" />
                 Nouvelle analyse
              </Button>
              <Button asChild size="lg" className="rounded-full flex-1">
@@ -63,18 +60,18 @@ export default function AnalysisDisplay({ result, imagePreview, onReset }: Analy
         <Card className="shadow-lg rounded-2xl">
           <CardHeader>
             <CardTitle className="flex items-center gap-3 font-bold text-2xl">
-                {isHealthy ? <IoCheckmarkCircleOutline className="h-8 w-8 text-primary" /> : <IoAlertTriangle className="h-8 w-8 text-destructive" />}
+                {isHealthy ? <CheckCircle className="h-8 w-8 text-primary" /> : <AlertTriangle className="h-8 w-8 text-destructive" />}
                 Résultat de l'analyse
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
                 <div className="flex items-center gap-3 text-lg">
-                    <GiSprout className="h-6 w-6 text-muted-foreground" />
+                    <Leaf className="h-6 w-6 text-muted-foreground" />
                     <p className="font-semibold">Plante :</p>
                     <span className="font-bold text-primary">{plantType}</span>
                 </div>
                  <div className="flex items-center gap-3 text-lg">
-                    {isHealthy ? <IoCheckmarkCircleOutline className="h-6 w-6 text-primary" /> : <IoAlertTriangle className="h-6 w-6 text-destructive" />}
+                    {isHealthy ? <CheckCircle className="h-6 w-6 text-primary" /> : <AlertTriangle className="h-6 w-6 text-destructive" />}
                     <p className="font-semibold">Diagnostic :</p>
                     <Badge variant={isHealthy ? "default" : "destructive"} className="text-base font-bold px-4 py-1.5 rounded-full">
                         {diseaseDetected}
@@ -85,10 +82,10 @@ export default function AnalysisDisplay({ result, imagePreview, onReset }: Analy
 
         {!isHealthy && (
           <Accordion type="single" collapsible defaultValue="item-1" className="w-full space-y-4">
-            <AccordionCard value="item-1" title="Cause Probable" icon={<IoInformationCircleOutline className="h-6 w-6 text-primary"/>} content={probableCause} />
-            <AccordionCard value="item-2" title="Conseils de Prévention" icon={<FiShield className="h-6 w-6 text-primary"/>} content={preventionAdvice} />
-            <AccordionCard value="item-3" title="Traitement Biologique" icon={<FaBug className="h-6 w-6 text-primary"/>} content={biologicalTreatment} />
-            <AccordionCard value="item-4" title="Traitement Chimique" icon={<FaFlask className="h-6 w-6 text-primary"/>} content={chemicalTreatment} />
+            <AccordionCard value="item-1" title="Cause Probable" icon={<Info className="h-6 w-6 text-primary"/>} content={probableCause} />
+            <AccordionCard value="item-2" title="Conseils de Prévention" icon={<Shield className="h-6 w-6 text-primary"/>} content={preventionAdvice} />
+            <AccordionCard value="item-3" title="Traitement Biologique" icon={<Bug className="h-6 w-6 text-primary"/>} content={biologicalTreatment} />
+            <AccordionCard value="item-4" title="Traitement Chimique" icon={<FlaskConical className="h-6 w-6 text-primary"/>} content={chemicalTreatment} />
           </Accordion>
         )}
       </div>

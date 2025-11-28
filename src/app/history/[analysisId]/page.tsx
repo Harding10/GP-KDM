@@ -7,8 +7,7 @@ import { doc } from 'firebase/firestore';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { IoAlertTriangle, IoArrowBack } from 'react-icons/io5';
-import { AiOutlineLoading3Quarters } from 'react-icons/ai';
+import { AlertTriangle, ArrowLeft, Loader } from 'lucide-react';
 import Link from 'next/link';
 import AnalysisDisplay from '@/components/analysis-display';
 import { AnalyzePlantImageAndDetectDiseaseOutput } from '@/ai/flows/analyze-plant-image-and-detect-disease';
@@ -29,7 +28,7 @@ export default function AnalysisDetailPage() {
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center gap-4 text-center h-64">
-        <AiOutlineLoading3Quarters className="h-12 w-12 animate-spin text-primary" />
+        <Loader className="h-12 w-12 animate-spin text-primary" />
         <h2 className="text-2xl font-semibold">Chargement de l'analyse...</h2>
       </div>
     );
@@ -38,12 +37,12 @@ export default function AnalysisDetailPage() {
   if (error || !analysis) {
     return (
       <div className="text-center py-16">
-        <IoAlertTriangle className="mx-auto h-12 w-12 text-destructive" />
+        <AlertTriangle className="mx-auto h-12 w-12 text-destructive" />
         <h2 className="mt-4 text-2xl font-bold tracking-tight text-destructive">Analyse introuvable</h2>
         <p className="mt-2 text-muted-foreground">Impossible de charger cette analyse. Elle n'existe peut-être pas ou vous n'y avez pas accès.</p>
         <Button asChild className="mt-6" size="lg" variant="outline">
           <Link href="/history">
-            <IoArrowBack className="mr-2" />
+            <ArrowLeft className="mr-2" />
             Retour à l'historique
           </Link>
         </Button>
@@ -61,7 +60,7 @@ export default function AnalysisDetailPage() {
         <div className="mb-8">
             <Button asChild variant="outline" className="mb-4">
                 <Link href="/history">
-                    <IoArrowBack className="mr-2 h-4 w-4" />
+                    <ArrowLeft className="mr-2 h-4 w-4" />
                     Retour à l'historique
                 </Link>
             </Button>
