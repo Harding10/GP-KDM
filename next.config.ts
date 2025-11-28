@@ -10,7 +10,7 @@ const withPWA = require('next-pwa')({
 
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  productionBrowserSourceMaps: false, // Désactiver les source maps
   typescript: {
     ignoreBuildErrors: true,
   },
