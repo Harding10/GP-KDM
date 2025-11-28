@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Loader, User, KeyRound } from 'lucide-react';
 import Link from 'next/link';
 import { doc, setDoc } from 'firebase/firestore';
-import { updateProfile, updatePassword } from 'firebase/auth';
+import { updatePassword } from 'firebase/auth';
 import { useFirebaseAuth } from '@/firebase/auth';
 
 interface UserProfile {
@@ -84,55 +84,60 @@ export default function AccountPage() {
     setIsSavingProfile(true);
 
     try {
-        let newPhotoURL: string | undefined = undefined;
-      
-        if (photoFile) {
-            newPhotoURL = await uploadToCloudinary(photoFile);
-        }
-      
-        const firestoreUpdates: { name?: string; photoURL?: string } = {};
+      let newPhotoURL: string | undefined = photoPreview || undefined;
 
-        if (displayName !== (userProfile?.name || user.displayName)) {
-            firestoreUpdates.name = displayName;
-            await updateProfile(user, { displayName: displayName });
-        }
+      if (photoFile) {
+        newPhotoURL = await uploadToCloudinary(photoFile);
+      }
 
-        if (newPhotoURL) {
-            firestoreUpdates.photoURL = newPhotoURL;
-        }
+      const firestoreUpdates: { name?: string; photoURL?: string } = {};
+      let hasChanges = false;
       
-        if (Object.keys(firestoreUpdates).length > 0) {
-            setDoc(userDocRef, firestoreUpdates, { merge: true })
-                .then(() => {
-                    toast({
-                        title: 'Profil mis à jour',
-                        description: 'Vos informations de profil ont été mises à jour.',
-                    });
-                    setPhotoFile(null);
-                })
-                .catch(async (serverError) => {
-                    const permissionError = new FirestorePermissionError({
-                        path: userDocRef.path,
-                        operation: 'update',
-                        requestResourceData: firestoreUpdates,
-                    });
-                    errorEmitter.emit('permission-error', permissionError);
-                })
-                .finally(() => {
-                    setIsSavingProfile(false);
-                });
-        } else {
-             setIsSavingProfile(false);
-        }
+      // Check for name change
+      if (displayName !== (userProfile?.name || user.displayName)) {
+        firestoreUpdates.name = displayName;
+        hasChanges = true;
+      }
+      
+      // Check for photo change
+      if (newPhotoURL && newPhotoURL !== (userProfile?.photoURL || user.photoURL)) {
+          firestoreUpdates.photoURL = newPhotoURL;
+          hasChanges = true;
+      }
+
+
+      if (hasChanges) {
+        setDoc(userDocRef, firestoreUpdates, { merge: true })
+          .then(() => {
+            toast({
+              title: 'Profil mis à jour',
+              description: 'Vos informations de profil ont été mises à jour.',
+            });
+            setPhotoFile(null);
+          })
+          .catch(async (serverError) => {
+            const permissionError = new FirestorePermissionError({
+              path: userDocRef.path,
+              operation: 'update',
+              requestResourceData: firestoreUpdates,
+            });
+            errorEmitter.emit('permission-error', permissionError);
+          })
+          .finally(() => {
+            setIsSavingProfile(false);
+          });
+      } else {
+        setIsSavingProfile(false);
+      }
 
     } catch (error: any) {
-        console.error("Error during profile save preparation:", error);
-        toast({
-            variant: 'destructive',
-            title: 'Erreur',
-            description: error.message || 'Impossible de préparer la mise à jour du profil.',
-        });
-        setIsSavingProfile(false);
+      console.error("Error during profile save preparation:", error);
+      toast({
+        variant: 'destructive',
+        title: 'Erreur',
+        description: error.message || 'Impossible de préparer la mise à jour du profil.',
+      });
+      setIsSavingProfile(false);
     }
   };
 
@@ -318,5 +323,3 @@ export default function AccountPage() {
     </div>
   );
 }
-
-    
