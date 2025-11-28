@@ -4,6 +4,9 @@
 import Link from 'next/link';
 import UserAuthButton from './user-auth-button';
 import { useUser } from '@/firebase';
+import { usePwaInstall } from '@/components/pwa-install-provider';
+import { Button } from './ui/button';
+import { Download } from 'lucide-react';
 
 const CustomLogo = () => (
     <svg
@@ -25,6 +28,8 @@ const CustomLogo = () => (
 
 export default function Header() {
   const { user } = useUser();
+  const { canInstall, promptInstall } = usePwaInstall();
+
 
   // Don't show header on the main landing/auth page
   if (!user) {
@@ -41,7 +46,15 @@ export default function Header() {
               AgriAide
             </span>
           </Link>
-          <UserAuthButton />
+          <div className="flex items-center gap-4">
+            {canInstall && (
+              <Button onClick={promptInstall} size="sm" variant="outline">
+                <Download className="mr-2 h-4 w-4" />
+                Installer
+              </Button>
+            )}
+            <UserAuthButton />
+          </div>
         </div>
       </div>
     </header>
