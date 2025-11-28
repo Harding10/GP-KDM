@@ -5,11 +5,13 @@ import ImageUploader from '@/components/image-uploader';
 import AnalysisDisplay from '@/components/analysis-display';
 import { Button } from '@/components/ui/button';
 import { analyzePlantImageAndDetectDisease } from '@/ai/flows/analyze-plant-image-and-detect-disease';
-import { LoaderCircle, X, Camera, SwitchCamera } from 'lucide-react';
+import { LoaderCircle, X, Camera } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { useUser, useFirestore, addDocumentNonBlocking } from '@/firebase';
+import { collection } from 'firebase/firestore';
 
 type AnalysisResult = {
   diseaseDetected: string;
@@ -27,6 +29,8 @@ export default function Home() {
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { user } = useUser();
+  const firestore = useFirestore();
 
   useEffect(() => {
     if (isCameraOpen) {
@@ -79,6 +83,21 @@ export default function Home() {
       const result = await analyzePlantImageAndDetectDisease({ plantImageDataUri: imagePreview });
       if (result) {
         setAnalysisResult(result);
+        if (user && firestore) {
+            const userAnalysesRef = collection(firestore, `users/${user.uid}/analyses`);
+            const analysisData = {
+              userId: user.uid,
+              imageUri: imagePreview,
+              diseaseDetected: result.diseaseDetected,
+              treatmentSuggestion: result.treatmentSuggestion,
+              analysisDate: new Date().toISOString(),
+            };
+            addDocumentNonBlocking(userAnalysesRef, analysisData);
+            toast({
+                title: "Analyse sauvegardée",
+                description: "Votre analyse a été ajoutée à votre historique.",
+            })
+        }
       } else {
         throw new Error('L\'analyse n\'a pas renvoyé de résultat.');
       }
