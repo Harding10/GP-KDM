@@ -25,6 +25,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 
 interface PlantAnalysis {
   id: string;
@@ -165,9 +166,15 @@ export default function HistoryPage() {
 
     return (
         <div className="grid grid-cols-2 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filteredAnalyses.map((analysis) => {
+            {filteredAnalyses.map((analysis, index) => {
                 return (
-                    <Card key={analysis.id} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-2xl group flex flex-col h-full">
+                    <Card
+                      key={analysis.id}
+                      className={cn(
+                          "overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-2xl group flex flex-col h-full animate-fade-in",
+                      )}
+                      style={{ animationDelay: `${index * 50}ms` }}
+                  >
                         <Link href={`/history/${analysis.id}`} className="block h-full flex flex-col">
                             <CardHeader className="p-0 relative">
                                 <div className="relative overflow-hidden h-40 sm:h-48">
@@ -259,3 +266,5 @@ export default function HistoryPage() {
     </>
   );
 }
+
+    
