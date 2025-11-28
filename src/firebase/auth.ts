@@ -67,27 +67,29 @@ export function useFirebaseAuth() {
     }
 
     const currentUser = auth.currentUser;
-    const profileUpdates: { displayName?: string, photoURL?: string } = {};
+    const authProfileUpdates: { displayName?: string } = {};
+    const firestoreUpdates: { displayName?: string, photoURL?: string } = {};
 
+    // Prepare Auth update only for display name
     if (displayName && displayName !== currentUser.displayName) {
-        profileUpdates.displayName = displayName;
+        authProfileUpdates.displayName = displayName;
+        firestoreUpdates.displayName = displayName;
     }
     
+    // Prepare Firestore update for photo
     if (photoFile) {
-        // This is a potentially long-running operation, so we await it.
-        profileUpdates.photoURL = await toDataURL(photoFile);
+        firestoreUpdates.photoURL = await toDataURL(photoFile);
     }
     
     // Update Firebase Auth profile if there are changes
-    if (Object.keys(profileUpdates).length > 0) {
-        await updateProfile(currentUser, profileUpdates);
+    if (Object.keys(authProfileUpdates).length > 0) {
+        await updateProfile(currentUser, authProfileUpdates);
     }
     
-    // Update Firestore user document with the same changes
+    // Update Firestore user document with all changes
     const userRef = doc(firestore, `users/${currentUser.uid}`);
-    // Use the same profileUpdates object, as it only contains the changed fields
-    if (Object.keys(profileUpdates).length > 0) {
-        await setDoc(userRef, profileUpdates, { merge: true });
+    if (Object.keys(firestoreUpdates).length > 0) {
+        await setDoc(userRef, firestoreUpdates, { merge: true });
     }
   };
   
