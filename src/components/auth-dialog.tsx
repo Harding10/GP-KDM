@@ -25,7 +25,7 @@ import {
   FormLabel,
   FormMessage,
 } from './ui/form';
-import { Mail, Key } from 'lucide-react';
+import { Mail, Key, Loader } from 'lucide-react';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
 
@@ -45,12 +45,20 @@ type FormData = z.infer<typeof formSchema>;
 export default function AuthDialog({ open, onOpenChange, initialTab = 'signup' }: AuthDialogProps) {
   const { signInWithGoogle, signUpWithEmail, signInWithEmail, sendPasswordResetEmail } = useFirebaseAuth();
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState(initialTab);
 
   useEffect(() => {
     setActiveTab(initialTab);
   }, [initialTab]);
+  
+  useEffect(() => {
+    if (!open) {
+      setError(null);
+      form.reset();
+    }
+  }, [open, form]);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -61,16 +69,21 @@ export default function AuthDialog({ open, onOpenChange, initialTab = 'signup' }
   });
 
   const handleGoogleSignIn = async () => {
+    setError(null);
+    setIsLoading(true);
     try {
       await signInWithGoogle();
       onOpenChange(false);
     } catch (err) {
       setError('Impossible de se connecter avec Google.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleEmailSignUp = async (data: FormData) => {
     setError(null);
+    setIsLoading(true);
     try {
       await signUpWithEmail(data.email, data.password);
       onOpenChange(false);
@@ -80,16 +93,21 @@ export default function AuthDialog({ open, onOpenChange, initialTab = 'signup' }
       } else {
         setError('Erreur lors de la création du compte.');
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleEmailSignIn = async (data: FormData) => {
     setError(null);
+    setIsLoading(true);
     try {
       await signInWithEmail(data.email, data.password);
       onOpenChange(false);
     } catch (err: any) {
       setError('Adresse e-mail ou mot de passe incorrect.');
+    } finally {
+      setIsLoading(false);
     }
   };
   
@@ -106,6 +124,7 @@ export default function AuthDialog({ open, onOpenChange, initialTab = 'signup' }
         return;
     }
 
+    setIsLoading(true);
     try {
       await sendPasswordResetEmail(email);
       toast({
@@ -119,6 +138,8 @@ export default function AuthDialog({ open, onOpenChange, initialTab = 'signup' }
         description: 'Si un compte existe, un e-mail de réinitialisation a été envoyé.',
       });
       onOpenChange(false);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -138,7 +159,7 @@ export default function AuthDialog({ open, onOpenChange, initialTab = 'signup' }
               <FormControl>
                 <div className="relative">
                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                   <Input placeholder="nom@exemple.com" {...field} className="pl-9" />
+                   <Input placeholder="nom@exemple.com" {...field} className="pl-9" disabled={isLoading} />
                 </div>
               </FormControl>
               <FormMessage />
@@ -154,7 +175,7 @@ export default function AuthDialog({ open, onOpenChange, initialTab = 'signup' }
                <FormControl>
                 <div className="relative">
                    <Key className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input type="password" placeholder="********" {...field} className="pl-9"/>
+                  <Input type="password" placeholder="********" {...field} className="pl-9" disabled={isLoading} />
                 </div>
               </FormControl>
               <FormMessage />
@@ -163,13 +184,14 @@ export default function AuthDialog({ open, onOpenChange, initialTab = 'signup' }
         />
         {!isSignUp && (
             <div className="text-right">
-                <Button type="button" variant="link" className="p-0 h-auto text-xs" onClick={handlePasswordReset}>
+                <Button type="button" variant="link" className="p-0 h-auto text-xs" onClick={handlePasswordReset} disabled={isLoading}>
                     Mot de passe oublié ?
                 </Button>
             </div>
         )}
          {error && <p className="text-sm text-destructive">{error}</p>}
-        <Button type="submit" className="w-full">
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading && <Loader className="mr-2 h-4 w-4 animate-spin" />}
           {isSignUp ? "Créer un compte" : "Se connecter"}
         </Button>
       </form>
@@ -181,14 +203,14 @@ export default function AuthDialog({ open, onOpenChange, initialTab = 'signup' }
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-center text-xl font-bold sm:text-2xl">
-            {activeTab === 'signup' ? 'Create an account' : 'Log in to your account'}
+            {activeTab === 'signup' ? 'Créer un compte' : 'Se connecter'}
           </DialogTitle>
         </DialogHeader>
         <div className="py-4">
           <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'signin' | 'signup')} className="w-full">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="signin">Se connecter</TabsTrigger>
-              <TabsTrigger value="signup">S'inscrire</TabsTrigger>
+              <TabsTrigger value="signin" disabled={isLoading}>Se connecter</TabsTrigger>
+              <TabsTrigger value="signup" disabled={isLoading}>S'inscrire</TabsTrigger>
             </TabsList>
             <TabsContent value="signin" className="pt-4">
               <EmailPasswordForm isSignUp={false} />
@@ -209,7 +231,8 @@ export default function AuthDialog({ open, onOpenChange, initialTab = 'signup' }
             </div>
           </div>
 
-          <Button variant="outline" className="w-full" onClick={handleGoogleSignIn}>
+          <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isLoading}>
+            {isLoading && <Loader className="mr-2 h-4 w-4 animate-spin" />}
             <Image 
                 src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png" 
                 width={18} 
@@ -224,5 +247,3 @@ export default function AuthDialog({ open, onOpenChange, initialTab = 'signup' }
     </Dialog>
   );
 }
-
-    
