@@ -57,16 +57,6 @@ service cloud.firestore {
     }
 
     /**
-     * Validates a UserAccount document on update.
-     * Enforces that the 'id' and 'email' fields are immutable. Allows other fields to be changed.
-     */
-    function isUpdatingValidUserAccount() {
-      // The incoming data cannot contain 'id' or 'email' fields.
-      let incomingData = request.resource.data;
-      return !('id' in incomingData) && !('email' in incomingData);
-    }
-
-    /**
      * Validates a new PlantAnalysis document on creation.
      * Ensures the creator is the owner and that the internal 'userId' foreign key is correctly set.
      */
@@ -99,7 +89,9 @@ service cloud.firestore {
       allow list: if false; // PREVENT USER ENUMERATION
 
       allow create: if isCreatingValidUserAccount(userId);
-      allow update: if isExistingOwner(userId) && isUpdatingValidUserAccount();
+      allow update: if isExistingOwner(userId) 
+                      && !('id' in request.resource.data)
+                      && !('email' in request.resource.data);
       allow delete: if isExistingOwner(userId);
 
       /**
