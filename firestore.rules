@@ -58,16 +58,13 @@ service cloud.firestore {
 
     /**
      * Validates a UserAccount document on update.
-     * Enforces the immutability of the 'id' and 'email' fields if they exist.
+     * Enforces the immutability of the 'id' and 'email' fields.
      */
     function isUpdatingValidUserAccount() {
-      let data = request.resource.data;
-      let existingData = resource.data;
-      
-      // The 'id' and 'email' fields must not be changed from their existing values.
-      // This rule doesn't fail if the fields aren't in the incoming request data.
-      return (!('id' in data) || data.id == existingData.id)
-          && (!('email' in data) || data.email == existingData.email);
+      // The incoming data must not attempt to change the 'id' or 'email'.
+      // If these fields are present in the request, they must match the existing values.
+      return request.resource.data.id == resource.data.id
+          && request.resource.data.email == resource.data.email;
     }
 
     /**
