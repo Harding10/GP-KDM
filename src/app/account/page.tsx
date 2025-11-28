@@ -14,26 +14,17 @@ import { Loader, User, KeyRound } from 'lucide-react';
 import Link from 'next/link';
 import { doc, setDoc } from 'firebase/firestore';
 import { updateProfile, updatePassword } from 'firebase/auth';
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 interface UserProfile {
     name?: string;
     photoURL?: string;
 }
 
-// Helper to convert file to data URI
-const toDataURL = (file: File): Promise<string> =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-
-
 export default function AccountPage() {
   const { user, isUserLoading: isAuthLoading } = useUser();
   const firestore = useFirestore();
-  const { auth } = useFirebaseAuth(); // We only need the auth instance
+  const { auth } = useFirebaseAuth();
   const { toast } = useToast();
 
   const userDocRef = useMemoFirebase(() => {
@@ -63,41 +54,98 @@ export default function AccountPage() {
 
   const isLoading = isAuthLoading || isProfileLoading;
 
-  const updateUserProfile = async (displayName?: string, photoFile?: File | null) => {
-    if (!auth.currentUser || !firestore) {
-        throw new Error("Utilisateur non authentifié ou service Firestore non disponible.");
-    }
+  const uploadProfilePhoto = async (userId: string, file: File): Promise<string> => {
+    const storage = getStorage();
+    const filePath = `profile-photos/${userId}/${file.name}`;
+    const fileRef = storageRef(storage, filePath);
+    
+    const snapshot = await uploadBytes(fileRef, file);
+    const downloadURL = await getDownloadURL(snapshot.ref);
+    return downloadURL;
+  }
 
-    const currentUser = auth.currentUser;
-    const authProfileUpdates: { displayName?: string } = {};
-    const firestoreUpdates: { name?: string, photoURL?: string } = {};
+  const handleProfileSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user || !firestore) return;
+    setIsSavingProfile(true);
 
-    if (displayName && displayName !== (userProfile?.name || currentUser.displayName)) {
-        authProfileUpdates.displayName = displayName;
+    try {
+      const firestoreUpdates: { name?: string, photoURL?: string } = {};
+      
+      // Update display name if changed
+      if (displayName && displayName !== (userProfile?.name || user.displayName)) {
+        await updateProfile(user, { displayName });
         firestoreUpdates.name = displayName;
-    }
-    
-    if (photoFile) {
-        firestoreUpdates.photoURL = await toDataURL(photoFile);
-    }
-    
-    if (Object.keys(authProfileUpdates).length > 0) {
-        await updateProfile(currentUser, authProfileUpdates);
-    }
-    
-    const userRef = doc(firestore, `users/${currentUser.uid}`);
-    if (Object.keys(firestoreUpdates).length > 0) {
-        await setDoc(userRef, firestoreUpdates, { merge: true });
+      }
+      
+      // Upload new photo if selected
+      if (photoFile) {
+        const newPhotoURL = await uploadProfilePhoto(user.uid, photoFile);
+        firestoreUpdates.photoURL = newPhotoURL;
+      }
+      
+      // Save changes to Firestore
+      if (Object.keys(firestoreUpdates).length > 0) {
+        await setDoc(userDocRef, firestoreUpdates, { merge: true });
+      }
+
+      toast({
+        title: 'Profil mis à jour',
+        description: 'Votre nom et votre photo de profil ont été mis à jour.',
+      });
+      setPhotoFile(null); // Reset file input after save
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast({
+        variant: 'destructive',
+        title: 'Erreur',
+        description: 'Impossible de mettre à jour le profil. Veuillez réessayer.',
+      });
+    } finally {
+      setIsSavingProfile(false);
     }
   };
 
-  const updateUserPassword = async (newPassword: string) => {
-    if (!auth.currentUser) {
-        throw new Error("Utilisateur non authentifié.");
+  const handlePasswordSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+    
+    if (password !== confirmPassword) {
+      toast({
+        variant: 'destructive',
+        title: 'Erreur',
+        description: 'Les mots de passe ne correspondent pas.',
+      });
+      return;
     }
-    await updatePassword(auth.currentUser, newPassword);
-  }
+    if (password.length < 6) {
+        toast({
+            variant: 'destructive',
+            title: 'Erreur',
+            description: 'Le mot de passe doit contenir au moins 6 caractères.',
+        });
+        return;
+    }
 
+    setIsSavingPassword(true);
+    try {
+      await updatePassword(user, password);
+      toast({
+        title: 'Mot de passe mis à jour',
+        description: 'Votre mot de passe a été modifié avec succès.',
+      });
+      setPassword('');
+      setConfirmPassword('');
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Erreur de mise à jour',
+        description: "Une erreur est survenue lors de la modification du mot de passe. Veuillez vous reconnecter et réessayer.",
+      });
+    } finally {
+      setIsSavingPassword(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -142,66 +190,6 @@ export default function AccountPage() {
     }
   };
 
-  const handleProfileSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSavingProfile(true);
-    try {
-      await updateUserProfile(displayName, photoFile);
-      toast({
-        title: 'Profil mis à jour',
-        description: 'Votre nom et votre photo de profil ont été mis à jour.',
-      });
-      setPhotoFile(null); // Reset file input after save
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Erreur',
-        description: 'Impossible de mettre à jour le profil.',
-      });
-    } finally {
-      setIsSavingProfile(false);
-    }
-  };
-
-  const handlePasswordSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (password !== confirmPassword) {
-      toast({
-        variant: 'destructive',
-        title: 'Erreur',
-        description: 'Les mots de passe ne correspondent pas.',
-      });
-      return;
-    }
-    if (password.length < 6) {
-        toast({
-            variant: 'destructive',
-            title: 'Erreur',
-            description: 'Le mot de passe doit contenir au moins 6 caractères.',
-        });
-        return;
-    }
-
-    setIsSavingPassword(true);
-    try {
-      await updateUserPassword(password);
-      toast({
-        title: 'Mot de passe mis à jour',
-        description: 'Votre mot de passe a été modifié avec succès.',
-      });
-      setPassword('');
-      setConfirmPassword('');
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Erreur de mise à jour',
-        description: "Une erreur est survenue lors de la modification du mot de passe. Veuillez vous reconnecter et réessayer.",
-      });
-    } finally {
-      setIsSavingPassword(false);
-    }
-  };
-  
   const currentPhoto = photoPreview || userProfile?.photoURL || user.photoURL;
 
   return (
