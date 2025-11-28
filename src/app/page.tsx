@@ -11,7 +11,7 @@ import { useFirebaseAuth } from '@/firebase/auth';
 
 const onboardingSteps = [
   {
-    image: 'https://images.unsplash.com/photo-1620574328574-12d3b5b31e32?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    image: '/onboarding-1.avif',
     imageAlt: 'Personne prenant en photo une plante avec un téléphone',
     title: 'Identifiez le monde végétal qui vous entoure',
     description: 'Transformez votre smartphone en un expert des plantes. Scannez n\'importe quelle plante avec votre appareil photo et laissez AgriAide l\'identifier pour vous.',
@@ -66,7 +66,7 @@ export default function OnboardingPage() {
                 {/* Notch */}
                 <div className="w-[100px] h-[22px] bg-zinc-800 dark:bg-zinc-800 top-0 rounded-b-xl left-1/2 -translate-x-1/2 absolute z-10"></div>
                 {/* Screen */}
-                <div className="h-full w-full bg-white dark:bg-zinc-800 rounded-[1.5rem] overflow-hidden">
+                <div className="h-full w-full bg-white dark:bg-zinc-800 rounded-[1.5rem] overflow-hidden relative">
                     <Image
                       src={step.image}
                       alt={step.imageAlt}
