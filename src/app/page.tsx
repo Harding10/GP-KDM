@@ -23,7 +23,7 @@ const onboardingSteps = [
     description: 'Apprenez à prendre soin de vos plantes grâce à nos guides détaillés et nos rappels pour l\'arrosage, la fertilisation, et plus encore.',
   },
   {
-    image: '/onboarding-3.png',
+    image: '/onboarding-3.avif',
     imageAlt: 'Smartphone affichant un diagnostic de plante',
     title: 'Diagnostiquez les problèmes des plantes',
     description: 'Votre plante est malade ? Prenez une photo et notre IA vous aidera à diagnostiquer le problème et à suggérer des solutions.',
