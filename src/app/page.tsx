@@ -11,8 +11,8 @@ import { useFirebaseAuth } from '@/firebase/auth';
 
 const onboardingSteps = [
   {
-    image: '/onboarding-1.png',
-    imageAlt: 'Succulentes dans un pot',
+    image: 'https://images.unsplash.com/photo-1593030025936-3a72d58309c4?q=80&w=2070&auto=format&fit=crop',
+    imageAlt: 'Personne prenant en photo une plante avec un téléphone',
     title: 'Identifiez le monde végétal qui vous entoure',
     description: 'Transformez votre smartphone en un expert des plantes. Scannez n\'importe quelle plante avec votre appareil photo et laissez AgriAide l\'identifier pour vous.',
   },
@@ -61,14 +61,17 @@ export default function OnboardingPage() {
        <AuthDialog open={isAuthDialogOpen} onOpenChange={setIsAuthDialogOpen} initialTab={authMode} />
         <div className="flex-1 flex flex-col">
             <div className="relative h-3/5 bg-primary/10 flex items-center justify-center">
+              <div className="relative w-64 h-[500px] bg-zinc-800 rounded-[40px] border-[12px] border-zinc-800 shadow-2xl overflow-hidden">
                 <Image
                   src={step.image}
                   alt={step.imageAlt}
-                  width={300}
-                  height={400}
-                  className="object-cover rounded-3xl"
+                  fill
+                  className="object-cover"
+                  data-ai-hint="plant phone"
                 />
-                 <div className="absolute bottom-0 left-0 w-full h-16 bg-background rounded-t-[100%]"></div>
+                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/3 h-5 bg-zinc-800 rounded-b-lg"></div>
+              </div>
+              <div className="absolute bottom-0 left-0 w-full h-16 bg-background rounded-t-[100%]"></div>
             </div>
 
             <div className="flex-1 flex flex-col justify-between p-8 pt-4 bg-background">
@@ -91,10 +94,10 @@ export default function OnboardingPage() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                    <Button variant="secondary" onClick={handleSkip} className="h-14 text-lg font-bold rounded-full">
+                    <Button variant="secondary" onClick={handleSkip} className="h-14 text-lg font-bold">
                         Passer
                     </Button>
-                    <Button onClick={handleContinue} className="h-14 text-lg font-bold rounded-full">
+                    <Button onClick={handleContinue} className="h-14 text-lg font-bold">
                         Continuer
                     </Button>
                 </div>
