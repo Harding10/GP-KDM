@@ -1,3 +1,4 @@
+
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -5,6 +6,7 @@ import { CheckCircle2, AlertTriangle, RefreshCcw, Info, Bug, ShieldCheck, TestTu
 import { Badge } from './ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import type { AnalyzePlantImageAndDetectDiseaseOutput } from '@/ai/flows/analyze-plant-image-and-detect-disease';
+import Link from 'next/link';
 
 interface AnalysisDisplayProps {
   result: AnalyzePlantImageAndDetectDiseaseOutput;
@@ -40,10 +42,18 @@ export default function AnalysisDisplay({ result, imagePreview, onReset }: Analy
                 <Image src={imagePreview} alt="Feuille de plante analysée" width={600} height={600} className="object-contain w-full max-h-[60vh] lg:max-h-[70vh]" />
             </CardContent>
          </Card>
-         <Button onClick={onReset} variant="outline" size="lg" className="rounded-full">
-            <RefreshCcw className="mr-2 h-4 w-4" />
-            Analyser une autre plante
-         </Button>
+         
+        <div className="flex flex-col sm:flex-row gap-4">
+             <Button onClick={onReset} variant="outline" size="lg" className="rounded-full flex-1">
+                <RefreshCcw className="mr-2 h-4 w-4" />
+                Nouvelle analyse
+             </Button>
+             <Button asChild size="lg" className="rounded-full flex-1">
+                 <Link href="/history">
+                    Voir l'historique
+                 </Link>
+             </Button>
+        </div>
       </div>
 
       <div className="flex flex-col gap-6">

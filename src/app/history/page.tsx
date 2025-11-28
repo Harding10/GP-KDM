@@ -82,30 +82,32 @@ export default function HistoryPage() {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {analyses?.map((analysis) => {
                 return (
-                    <Card key={analysis.id} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-2xl group flex flex-col">
-                        <CardHeader className="p-0 relative">
-                             <div className="relative overflow-hidden h-48">
-                                <Image src={analysis.imageUri} alt={`Analyse de ${analysis.plantType}`} fill className="object-cover group-hover:scale-105 transition-transform duration-300" />
-                             </div>
-                             <div className="absolute top-2 right-2">
-                                <Badge variant={analysis.isHealthy ? "default" : "destructive"} className="font-bold rounded-full text-xs py-1 px-3 shadow-md">
-                                    {analysis.isHealthy ? <CheckCircle2 className="h-4 w-4 mr-1.5"/> : <AlertTriangle className="h-4 w-4 mr-1.5"/>}
-                                    {analysis.isHealthy ? 'Sain' : 'Malade'}
-                                </Badge>
-                             </div>
-                        </CardHeader>
-                        <CardContent className="p-4 flex flex-col flex-grow">
-                           <div className='flex-grow'>
-                                <p className="font-bold text-lg text-foreground truncate">{analysis.plantType}</p>
-                                <p className="text-sm text-muted-foreground font-medium line-clamp-1">
-                                    {analysis.diseaseDetected}
+                    <Link key={analysis.id} href={`/history/${analysis.id}`} className="block">
+                        <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-2xl group flex flex-col h-full">
+                            <CardHeader className="p-0 relative">
+                                <div className="relative overflow-hidden h-48">
+                                    <Image src={analysis.imageUri} alt={`Analyse de ${analysis.plantType}`} fill className="object-cover group-hover:scale-105 transition-transform duration-300" />
+                                </div>
+                                <div className="absolute top-2 right-2">
+                                    <Badge variant={analysis.isHealthy ? "default" : "destructive"} className="font-bold rounded-full text-xs py-1 px-3 shadow-md">
+                                        {analysis.isHealthy ? <CheckCircle2 className="h-4 w-4 mr-1.5"/> : <AlertTriangle className="h-4 w-4 mr-1.5"/>}
+                                        {analysis.isHealthy ? 'Sain' : 'Malade'}
+                                    </Badge>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="p-4 flex flex-col flex-grow">
+                            <div className='flex-grow'>
+                                    <p className="font-bold text-lg text-foreground truncate">{analysis.plantType}</p>
+                                    <p className="text-sm text-muted-foreground font-medium line-clamp-1">
+                                        {analysis.diseaseDetected}
+                                    </p>
+                            </div>
+                            <p className="text-xs text-muted-foreground font-medium mt-3 pt-3 border-t">
+                                    {format(new Date(analysis.analysisDate), "d MMMM yyyy 'à' HH:mm", { locale: fr })}
                                 </p>
-                           </div>
-                           <p className="text-xs text-muted-foreground font-medium mt-3 pt-3 border-t">
-                                {format(new Date(analysis.analysisDate), "d MMMM yyyy 'à' HH:mm", { locale: fr })}
-                            </p>
-                        </CardContent>
-                    </Card>
+                            </CardContent>
+                        </Card>
+                    </Link>
                 )
             })}
         </div>
