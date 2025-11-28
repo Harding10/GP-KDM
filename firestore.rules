@@ -42,18 +42,12 @@ service cloud.firestore {
     
     /**
      * Validates a new UserAccount document on creation.
-     * Ensures the creator is the owner, the internal 'id' field matches the path,
-     * and the name is only required if present in the auth token.
+     * Ensures the creator is the owner, the internal 'id' field matches the path.
      */
     function isCreatingValidUserAccount(userId) {
       let data = request.resource.data;
-      // The name check is relaxed: it's only enforced if the auth token actually has a name.
-      // This supports email/password sign-up where the name is initially null.
-      let isNameValid = request.auth.token.name == null || data.name == request.auth.token.name;
-      
       return isOwner(userId)
         && data.id == userId
-        && isNameValid
         && data.email == request.auth.token.email;
     }
     

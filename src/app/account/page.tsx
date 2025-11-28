@@ -83,7 +83,7 @@ export default function AccountPage() {
     setIsSavingProfile(true);
   
     try {
-      let newPhotoURL = photoPreview;
+      let newPhotoURL = userProfile?.photoURL ?? user.photoURL ?? null;
   
       if (photoFile) {
         newPhotoURL = await uploadToCloudinary(photoFile);
