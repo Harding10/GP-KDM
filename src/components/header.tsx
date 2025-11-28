@@ -6,11 +6,8 @@ import UserAuthButton from './user-auth-button';
 import { useUser } from '@/firebase';
 import { usePwaInstall } from '@/components/pwa-install-provider';
 import { Button } from './ui/button';
-import { Download, Leaf } from 'lucide-react';
-
-const CustomLogo = () => (
-    <Leaf className="h-8 w-8 text-primary" />
-  );
+import { Download } from 'lucide-react';
+import { SplashLogo } from './auth-redirect';
 
 export default function Header() {
   const { user } = useUser();
@@ -27,7 +24,7 @@ export default function Header() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <Link href="/analyze" className="flex items-center gap-2">
-            <CustomLogo />
+            <SplashLogo className="h-8 w-8 text-primary" />
             <span className="text-xl font-bold text-foreground sm:text-2xl">
               AgriAide
             </span>
@@ -46,5 +43,3 @@ export default function Header() {
     </header>
   );
 }
-
-    
