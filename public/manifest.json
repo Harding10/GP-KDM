@@ -1,7 +1,7 @@
 {
   "name": "AgriAide",
   "short_name": "AgriAide",
-  "description": "Votre assistant IA pour la santé des plantes",
+  "description": "Détection des maladies des plantes et suggestions de traitement basées sur l'IA.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
