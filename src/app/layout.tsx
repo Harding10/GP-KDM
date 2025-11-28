@@ -26,10 +26,6 @@ export default function RootLayout({
       <head>
         <link rel="apple-touch-icon" href="https://play-lh.googleusercontent.com/OocMG8bjiq6hNmg2LMNrdcSlZgBfqc6b-0erv4IE8wlR88MgCWPZS_Te42iR5UV7sA" />
         <link rel="icon" href="https://play-lh.googleusercontent.com/OocMG8bjiq6hNmg2LMNrdcSlZgBfqc6b-0erv4IE8wlR88MgCWPZS_Te42iR5UV7sA" sizes="any" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
         <meta name="theme-color" content="#16a34a" />
       </head>
       <body className={cn("font-body antialiased h-full flex flex-col")}>
