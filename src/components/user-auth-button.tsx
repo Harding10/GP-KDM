@@ -17,7 +17,7 @@ import { Skeleton } from './ui/skeleton';
 import AuthDialog from './auth-dialog';
 import { useState } from 'react';
 import Link from 'next/link';
-import { LogIn, LogOut, History } from 'lucide-react';
+import { LogIn, LogOut, History, User as UserIcon } from 'lucide-react';
 
 export default function UserAuthButton() {
   const { user, isUserLoading } = useUser();
@@ -67,6 +67,12 @@ export default function UserAuthButton() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href="/account">
+            <UserIcon className="mr-2 h-4 w-4" />
+            <span>Mon Compte</span>
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/history">
             <History className="mr-2 h-4 w-4" />
