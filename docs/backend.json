@@ -1,0 +1,129 @@
+{
+  "entities": {
+    "UserAccount": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "UserAccount",
+      "type": "object",
+      "description": "Stores user account information, linked to their plant disease analysis history.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the user account."
+        },
+        "email": {
+          "type": "string",
+          "description": "User's email address for login and communication.",
+          "format": "email"
+        },
+        "name": {
+          "type": "string",
+          "description": "User's display name."
+        },
+        "oauthProvider": {
+          "type": "string",
+          "description": "The OAuth provider used for authentication (e.g., 'Google')."
+        },
+        "oauthId": {
+          "type": "string",
+          "description": "The user ID provided by the OAuth provider."
+        }
+      },
+      "required": [
+        "id",
+        "email",
+        "name",
+        "oauthProvider",
+        "oauthId"
+      ]
+    },
+    "PlantAnalysis": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "PlantAnalysis",
+      "type": "object",
+      "description": "Stores the history of plant disease analysis for each user.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the plant analysis entry."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to UserAccount. (Relationship: UserAccount 1:N PlantAnalysis)"
+        },
+        "imageUri": {
+          "type": "string",
+          "description": "URI of the uploaded plant leaf image.",
+          "format": "uri"
+        },
+        "diseaseDetected": {
+          "type": "string",
+          "description": "Name of the detected plant disease."
+        },
+        "treatmentSuggestion": {
+          "type": "string",
+          "description": "Suggested treatment or remedy for the detected disease."
+        },
+        "analysisDate": {
+          "type": "string",
+          "description": "Date and time when the analysis was performed.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "imageUri",
+        "diseaseDetected",
+        "treatmentSuggestion",
+        "analysisDate"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "UserAccount",
+          "schema": {
+            "$ref": "#/backend/entities/UserAccount"
+          },
+          "description": "Stores user account information. Path-based ownership ensures only the user can access their account data.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/analyses/{analysisId}",
+        "definition": {
+          "entityName": "PlantAnalysis",
+          "schema": {
+            "$ref": "#/backend/entities/PlantAnalysis"
+          },
+          "description": "Stores plant analysis history for each user. Path-based ownership with `userId` as part of the path guarantees data isolation and simplifies security rules.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user, taken from `UserAccount.id`."
+            },
+            {
+              "name": "analysisId",
+              "description": "The unique identifier for the plant analysis entry."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to provide a secure and scalable solution for AgriAssist, focusing on user-specific plant analysis data. It leverages path-based ownership for user data to ensure data privacy and simplifies security rules.  The structure avoids using `get()` calls in security rules by denormalizing data where authorization depends on parent documents. This ensures Authorization Independence, allowing atomic operations and easier debugging.\n\n**Authorization Independence:** User account and analysis data are kept separate to allow for future flexibility in user management without affecting analysis data. Each `PlantAnalysis` document is stored under the `/users/{userId}/analyses/{analysisId}` path, which implicitly grants ownership to the specified user. The `userId` field inside the `PlantAnalysis` document reinforces this ownership and enables rule-based authorization based on the path.\n\n**QAPs (Rules are not Filters):** The path `/users/{userId}/analyses/{analysisId}` allows for efficient `list` operations since all analysis entries under a specific user ID are accessible via a single query. Because the analysis documents are stored directly under user-specific paths, listing analysis requires no filtering based on the document content. A malicious user can not read other user's analyses because they do not have access to that user's path."
+  }
+}

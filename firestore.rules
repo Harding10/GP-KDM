@@ -1,0 +1,112 @@
+/**
+ * Core Philosophy: This ruleset enforces a strict user-ownership model. All data is private and scoped to the authenticated user who created it. There is no public or shared data.
+ * Data Structure: The data is organized hierarchically under a top-level `users` collection. Each user's data, including their personal account information and their plant analysis history, is stored within a document tree identified by their unique user ID (e.g., `/users/{userId}/...`).
+ * Key Security Decisions:
+ *  - Default Secure: All access is denied by default. Explicit rules are required to grant access.
+ *  - Strict Ownership: A user can only access documents under their own `/users/{userId}` path.
+ *  - No User Enumeration: Listing the top-level `/users` collection is explicitly forbidden to prevent attackers from discovering the list of all application users.
+ * Denormalization for Authorization: The hierarchical path structure (`/users/{userId}/analyses/{analysisId}`) is a form of denormalization that embeds the owner's ID directly in the path. This allows for simple, fast, and secure ownership checks without needing extra `get()` calls to parent documents.
+ * Structural Segregation: This pattern is not required as the application does not mix public and private data within the same collection. All user data is inherently private.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ------------------------------------------------------------------------
+    // Helper Functions
+    // ------------------------------------------------------------------------
+
+    /**
+     * Checks if a user is authenticated.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * Checks if the currently authenticated user's UID matches the provided userId.
+     * This is the primary function for enforcing data ownership.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * Combines an ownership check with a check to ensure the document already exists.
+     * CRITICAL for preventing writes to non-existent documents on update/delete.
+     */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
+    }
+    
+    /**
+     * Validates a new UserAccount document on creation.
+     * Ensures the creator is the owner and that the internal 'id' field matches the path.
+     */
+    function isCreatingValidUserAccount(userId) {
+      return isOwner(userId)
+        && request.resource.data.id == userId;
+    }
+
+    /**
+     * Validates a UserAccount document on update.
+     * Enforces the immutability of the 'id' field to prevent re-assigning ownership.
+     */
+    function isUpdatingValidUserAccount() {
+      return request.resource.data.id == resource.data.id;
+    }
+
+    /**
+     * Validates a new PlantAnalysis document on creation.
+     * Ensures the creator is the owner and that the internal 'userId' foreign key is correctly set.
+     */
+    function isCreatingValidAnalysis(userId) {
+      return isOwner(userId)
+        && request.resource.data.userId == userId;
+    }
+
+    /**
+     * Validates a PlantAnalysis document on update.
+     * Enforces the immutability of the 'userId' field to maintain the ownership link.
+     */
+    function isUpdatingValidAnalysis() {
+      return request.resource.data.userId == resource.data.userId;
+    }
+
+    // ------------------------------------------------------------------------
+    // Collection Rules
+    // ------------------------------------------------------------------------
+
+    /**
+     * @description Manages user account documents. Only the user themselves can create, read, update, or delete their own account information.
+     * @path /users/{userId}
+     * @allow A user with auth.uid 'user123' (create) their own document at `/users/user123`.
+     * @deny A user with auth.uid 'userABC' (get) the document at `/users/userXYZ`.
+     * @principle Restricts access to a user's own data tree and prevents user enumeration.
+     */
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false; // PREVENT USER ENUMERATION
+
+      allow create: if isCreatingValidUserAccount(userId);
+      allow update: if isExistingOwner(userId) && isUpdatingValidUserAccount();
+      allow delete: if isExistingOwner(userId);
+
+      /**
+       * @description Manages the plant analysis history for a specific user. Access is strictly limited to the user who owns the parent user document.
+       * @path /users/{userId}/analyses/{analysisId}
+       * @allow A user with auth.uid 'user123' (list) all documents in the `/users/user123/analyses` collection.
+       * @deny An anonymous user (create) a document at `/users/user123/analyses/analysis456`.
+       * @principle Enforces path-based ownership, ensuring a user can only manage their own subcollection data.
+       */
+      match /analyses/{analysisId} {
+        allow get: if isOwner(userId);
+        allow list: if isOwner(userId);
+
+        allow create: if isCreatingValidAnalysis(userId);
+        allow update: if isExistingOwner(userId) && isUpdatingValidAnalysis();
+        allow delete: if isExistingOwner(userId);
+      }
+    }
+  }
+}
