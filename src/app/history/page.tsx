@@ -109,7 +109,7 @@ export default function HistoryPage() {
   const renderContent = () => {
     if (isUserLoading || isLoading) {
       return (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {Array.from({ length: 8 }).map((_, index) => (
             <AnalysisCardSkeleton key={index} />
           ))}
@@ -164,32 +164,32 @@ export default function HistoryPage() {
     }
 
     return (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {filteredAnalyses.map((analysis) => {
                 return (
                     <Card key={analysis.id} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-2xl group flex flex-col h-full">
                         <Link href={`/history/${analysis.id}`} className="block h-full flex flex-col">
                             <CardHeader className="p-0 relative">
-                                <div className="relative overflow-hidden h-48">
+                                <div className="relative overflow-hidden h-40 sm:h-48">
                                     <Image src={analysis.imageUri} alt={`Analyse de ${analysis.plantType}`} fill className="object-cover group-hover:scale-105 transition-transform duration-300" />
                                 </div>
                                 <div className="absolute top-2 right-2">
-                                    <Badge variant={analysis.isHealthy ? "default" : "destructive"} className="font-bold rounded-full text-xs py-1 px-3 shadow-md flex items-center">
-                                        {analysis.isHealthy ? <CheckCircle className="h-4 w-4 mr-1.5"/> : <AlertTriangle className="h-4 w-4 mr-1.5"/>}
+                                    <Badge variant={analysis.isHealthy ? "default" : "destructive"} className="font-bold rounded-full text-xs py-1 px-2.5 shadow-md flex items-center">
+                                        {analysis.isHealthy ? <CheckCircle className="h-3 w-3 mr-1"/> : <AlertTriangle className="h-3 w-3 mr-1"/>}
                                         {analysis.isHealthy ? 'Sain' : 'Malade'}
                                     </Badge>
                                 </div>
                             </CardHeader>
-                            <CardContent className="p-4 flex flex-col flex-grow">
+                            <CardContent className="p-3 flex flex-col flex-grow">
                                 <div className='flex-grow'>
-                                    <p className="font-bold text-lg text-foreground truncate">{analysis.plantType}</p>
-                                    <p className="text-sm text-muted-foreground font-medium line-clamp-1">
+                                    <p className="font-bold text-base text-foreground truncate">{analysis.plantType}</p>
+                                    <p className="text-xs text-muted-foreground font-medium line-clamp-1">
                                         {analysis.diseaseDetected}
                                     </p>
                                 </div>
-                                <div className="text-xs text-muted-foreground font-medium mt-3 pt-3 border-t flex justify-between items-center">
-                                  <span>
-                                      {format(new Date(analysis.analysisDate), "d MMMM yyyy 'à' HH:mm", { locale: fr })}
+                                <div className="text-xs text-muted-foreground font-medium mt-2 pt-2 border-t flex justify-between items-center">
+                                  <span className="truncate">
+                                      {format(new Date(analysis.analysisDate), "d MMM yy HH:mm", { locale: fr })}
                                   </span>
                                 </div>
                             </CardContent>
@@ -197,7 +197,7 @@ export default function HistoryPage() {
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="absolute bottom-2 right-2 h-8 w-8 text-muted-foreground hover:bg-destructive/10 hover:text-destructive z-10 opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="absolute bottom-1 right-1 h-7 w-7 text-muted-foreground hover:bg-destructive/10 hover:text-destructive z-10 opacity-0 group-hover:opacity-100 transition-opacity"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 e.preventDefault();
