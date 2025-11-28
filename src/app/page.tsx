@@ -17,7 +17,7 @@ const onboardingSteps = [
     description: 'Transformez votre smartphone en un expert des plantes. Scannez n\'importe quelle plante avec votre appareil photo et laissez AgriAide l\'identifier pour vous.',
   },
   {
-    image: '/onboarding-2.png',
+    image: '/onboarding-2.avif',
     imageAlt: 'Personne tenant une plante',
     title: 'Obtenez des instructions d\'entretien',
     description: 'Apprenez à prendre soin de vos plantes grâce à nos guides détaillés et nos rappels pour l\'arrosage, la fertilisation, et plus encore.',
