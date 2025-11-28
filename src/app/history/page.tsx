@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
@@ -70,7 +71,7 @@ export default function HistoryPage() {
                 <h2 className="mt-4 text-2xl font-bold tracking-tight">Aucune analyse trouvée</h2>
                 <p className="mt-2 text-muted-foreground">Votre historique est vide. Commencez par analyser une plante !</p>
                 <Button asChild className="mt-6" size="lg">
-                    <Link href="/">Analyser une plante</Link>
+                    <Link href="/analyze">Analyser une plante</Link>
                 </Button>
             </div>
         )

@@ -1,218 +1,72 @@
+
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import ImageUploader from '@/components/image-uploader';
-import AnalysisDisplay from '@/components/analysis-display';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { analyzePlantImageAndDetectDisease, AnalyzePlantImageAndDetectDiseaseOutput } from '@/ai/flows/analyze-plant-image-and-detect-disease';
-import { LoaderCircle, X, Camera } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Check, Leaf, HeartPulse, History, Microscope } from 'lucide-react';
 import Image from 'next/image';
-import { Card, CardContent } from '@/components/ui/card';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { useUser, useFirestore, addDocumentNonBlocking } from '@/firebase';
-import { collection } from 'firebase/firestore';
 
-export default function Home() {
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [analysisResult, setAnalysisResult] = useState<AnalyzePlantImageAndDetectDiseaseOutput | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const { toast } = useToast();
-  const [isCameraOpen, setIsCameraOpen] = useState(false);
-  const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { user } = useUser();
-  const firestore = useFirestore();
+const FeatureCard = ({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) => (
+  <Card className="text-center shadow-lg hover:shadow-primary/20 transition-shadow duration-300 border-0 rounded-2xl">
+    <CardHeader className="items-center">
+      <div className="bg-primary/10 p-4 rounded-full">
+        {icon}
+      </div>
+      <CardTitle className="pt-4 font-bold">{title}</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <p className="text-muted-foreground">{description}</p>
+    </CardContent>
+  </Card>
+);
 
-  useEffect(() => {
-    if (isCameraOpen) {
-      const getCameraPermission = async () => {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-          setHasCameraPermission(true);
-          if (videoRef.current) {
-            videoRef.current.srcObject = stream;
-          }
-        } catch (error) {
-          console.error('Error accessing camera:', error);
-          setHasCameraPermission(false);
-          toast({
-            variant: 'destructive',
-            title: 'Accès à la caméra refusé',
-            description: 'Veuillez autoriser l\'accès à la caméra dans les paramètres de votre navigateur.',
-          });
-          setIsCameraOpen(false);
-        }
-      };
-      getCameraPermission();
-    } else {
-      if (videoRef.current && videoRef.current.srcObject) {
-        const stream = videoRef.current.srcObject as MediaStream;
-        stream.getTracks().forEach(track => track.stop());
-        videoRef.current.srcObject = null;
-      }
-    }
-  }, [isCameraOpen, toast]);
 
-  const handleImageSelect = (file: File) => {
-    if (file) {
-      setImageFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-      setAnalysisResult(null);
-      setError(null);
-    }
-  };
-
-  const handleAnalyze = async () => {
-    if (!imagePreview) return;
-    setIsLoading(true);
-    setError(null);
-    try {
-      const result = await analyzePlantImageAndDetectDisease({ plantImageDataUri: imagePreview });
-      if (result) {
-        setAnalysisResult(result);
-        if (user && firestore) {
-            const userAnalysesRef = collection(firestore, `users/${user.uid}/analyses`);
-            const analysisData = {
-              userId: user.uid,
-              imageUri: imagePreview,
-              plantType: result.plantType,
-              diseaseDetected: result.diseaseDetected,
-              isHealthy: result.isHealthy,
-              probableCause: result.probableCause,
-              preventionAdvice: result.preventionAdvice,
-              biologicalTreatment: result.biologicalTreatment,
-              chemicalTreatment: result.chemicalTreatment,
-              analysisDate: new Date().toISOString(),
-            };
-            addDocumentNonBlocking(userAnalysesRef, analysisData);
-            toast({
-                title: "Analyse sauvegardée",
-                description: "Votre analyse a été ajoutée à votre historique.",
-            })
-        }
-      } else {
-        throw new Error('L\'analyse n\'a pas renvoyé de résultat.');
-      }
-    } catch (e) {
-      const errorMessage = e instanceof Error ? e.message : 'Une erreur inconnue est survenue.';
-      setError(errorMessage);
-      toast({
-        variant: 'destructive',
-        title: 'L\'analyse a échoué',
-        description: errorMessage,
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleReset = () => {
-    setImageFile(null);
-    setImagePreview(null);
-    setAnalysisResult(null);
-    setIsLoading(false);
-    setError(null);
-    setIsCameraOpen(false);
-  };
-  
-  const handleCapture = () => {
-    if (videoRef.current && canvasRef.current) {
-      const video = videoRef.current;
-      const canvas = canvasRef.current;
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const context = canvas.getContext('2d');
-      if (context) {
-        context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-        const dataUri = canvas.toDataURL('image/jpeg');
-        setImagePreview(dataUri);
-        setIsCameraOpen(false);
-      }
-    }
-  };
-
-  const renderContent = () => {
-     if (isCameraOpen) {
-      return (
-        <Card className="w-full max-w-lg overflow-hidden shadow-lg rounded-xl">
-          <CardContent className="p-6 text-center">
-            <div className="relative">
-              <video ref={videoRef} className="w-full aspect-video rounded-md bg-muted" autoPlay muted playsInline />
-              <canvas ref={canvasRef} className="hidden" />
-              {hasCameraPermission === false && (
-                <Alert variant="destructive" className="mt-4">
-                  <AlertTitle>Accès à la caméra requis</AlertTitle>
-                  <AlertDescription>
-                    Veuillez autoriser l'accès à la caméra pour utiliser cette fonctionnalité.
-                  </AlertDescription>
-                </Alert>
-              )}
-            </div>
-            <div className="mt-4 flex justify-center gap-4">
-              <Button onClick={() => setIsCameraOpen(false)} variant="outline">Annuler</Button>
-              <Button onClick={handleCapture} disabled={hasCameraPermission !== true} size="lg">
-                <Camera className="mr-2" />
-                Capturer
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      );
-    }
-
-    if (isLoading) {
-      return (
-        <div className="flex flex-col items-center justify-center gap-4 text-center">
-          <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
-          <h2 className="text-2xl font-semibold">Analyse en cours...</h2>
-          <p className="text-muted-foreground">Notre IA examine votre feuille de plante. Veuillez patienter un instant.</p>
-          {imagePreview && (
-            <div className="mt-4 rounded-lg overflow-hidden shadow-lg">
-              <Image src={imagePreview} alt="Feuille de plante pour analyse" width={200} height={200} className="object-cover" />
-            </div>
-          )}
-        </div>
-      );
-    }
-
-    if (analysisResult) {
-      return <AnalysisDisplay result={analysisResult} imagePreview={imagePreview!} onReset={handleReset} />;
-    }
-
-    if (imagePreview) {
-      return (
-        <Card className="w-full max-w-lg overflow-hidden shadow-lg rounded-xl">
-          <CardContent className="p-6 text-center">
-            <div className="relative mb-4 group">
-              <Image src={imagePreview} alt="Feuille de plante sélectionnée" width={400} height={400} className="rounded-lg object-contain mx-auto max-h-[50vh]" />
-              <Button variant="destructive" size="icon" className="absolute top-2 right-2 opacity-50 group-hover:opacity-100 rounded-full h-8 w-8" onClick={() => { setImageFile(null); setImagePreview(null); }}>
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-            <h2 className="text-xl font-semibold mb-2 font-headline">Prêt pour l'analyse</h2>
-            <p className="text-muted-foreground mb-4">Cliquez sur le bouton ci-dessous pour détecter les maladies potentielles.</p>
-            <Button onClick={handleAnalyze} size="lg">
-              Analyser la plante
-            </Button>
-          </CardContent>
-        </Card>
-      );
-    }
-
-    return <ImageUploader onImageSelect={handleImageSelect} onCameraClick={() => setIsCameraOpen(true)} />;
-  };
-
+export default function HomePage() {
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col items-center justify-center min-h-full">
-      {renderContent()}
-    </div>
+    <>
+      <section className="py-20 md:py-32 bg-gradient-to-b from-primary/5 to-transparent">
+        <div className="container mx-auto px-4 text-center">
+          <div className="bg-primary/10 inline-block px-4 py-1 rounded-full text-primary font-semibold text-sm mb-4">
+            Votre expert botaniste IA
+          </div>
+          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6">
+            Prenez soin de vos plantes, <br/> plus simplement.
+          </h1>
+          <p className="max-w-3xl mx-auto text-lg md:text-xl text-muted-foreground mb-10">
+            Prenez une photo, et notre intelligence artificielle identifie la plante, détecte les maladies et vous propose des solutions de traitement. C'est simple, rapide et efficace.
+          </p>
+          <Button asChild size="lg" className="rounded-full font-bold text-lg">
+            <Link href="/analyze">Commencer l'analyse <Microscope className="ml-2" /></Link>
+          </Button>
+        </div>
+      </section>
+
+      <section className="py-20">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold">Comment ça marche ?</h2>
+            <p className="text-lg text-muted-foreground mt-2 max-w-2xl mx-auto">En trois étapes simples, obtenez un diagnostic complet pour votre plante.</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8">
+            <FeatureCard 
+              icon={<Leaf className="h-8 w-8 text-primary" />}
+              title="1. Identifiez"
+              description="Prenez ou téléchargez une photo de la feuille de votre plante. Notre IA identifie l'espèce pour une analyse précise."
+            />
+            <FeatureCard 
+              icon={<HeartPulse className="h-8 w-8 text-primary" />}
+              title="2. Diagnostiquez"
+              description="L'IA analyse l'image pour détecter toute maladie, carence ou parasite, et évalue la santé globale de la plante."
+            />
+            <FeatureCard 
+              icon={<History className="h-8 w-8 text-primary" />}
+              title="3. Traitez & Suivez"
+              description="Recevez des conseils de traitements biologiques et chimiques, et conservez un historique de vos analyses."
+            />
+          </div>
+        </div>
+      </section>
+    </>
   );
 }

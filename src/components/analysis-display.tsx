@@ -5,6 +5,7 @@ import { CheckCircle2, AlertTriangle, Sparkles, RefreshCcw, Info, Bug, ShieldChe
 import { Badge } from './ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import type { AnalyzePlantImageAndDetectDiseaseOutput } from '@/ai/flows/analyze-plant-image-and-detect-disease';
+import Link from 'next/link';
 
 interface AnalysisDisplayProps {
   result: AnalyzePlantImageAndDetectDiseaseOutput;
