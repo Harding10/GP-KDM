@@ -23,6 +23,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface PlantAnalysis {
   id: string;
@@ -32,6 +33,21 @@ interface PlantAnalysis {
   isHealthy: boolean;
   analysisDate: string;
 }
+
+const AnalysisCardSkeleton = () => (
+  <Card className="overflow-hidden rounded-2xl flex flex-col h-full">
+    <Skeleton className="h-48 w-full" />
+    <CardContent className="p-4 flex flex-col flex-grow">
+      <div className="flex-grow">
+        <Skeleton className="h-6 w-3/4 mb-2" />
+        <Skeleton className="h-4 w-1/2" />
+      </div>
+      <div className="mt-3 pt-3 border-t">
+        <Skeleton className="h-4 w-full" />
+      </div>
+    </CardContent>
+  </Card>
+);
 
 export default function HistoryPage() {
   const { user, isUserLoading } = useUser();
@@ -81,9 +97,10 @@ export default function HistoryPage() {
   const renderContent = () => {
     if (isUserLoading || isLoading) {
       return (
-        <div className="flex flex-col items-center justify-center gap-4 text-center h-64">
-          <Loader className="h-12 w-12 animate-spin text-primary" />
-          <h2 className="text-2xl font-semibold">Chargement de votre historique...</h2>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {Array.from({ length: 8 }).map((_, index) => (
+            <AnalysisCardSkeleton key={index} />
+          ))}
         </div>
       );
     }
@@ -158,9 +175,10 @@ export default function HistoryPage() {
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="absolute bottom-2 right-2 h-8 w-8 text-muted-foreground hover:bg-destructive/10 hover:text-destructive z-10"
+                            className="absolute bottom-2 right-2 h-8 w-8 text-muted-foreground hover:bg-destructive/10 hover:text-destructive z-10 opacity-0 group-hover:opacity-100 transition-opacity"
                             onClick={(e) => {
                                 e.stopPropagation();
+                                e.preventDefault();
                                 openDeleteDialog(analysis.id);
                             }}
                         >
