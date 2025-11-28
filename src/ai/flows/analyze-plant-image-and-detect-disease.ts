@@ -20,6 +20,7 @@ const AnalyzePlantImageAndDetectDiseaseInputSchema = z.object({
 export type AnalyzePlantImageAndDetectDiseaseInput = z.infer<typeof AnalyzePlantImageAndDetectDiseaseInputSchema>;
 
 const AnalyzePlantImageAndDetectDiseaseOutputSchema = z.object({
+  plantType: z.string().describe("Le nom commun de la plante identifiée dans l'image."),
   diseaseDetected: z.string().describe('Le nom de la maladie détectée dans la feuille de la plante. Si la plante est saine, retourner "Aucune maladie détectée".'),
   isHealthy: z.boolean().describe('Indique si la plante est considérée comme saine.'),
   probableCause: z.string().describe('La cause la plus probable de la maladie détectée. Laissez vide si la plante est saine.'),
@@ -39,15 +40,16 @@ const prompt = ai.definePrompt({
   name: 'analyzePlantImageAndDetectDiseasePrompt',
   input: {schema: AnalyzePlantImageAndDetectDiseaseInputSchema},
   output: {schema: AnalyzePlantImageAndDetectDiseaseOutputSchema},
-  prompt: `Vous êtes un botaniste expert de renommée mondiale, spécialisé dans le diagnostic des maladies des plantes. Votre objectif est de fournir une analyse complète et exploitable.
+  prompt: `Vous êtes un botaniste expert de renommée mondiale, spécialisé dans l'identification des plantes et le diagnostic des maladies. Votre objectif est de fournir une analyse complète et exploitable.
 
 Analysez l'image de la feuille de la plante fournie et suivez ces étapes :
-1.  Identifiez toute maladie potentielle. Si la plante semble saine, indiquez clairement "Aucune maladie détectée" et définissez isHealthy sur true.
-2.  Si une maladie est détectée, définissez isHealthy sur false.
-3.  Pour toute maladie détectée, décrivez la cause probable (par exemple, champignon, bactérie, carence nutritionnelle, ravageur).
-4.  Fournissez des conseils de prévention clairs et concis pour éviter que ce problème ne se reproduise.
-5.  Suggérez au moins un traitement biologique (par exemple, savon insecticide, huile de neem, introduction d'insectes bénéfiques).
-6.  Suggérez au moins un traitement chimique (par exemple, un fongicide ou un pesticide spécifique).
+1.  **Identifiez la plante.** Déterminez le nom commun de la plante.
+2.  **Diagnostiquez la plante** en utilisant la connaissance du type de plante pour affiner votre analyse. Si la plante semble saine, indiquez "Aucune maladie détectée" et définissez isHealthy sur true.
+3.  Si une maladie est détectée, définissez isHealthy sur false.
+4.  Pour toute maladie détectée, décrivez la cause probable (par exemple, champignon, bactérie, carence nutritionnelle, ravageur).
+5.  Fournissez des conseils de prévention clairs et concis pour éviter que ce problème ne se reproduise.
+6.  Suggérez au moins un traitement biologique (par exemple, savon insecticide, huile de neem, introduction d'insectes bénéfiques).
+7.  Suggérez au moins un traitement chimique (par exemple, un fongicide ou un pesticide spécifique).
 
 Fournissez une réponse structurée en utilisant le schéma de sortie JSON.
 

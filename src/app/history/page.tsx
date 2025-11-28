@@ -7,13 +7,14 @@ import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { LoaderCircle, AlertTriangle, Leaf } from 'lucide-react';
+import { LoaderCircle, AlertTriangle, Leaf, Sprout } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
 interface PlantAnalysis {
   id: string;
   imageUri: string;
+  plantType: string;
   diseaseDetected: string;
   isHealthy: boolean;
   analysisDate: string;
@@ -84,10 +85,18 @@ export default function HistoryPage() {
                              <Image src={analysis.imageUri} alt="Analyse de plante" width={400} height={300} className="object-cover w-full h-48" />
                         </CardHeader>
                         <CardContent className="p-4">
-                            <Badge variant={!analysis.isHealthy ? "destructive" : "default"} className="mb-2">
-                                {analysis.diseaseDetected}
-                            </Badge>
-                            <p className="text-sm text-muted-foreground">
+                            <div className='flex justify-between items-start'>
+                                <Badge variant={!analysis.isHealthy ? "destructive" : "default"} className="mb-2">
+                                    {analysis.diseaseDetected}
+                                </Badge>
+                                {analysis.plantType && (
+                                    <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                                        <Sprout className="h-4 w-4" />
+                                        <span>{analysis.plantType}</span>
+                                    </div>
+                                )}
+                            </div>
+                            <p className="text-sm text-muted-foreground mt-1">
                                 {format(new Date(analysis.analysisDate), "d MMMM yyyy 'à' HH:mm", { locale: fr })}
                             </p>
                             <CardDescription className="mt-2 line-clamp-3">

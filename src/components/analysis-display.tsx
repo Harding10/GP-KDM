@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, AlertTriangle, Sparkles, RefreshCcw, Info, Bug, ShieldCheck, TestTube2 } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, Sparkles, RefreshCcw, Info, Bug, ShieldCheck, TestTube2, Sprout } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import type { AnalyzePlantImageAndDetectDiseaseOutput } from '@/ai/flows/analyze-plant-image-and-detect-disease';
@@ -13,7 +13,7 @@ interface AnalysisDisplayProps {
 }
 
 export default function AnalysisDisplay({ result, imagePreview, onReset }: AnalysisDisplayProps) {
-  const { isHealthy, diseaseDetected, probableCause, preventionAdvice, biologicalTreatment, chemicalTreatment } = result;
+  const { plantType, isHealthy, diseaseDetected, probableCause, preventionAdvice, biologicalTreatment, chemicalTreatment } = result;
 
   return (
     <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8 animate-fade-in">
@@ -38,11 +38,19 @@ export default function AnalysisDisplay({ result, imagePreview, onReset }: Analy
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              <p className="font-semibold text-lg">Condition détectée :</p>
-              <Badge variant={isHealthy ? "default" : "destructive"} className="text-base px-4 py-1">
-                {diseaseDetected}
-              </Badge>
+            <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                    <Sprout className="h-5 w-5 text-muted-foreground" />
+                    <p className="font-semibold">Plante identifiée :</p>
+                    <span className="font-medium text-lg">{plantType}</span>
+                </div>
+                 <div className="flex items-center gap-3">
+                    {isHealthy ? <CheckCircle2 className="h-5 w-5 text-muted-foreground" /> : <AlertTriangle className="h-5 w-5 text-muted-foreground" />}
+                    <p className="font-semibold">Condition détectée :</p>
+                    <Badge variant={isHealthy ? "default" : "destructive"} className="text-base px-4 py-1">
+                        {diseaseDetected}
+                    </Badge>
+                </div>
             </div>
             {!isHealthy && (
                 <p className="mt-4 text-muted-foreground">Voici une analyse détaillée et des suggestions pour aider votre plante.</p>

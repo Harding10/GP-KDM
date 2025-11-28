@@ -49,6 +49,10 @@
           "description": "URI of the uploaded plant leaf image.",
           "format": "uri"
         },
+        "plantType": {
+          "type": "string",
+          "description": "The common name of the identified plant."
+        },
         "diseaseDetected": {
           "type": "string",
           "description": "Name of the detected plant disease."
@@ -67,6 +71,7 @@
         "id",
         "userId",
         "imageUri",
+        "plantType",
         "diseaseDetected",
         "treatmentSuggestion",
         "analysisDate"
@@ -75,7 +80,8 @@
   },
   "auth": {
     "providers": [
-      "google.com"
+      "google.com",
+      "password"
     ]
   },
   "firestore": {

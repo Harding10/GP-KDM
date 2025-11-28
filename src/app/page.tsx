@@ -83,6 +83,7 @@ export default function Home() {
             const analysisData = {
               userId: user.uid,
               imageUri: imagePreview,
+              plantType: result.plantType,
               diseaseDetected: result.diseaseDetected,
               isHealthy: result.isHealthy,
               probableCause: result.probableCause,
