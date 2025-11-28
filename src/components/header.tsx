@@ -5,13 +5,19 @@ import Link from 'next/link';
 import UserAuthButton from './user-auth-button';
 
 const CustomLogo = () => (
-    <svg 
-        className="h-8 w-8 text-primary"
-        viewBox="0 0 100 100"
-        fill="currentColor"
-        xmlns="http://www.w3.org/2000/svg">
-        <path d="M68.333,35.917A18.333,18.333,0,0,1,50,54.25h0a18.333,18.333,0,0,1-18.333-18.333A18.333,18.333,0,0,1,50,17.583h0A18.333,18.333,0,0,1,68.333,35.917Z" />
-        <path d="M55.833,54.25H44.167a5.833,5.833,0,0,0-5.833,5.833V82.5h23.333V60.083A5.833,5.833,0,0,0,55.833,54.25Z" />
+    <svg
+      className="h-8 w-8 text-primary"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
+      <path d="M12 2a10 10 0 0 0-10 10c0 4.42 2.866 8.169 6.837 9.488" />
+      <path d="M12 2a10 10 0 0 1 10 10c0 4.42-2.866 8.169-6.837 9.488" />
     </svg>
 )
 
