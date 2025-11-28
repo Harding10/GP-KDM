@@ -3,7 +3,6 @@
 
 import { useState, useEffect } from 'react';
 import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
-import { useFirebaseAuth } from '@/firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,7 +13,7 @@ import { Loader, User, KeyRound } from 'lucide-react';
 import Link from 'next/link';
 import { doc, setDoc } from 'firebase/firestore';
 import { updateProfile, updatePassword } from 'firebase/auth';
-import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { useFirebaseAuth } from '@/firebase/auth';
 
 interface UserProfile {
     name?: string;
@@ -54,42 +53,55 @@ export default function AccountPage() {
 
   const isLoading = isAuthLoading || isProfileLoading;
 
-  const uploadProfilePhoto = async (userId: string, file: File): Promise<string> => {
-    const storage = getStorage();
-    const filePath = `profile-photos/${userId}/${file.name}`;
-    const fileRef = storageRef(storage, filePath);
+  const uploadToCloudinary = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append('file', file);
     
-    const snapshot = await uploadBytes(fileRef, file);
-    const downloadURL = await getDownloadURL(snapshot.ref);
-    return downloadURL;
+    const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+
+    if (!uploadPreset || !cloudName) {
+        throw new Error("Les variables d'environnement Cloudinary ne sont pas configurées.");
+    }
+    
+    formData.append('upload_preset', uploadPreset);
+
+    const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+        method: 'POST',
+        body: formData,
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+        throw new Error(data.error.message || "Échec du téléversement sur Cloudinary.");
+    }
+    return data.secure_url;
   }
 
   const handleProfileSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !firestore || !userDocRef) return;
+    if (!user || !auth || !firestore || !userDocRef) return;
     setIsSavingProfile(true);
 
     try {
-      const authUpdates: { displayName?: string, photoURL?: string } = {};
-      const firestoreUpdates: { name?: string, photoURL?: string } = {};
+      let newPhotoURL: string | undefined = undefined;
       
-      // Update display name if changed
-      if (displayName && displayName !== (userProfile?.name || user.displayName)) {
-        authUpdates.displayName = displayName;
-        firestoreUpdates.name = displayName;
-      }
-      
-      // Upload new photo if selected
+      // Upload new photo to Cloudinary if selected
       if (photoFile) {
-        const newPhotoURL = await uploadProfilePhoto(user.uid, photoFile);
-        firestoreUpdates.photoURL = newPhotoURL;
+        newPhotoURL = await uploadToCloudinary(photoFile);
       }
       
-      // Update Firebase Auth profile
-      if (Object.keys(authUpdates).length > 0) {
-        await updateProfile(user, authUpdates);
+      const firestoreUpdates: { name?: string; photoURL?: string } = {};
+
+      if (displayName !== (userProfile?.name || user.displayName)) {
+          firestoreUpdates.name = displayName;
+          await updateProfile(user, { displayName: displayName });
       }
 
+      if (newPhotoURL) {
+          firestoreUpdates.photoURL = newPhotoURL;
+      }
+      
       // Save changes to Firestore
       if (Object.keys(firestoreUpdates).length > 0) {
         await setDoc(userDocRef, firestoreUpdates, { merge: true });
@@ -97,15 +109,15 @@ export default function AccountPage() {
 
       toast({
         title: 'Profil mis à jour',
-        description: 'Votre nom et votre photo de profil ont été mis à jour.',
+        description: 'Vos informations de profil ont été mises à jour.',
       });
-      setPhotoFile(null); // Reset file input after save
-    } catch (error) {
+      setPhotoFile(null);
+    } catch (error: any) {
       console.error("Error updating profile:", error);
       toast({
         variant: 'destructive',
         title: 'Erreur',
-        description: 'Impossible de mettre à jour le profil. Veuillez réessayer.',
+        description: error.message || 'Impossible de mettre à jour le profil. Veuillez réessayer.',
       });
     } finally {
       setIsSavingProfile(false);
@@ -294,3 +306,5 @@ export default function AccountPage() {
     </div>
   );
 }
+
+    
