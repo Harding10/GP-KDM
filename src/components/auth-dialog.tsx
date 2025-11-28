@@ -26,6 +26,7 @@ import {
   FormMessage,
 } from './ui/form';
 import { Mail, Key } from 'lucide-react';
+import Image from 'next/image';
 
 interface AuthDialogProps {
   open: boolean;
@@ -166,12 +167,13 @@ export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
           </div>
 
           <Button variant="outline" className="w-full" onClick={handleGoogleSignIn}>
-            <svg role="img" viewBox="0 0 24 24" className="mr-2 h-4 w-4">
-              <path
-                fill="currentColor"
-                d="M12.48 10.92v3.28h7.84c-.24 1.84-.85 3.18-1.73 4.1-1.02 1.02-2.3 1.62-3.85 1.62-3.31 0-6.03-2.71-6.03-6.03s2.72-6.03 6.03-6.03c1.9 0 3.16.79 3.89 1.48l2.64-2.58C18.04 2.15 15.49 1 12.48 1 7.03 1 3 5.03 3 10.5s4.03 9.5 9.48 9.5c2.73 0 4.93-.91 6.57-2.54 1.7-1.68 2.2-4.21 2.2-6.38 0-.48-.05-.96-.12-1.42Z"
-              ></path>
-            </svg>
+            <Image 
+                src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png" 
+                width={18} 
+                height={18} 
+                alt="Google logo"
+                className="mr-2"
+              />
             Google
           </Button>
         </div>
