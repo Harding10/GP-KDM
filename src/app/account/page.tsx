@@ -66,15 +66,16 @@ export default function AccountPage() {
 
   const handleProfileSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !firestore) return;
+    if (!user || !firestore || !userDocRef) return;
     setIsSavingProfile(true);
 
     try {
+      const authUpdates: { displayName?: string, photoURL?: string } = {};
       const firestoreUpdates: { name?: string, photoURL?: string } = {};
       
       // Update display name if changed
       if (displayName && displayName !== (userProfile?.name || user.displayName)) {
-        await updateProfile(user, { displayName });
+        authUpdates.displayName = displayName;
         firestoreUpdates.name = displayName;
       }
       
@@ -84,6 +85,11 @@ export default function AccountPage() {
         firestoreUpdates.photoURL = newPhotoURL;
       }
       
+      // Update Firebase Auth profile
+      if (Object.keys(authUpdates).length > 0) {
+        await updateProfile(user, authUpdates);
+      }
+
       // Save changes to Firestore
       if (Object.keys(firestoreUpdates).length > 0) {
         await setDoc(userDocRef, firestoreUpdates, { merge: true });
@@ -288,5 +294,3 @@ export default function AccountPage() {
     </div>
   );
 }
-
-    
