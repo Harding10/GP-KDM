@@ -74,6 +74,7 @@ export function useFirebaseAuth() {
     }
     
     if (photoFile) {
+        // This is a potentially long-running operation, so we await it.
         profileUpdates.photoURL = await toDataURL(photoFile);
     }
     
@@ -101,6 +102,7 @@ export function useFirebaseAuth() {
       ...additionalData,
     };
 
+    // Remove any null or undefined fields to keep the document clean
     Object.keys(userProfile).forEach(key => {
       if (userProfile[key] === undefined || userProfile[key] === null) {
         delete userProfile[key];
