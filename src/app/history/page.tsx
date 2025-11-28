@@ -84,7 +84,7 @@ export default function HistoryPage() {
                 return (
                     <Card key={analysis.id} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-2xl group flex flex-col">
                         <CardHeader className="p-0 relative">
-                             <div className="overflow-hidden aspect-w-4 aspect-h-3">
+                             <div className="relative overflow-hidden aspect-w-4 aspect-h-3 h-48">
                                 <Image src={analysis.imageUri} alt={`Analyse de ${analysis.plantType}`} fill className="object-cover group-hover:scale-105 transition-transform duration-300" />
                              </div>
                              <div className="absolute top-2 right-2">
