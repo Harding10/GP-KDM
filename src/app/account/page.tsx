@@ -80,7 +80,7 @@ export default function AccountPage() {
 
   const handleProfileSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !auth || !firestore || !userDocRef) return;
+    if (!user || !firestore || !userDocRef) return;
     setIsSavingProfile(true);
 
     try {
@@ -327,5 +327,3 @@ export default function AccountPage() {
     </div>
   );
 }
-
-    
