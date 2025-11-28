@@ -13,7 +13,6 @@ import AuthRedirect from "@/components/auth-redirect";
 export const metadata: Metadata = {
   title: "AgriAide",
   description: "Détection des maladies des plantes et suggestions de traitement basées sur l'IA.",
-  manifest: "/manifest.json",
 };
 
 export default function RootLayout({
@@ -24,6 +23,7 @@ export default function RootLayout({
   return (
     <html lang="fr" className="h-full" suppressHydrationWarning>
       <head>
+        <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="icon" type="image/png" sizes="192x192" href="/icon-192x192.png" />
