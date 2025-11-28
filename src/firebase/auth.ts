@@ -12,8 +12,7 @@ import {
   updateProfile,
   updatePassword,
 } from 'firebase/auth';
-import { doc } from 'firebase/firestore';
-import { setDocumentNonBlocking } from './non-blocking-updates';
+import { doc, setDoc } from 'firebase/firestore';
 import { useAuth, useFirestore } from '.';
 
 // Helper to convert file to data URI
@@ -63,11 +62,11 @@ export function useFirebaseAuth() {
   }
 
   const updateUserProfile = async (displayName?: string, photoFile?: File | null) => {
-    if (!auth.currentUser) {
-        throw new Error("Utilisateur non authentifié.");
+    if (!auth.currentUser || !firestore) {
+        throw new Error("Utilisateur non authentifié ou service Firestore non disponible.");
     }
 
-    let photoURL: string | undefined = undefined;
+    let photoURL: string | undefined = auth.currentUser.photoURL ?? undefined;
     if (photoFile) {
         photoURL = await toDataURL(photoFile);
     }
@@ -75,17 +74,21 @@ export function useFirebaseAuth() {
     const profileUpdates: { displayName?: string, photoURL?: string } = {};
     if (displayName) profileUpdates.displayName = displayName;
     if (photoURL) profileUpdates.photoURL = photoURL;
-
+    
     // Update Firebase Auth profile
     await updateProfile(auth.currentUser, profileUpdates);
     
     // Update Firestore user document
     const userRef = doc(firestore, `users/${auth.currentUser.uid}`);
-    setDocumentNonBlocking(userRef, profileUpdates, { merge: true });
+    const dataToUpdate = { ...profileUpdates };
+    // remove undefined values
+    Object.keys(dataToUpdate).forEach(key => (dataToUpdate as any)[key] === undefined && delete (dataToUpdate as any)[key]);
+    
+    await setDoc(userRef, dataToUpdate, { merge: true });
   };
   
   const createUserProfile = async (user: User, additionalData: any = {}) => {
-    if (!user) return;
+    if (!user || !firestore) return;
     const userRef = doc(firestore, `users/${user.uid}`);
     const userProfile: { [key: string]: any } = {
       id: user.uid,
@@ -101,7 +104,7 @@ export function useFirebaseAuth() {
       }
     });
     
-    setDocumentNonBlocking(userRef, userProfile, { merge: true });
+    await setDoc(userRef, userProfile, { merge: true });
   };
 
   return { 
