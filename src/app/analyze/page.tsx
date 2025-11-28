@@ -196,29 +196,27 @@ export default function AnalyzePage() {
   const renderContent = () => {
      if (isCameraOpen) {
       return (
-        <Card className="w-full max-w-lg overflow-hidden shadow-lg rounded-xl">
-          <CardContent className="p-6 text-center">
-            <div className="relative">
-              <video ref={videoRef} className="w-full aspect-video rounded-md bg-muted" autoPlay muted playsInline />
-              <canvas ref={canvasRef} className="hidden" />
-              {hasCameraPermission === false && (
-                <Alert variant="destructive" className="mt-4">
-                  <AlertTitle>Accès à la caméra requis</AlertTitle>
-                  <AlertDescription>
-                    Veuillez autoriser l'accès à la caméra pour utiliser cette fonctionnalité.
-                  </AlertDescription>
-                </Alert>
-              )}
-            </div>
-            <div className="mt-4 flex justify-center gap-4">
-              <Button onClick={() => setIsCameraOpen(false)} variant="outline">Annuler</Button>
-              <Button onClick={handleCapture} disabled={hasCameraPermission !== true} size="lg">
-                <Camera className="mr-2" />
-                Capturer
+        <div className="fixed inset-0 bg-black z-50 flex flex-col items-center justify-center">
+            <video ref={videoRef} className="w-full h-full object-cover" autoPlay muted playsInline />
+            <canvas ref={canvasRef} className="hidden" />
+            <div className="absolute bottom-0 left-0 right-0 p-4 bg-black/50 flex justify-center items-center gap-4">
+              <Button onClick={() => setIsCameraOpen(false)} variant="outline" className="rounded-full !px-8 !py-6 text-base">Annuler</Button>
+              <Button onClick={handleCapture} disabled={hasCameraPermission !== true} size="lg" className="rounded-full w-20 h-20 !p-0 border-4 border-white bg-white/30 hover:bg-white/50">
+                <div className="w-16 h-16 rounded-full bg-white"></div>
               </Button>
+              <div className="w-24"></div>
             </div>
-          </CardContent>
-        </Card>
+            {hasCameraPermission === false && (
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                    <Alert variant="destructive" className="mt-4">
+                      <AlertTitle>Accès à la caméra requis</AlertTitle>
+                      <AlertDescription>
+                        Veuillez autoriser l'accès à la caméra pour utiliser cette fonctionnalité.
+                      </AlertDescription>
+                    </Alert>
+                </div>
+            )}
+        </div>
       );
     }
 
