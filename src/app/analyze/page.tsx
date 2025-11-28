@@ -11,8 +11,8 @@ import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { useUser, useFirestore, addDocumentNonBlocking } from '@/firebase';
-import { collection } from 'firebase/firestore';
+import { useUser, useFirestore } from '@/firebase';
+import { collection, addDoc } from 'firebase/firestore';
 
 export default function AnalyzePage() {
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -29,10 +29,11 @@ export default function AnalyzePage() {
   const firestore = useFirestore();
 
   useEffect(() => {
+    let stream: MediaStream | null = null;
     if (isCameraOpen) {
       const getCameraPermission = async () => {
         try {
-          const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+          stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
           setHasCameraPermission(true);
           if (videoRef.current) {
             videoRef.current.srcObject = stream;
@@ -49,13 +50,16 @@ export default function AnalyzePage() {
         }
       };
       getCameraPermission();
-    } else {
-      if (videoRef.current && videoRef.current.srcObject) {
-        const stream = videoRef.current.srcObject as MediaStream;
+    }
+  
+    return () => {
+      if (stream) {
         stream.getTracks().forEach(track => track.stop());
+      }
+      if (videoRef.current) {
         videoRef.current.srcObject = null;
       }
-    }
+    };
   }, [isCameraOpen, toast]);
 
   const handleImageSelect = (file: File) => {
@@ -70,6 +74,33 @@ export default function AnalyzePage() {
       setError(null);
     }
   };
+  
+  const saveAnalysis = async (result: AnalyzePlantImageAndDetectDiseaseOutput) => {
+      if (user && firestore && imagePreview) {
+          try {
+            const userAnalysesRef = collection(firestore, `users/${user.uid}/analyses`);
+            await addDoc(userAnalysesRef, {
+              userId: user.uid,
+              imageUri: imagePreview,
+              plantType: result.plantType,
+              diseaseDetected: result.diseaseDetected,
+              isHealthy: result.isHealthy,
+              analysisDate: new Date().toISOString(),
+            });
+            toast({
+                title: "Analyse sauvegardée",
+                description: "Votre analyse a été ajoutée à votre historique.",
+            })
+          } catch (error) {
+              console.error("Error saving analysis: ", error);
+              toast({
+                  variant: "destructive",
+                  title: "Sauvegarde échouée",
+                  description: "Impossible de sauvegarder l'analyse dans votre historique.",
+              })
+          }
+      }
+  }
 
   const handleAnalyze = async () => {
     if (!imagePreview) return;
@@ -79,26 +110,7 @@ export default function AnalyzePage() {
       const result = await analyzePlantImageAndDetectDisease({ plantImageDataUri: imagePreview });
       if (result) {
         setAnalysisResult(result);
-        if (user && firestore) {
-            const userAnalysesRef = collection(firestore, `users/${user.uid}/analyses`);
-            const analysisData = {
-              userId: user.uid,
-              imageUri: imagePreview,
-              plantType: result.plantType,
-              diseaseDetected: result.diseaseDetected,
-              isHealthy: result.isHealthy,
-              probableCause: result.probableCause,
-              preventionAdvice: result.preventionAdvice,
-              biologicalTreatment: result.biologicalTreatment,
-              chemicalTreatment: result.chemicalTreatment,
-              analysisDate: new Date().toISOString(),
-            };
-            addDocumentNonBlocking(userAnalysesRef, analysisData);
-            toast({
-                title: "Analyse sauvegardée",
-                description: "Votre analyse a été ajoutée à votre historique.",
-            })
-        }
+        await saveAnalysis(result);
       } else {
         throw new Error('L\'analyse n\'a pas renvoyé de résultat.');
       }
@@ -133,8 +145,12 @@ export default function AnalyzePage() {
       const context = canvas.getContext('2d');
       if (context) {
         context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-        const dataUri = canvas.toDataURL('image/jpeg');
-        setImagePreview(dataUri);
+        canvas.toBlob((blob) => {
+            if (blob) {
+                const capturedFile = new File([blob], "capture.jpg", { type: "image/jpeg" });
+                handleImageSelect(capturedFile);
+            }
+        }, 'image/jpeg', 0.95);
         setIsCameraOpen(false);
       }
     }
@@ -172,14 +188,16 @@ export default function AnalyzePage() {
     if (isLoading) {
       return (
         <div className="flex flex-col items-center justify-center gap-4 text-center">
-          <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
-          <h2 className="text-2xl font-semibold">Analyse en cours...</h2>
-          <p className="text-muted-foreground">Notre IA examine votre feuille de plante. Veuillez patienter un instant.</p>
-          {imagePreview && (
-            <div className="mt-4 rounded-lg overflow-hidden shadow-lg">
-              <Image src={imagePreview} alt="Feuille de plante pour analyse" width={200} height={200} className="object-cover" />
+          <div className="relative">
+            {imagePreview && (
+              <Image src={imagePreview} alt="Feuille de plante pour analyse" width={250} height={250} className="object-cover rounded-2xl shadow-lg opacity-30" />
+            )}
+            <div className="absolute inset-0 flex items-center justify-center bg-background/50 rounded-2xl">
+              <LoaderCircle className="h-16 w-16 animate-spin text-primary" />
             </div>
-          )}
+          </div>
+          <h2 className="text-2xl font-semibold mt-6">Analyse en cours...</h2>
+          <p className="text-muted-foreground max-w-sm">Notre IA examine votre feuille de plante. Veuillez patienter un instant, cela peut prendre quelques secondes.</p>
         </div>
       );
     }
@@ -190,7 +208,7 @@ export default function AnalyzePage() {
 
     if (imagePreview) {
       return (
-        <Card className="w-full max-w-lg overflow-hidden shadow-lg rounded-xl">
+        <Card className="w-full max-w-lg overflow-hidden shadow-lg rounded-xl animate-fade-in">
           <CardContent className="p-6 text-center">
             <div className="relative mb-4 group">
               <Image src={imagePreview} alt="Feuille de plante sélectionnée" width={400} height={400} className="rounded-lg object-contain mx-auto max-h-[50vh]" />
@@ -198,7 +216,7 @@ export default function AnalyzePage() {
                 <X className="h-4 w-4" />
               </Button>
             </div>
-            <h2 className="text-xl font-semibold mb-2 font-headline">Prêt pour l'analyse</h2>
+            <h2 className="text-xl font-semibold mb-2">Prêt pour l'analyse</h2>
             <p className="text-muted-foreground mb-4">Cliquez sur le bouton ci-dessous pour détecter les maladies potentielles.</p>
             <Button onClick={handleAnalyze} size="lg">
               Analyser la plante
@@ -212,7 +230,7 @@ export default function AnalyzePage() {
   };
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col items-center justify-center min-h-full">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col items-center justify-center min-h-[calc(100vh-10rem)]">
       {renderContent()}
     </div>
   );
