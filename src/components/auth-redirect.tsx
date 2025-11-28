@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useUser } from '@/firebase';
@@ -9,22 +10,20 @@ const AUTH_PAGES = ['/']; // Pages accessible without auth
 const APP_PAGES = ['/analyze', '/history', '/account']; // Pages requiring auth
 
 const SplashLogo = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="h-24 w-24 text-white"
-  >
-    <path d="M12 22c-2 0-3.8-1-5-2.5-1.2-1.5-2-3.5-2-5.5 0-4.5 3.5-8 8-8s8 3.5 8 8c0 2-1 4-2.5 5.5S14 22 12 22z" fill="white"></path>
-    <path d="M12 2c-2 0-3.8 1-5 2.5-1.2 1.5-2 3.5-2 5.5 0 4.5 3.5 8 8 8s8 3.5 8 8c0 2-1 4-2.5 5.5S14 22 12 22z" fill="white" transform="rotate(180 12 12)"></path>
-    <path d="M7.5 10.5c1-2.5 3-4.5 5.5-5.5" stroke="hsl(var(--primary))" strokeWidth="1.5"></path>
-    <path d="M16.5 13.5c-1 2.5-3 4.5-5.5 5.5" stroke="hsl(var(--primary))" strokeWidth="1.5"></path>
-  </svg>
-);
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-24 w-24 text-white"
+    >
+      <path d="M12 22c-2 0-3.8-1-5-2.5-1.2-1.5-2-3.5-2-5.5 0-4.5 3.5-8 8-8s8 3.5 8 8c0 2-1 4-2.5 5.5S14 22 12 22z"></path>
+      <path d="M7.5 10.5c1-2.5 3-4.5 5.5-5.5" stroke="hsl(var(--primary))" strokeWidth="1.5"></path>
+    </svg>
+  );
 
 
 export default function AuthRedirect({ children }: { children: React.ReactNode }) {
