@@ -1,92 +1,131 @@
+
 'use client';
 
 import { useState } from 'react';
 import Image from 'next/image';
-import AuthDialog from '@/components/auth-dialog';
 import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
+import AuthDialog from '@/components/auth-dialog';
 import { useFirebaseAuth } from '@/firebase/auth';
 
-const CustomLogo = () => (
-    <svg
-      className="h-16 w-16 text-primary"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path d="M10 16.5c-3.14 0-5-2.5-5-5.5s1.86-5.5 5-5.5c2.75 0 4.25.9 5.5 2.5" />
-      <path d="M14 12c-1.25 1.6-2.75 2.5-5.5 2.5" />
-      <path d="M14 12c1.25-1.6 2.75-2.5 5.5-2.5" />
-      <path d="M19.5 16.5c3.14 0 5-2.5 5-5.5s-1.86-5.5-5-5.5c-2.75 0-4.25.9-5.5 2.5" />
-    </svg>
-  );
+const onboardingSteps = [
+  {
+    image: '/onboarding-1.png',
+    imageAlt: 'Succulents in a pot',
+    title: 'Identify the Green World Around You',
+    description: 'Turn your smartphone into a plant expert. Scan any plant using your camera and let AgriAide identify it for you.',
+  },
+  {
+    image: '/onboarding-2.png',
+    imageAlt: 'Person holding a plant',
+    title: 'Get Care Instructions',
+    description: 'Learn how to care for your plants with our detailed guides and reminders for watering, fertilizing, and more.',
+  },
+  {
+    image: '/onboarding-3.png',
+    imageAlt: 'Smartphone showing plant diagnosis',
+    title: 'Diagnose Plant Problems',
+    description: 'Is your plant sick? Take a photo and our AI will help you diagnose the problem and suggest solutions.',
+  },
+];
 
-export default function GetStartedPage() {
+export default function OnboardingPage() {
+  const [currentStep, setCurrentStep] = useState(0);
+  const router = useRouter();
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signup');
-  const { signInWithGoogle } = useFirebaseAuth();
 
   const openDialog = (mode: 'signin' | 'signup') => {
     setAuthMode(mode);
     setIsAuthDialogOpen(true);
   };
+  
 
-  const handleGoogleSignIn = async () => {
-    try {
-      await signInWithGoogle();
-      // The useUser hook will handle redirection or UI changes upon successful login
-    } catch (err) {
-      console.error(err); // Optionally, show a toast or error message
+  const handleContinue = () => {
+    if (currentStep < onboardingSteps.length - 1) {
+      setCurrentStep(currentStep + 1);
+    } else {
+        openDialog('signup');
     }
   };
 
+  const handleSkip = () => {
+    openDialog('signin');
+  };
+
+  const step = onboardingSteps[currentStep];
 
   return (
-    <div className="flex flex-col h-full min-h-screen">
+     <div className="flex flex-col h-full min-h-screen bg-background text-foreground">
        <AuthDialog open={isAuthDialogOpen} onOpenChange={setIsAuthDialogOpen} initialTab={authMode} />
-      <main className="flex-grow flex flex-col items-center justify-center p-4 bg-background">
-        <div className="w-full max-w-sm flex flex-col items-center text-center">
-            <div className="mb-8">
-                <CustomLogo />
+        <div className="flex-1 flex flex-col">
+            <div className="relative h-3/5 bg-primary/10">
+                {/* This is a placeholder for the top part of the screen from Figma */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-[280px] h-[560px] rounded-3xl bg-white shadow-2xl p-4 border overflow-hidden">
+                        <div className="flex justify-between items-center mb-4">
+                           <svg
+                                className="h-6 w-6 text-primary"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                xmlns="http://www.w3.org/2000/svg"
+                                >
+                                <path d="M10.4,1.4c-3.1,0-5.7,2.5-5.7,5.7s2.5,5.7,5.7,5.7s5.7-2.5,5.7-5.7S13.5,1.4,10.4,1.4z M10.4,11.3c-2.3,0-4.2-1.9-4.2-4.2s1.9-4.2,4.2-4.2s4.2,1.9,4.2,4.2S12.7,11.3,10.4,11.3z" />
+                                <path d="M15.8,9.6c-0.6-1.1-1.5-2-2.6-2.6C12.7,6.8,12.2,6,12.2,5c0-1.1-0.9-2-2-2S8.2,3.9,8.2,5c0,1,0.5,1.8,1.1,2.2c1.1,0.6,2,1.5,2.6,2.6c0.6,1.1,0.6,2.4,0,3.5c-0.6,1.1-1.5,2-2.6,2.6c-0.6,0.4-1.1,1.2-1.1,2.2c0,1.1,0.9,2,2,2s2-0.9,2-2c0-1-0.5-1.8-1.1-2.2c-1.1-0.6-2-1.5-2.6-2.6C7.9,12,7.9,10.7,8.5,9.6z" />
+                                <path d="M20.6,1.4c-3.1,0-5.7,2.5-5.7,5.7s2.5,5.7,5.7,5.7s5.7-2.5,5.7-5.7S23.7,1.4,20.6,1.4z M20.6,11.3c-2.3,0-4.2-1.9-4.2-4.2s1.9-4.2,4.2-4.2s4.2,1.9,4.2,4.2S22.9,11.3,20.6,11.3z" />
+                            </svg>
+                            <p className="font-bold text-lg">Plantify</p>
+                            <div className="flex gap-2">
+                                <div className="h-6 w-6 rounded-full bg-gray-200"></div>
+                                <div className="h-6 w-6 rounded-full bg-gray-200"></div>
+                            </div>
+                        </div>
+                        <div className="h-8 w-full rounded-full bg-gray-100 mb-4"></div>
+                        <div className="h-4 w-1/2 rounded-full bg-gray-200 mb-2"></div>
+                        <div className="flex gap-4">
+                            <div className="w-1/2 h-32 rounded-lg bg-gray-200"></div>
+                            <div className="w-1/2 h-32 rounded-lg bg-gray-200"></div>
+                        </div>
+                    </div>
+                </div>
+                 <div className="absolute bottom-0 left-0 w-full h-16 bg-background rounded-t-[100%]"></div>
             </div>
 
-            <h1 className="text-4xl font-bold mb-2">Let's Get Started!</h1>
-            <p className="text-muted-foreground text-lg mb-10">Let's dive in into your account</p>
+            <div className="flex-1 flex flex-col justify-between p-8 pt-4 bg-background">
+                <div className="text-center">
+                    <h1 className="text-3xl font-bold mb-4 tracking-tight leading-tight">{step.title}</h1>
+                    <p className="text-muted-foreground text-base leading-relaxed max-w-sm mx-auto">{step.description}</p>
+                </div>
 
-            <div className="w-full space-y-4 mb-10">
-                <Button variant="outline" className="w-full h-12 text-base font-medium border-border" onClick={handleGoogleSignIn}>
-                     <Image 
-                        src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png" 
-                        width={20} 
-                        height={20} 
-                        alt="Google logo"
-                        className="mr-3"
-                      />
-                    Continue with Google
-                </Button>
-                {/* Add other social logins here if needed */}
-            </div>
+                <div className="flex justify-center items-center gap-2 my-8">
+                    {onboardingSteps.map((_, index) => (
+                    <button
+                        key={index}
+                        onClick={() => setCurrentStep(index)}
+                        className={cn(
+                        'h-2 w-2 rounded-full transition-all duration-300',
+                        currentStep === index ? 'w-6 bg-primary' : 'bg-gray-300'
+                        )}
+                    />
+                    ))}
+                </div>
 
-            <div className="w-full space-y-4">
-                 <Button className="w-full h-14 text-lg font-bold" onClick={() => openDialog('signup')}>
-                    Sign up
-                </Button>
-                <Button variant="secondary" className="w-full h-14 text-lg font-bold" onClick={() => openDialog('signin')}>
-                    Log in
-                </Button>
+                <div className="grid grid-cols-2 gap-4">
+                    <Button variant="secondary" onClick={handleSkip} className="h-14 text-lg font-bold rounded-full">
+                        Skip
+                    </Button>
+                    <Button onClick={handleContinue} className="h-14 text-lg font-bold rounded-full">
+                        Continue
+                    </Button>
+                </div>
             </div>
         </div>
-      </main>
-      <footer className="py-6 px-4 text-center text-sm text-muted-foreground">
-        <p>
-            <a href="#" className="hover:underline">Privacy Policy</a>
-            <span className="mx-2">·</span>
-            <a href="#" className="hover:underline">Terms of Service</a>
-        </p>
-      </footer>
     </div>
   );
 }
+
