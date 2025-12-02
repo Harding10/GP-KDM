@@ -35,12 +35,18 @@ export default function OnboardingPage() {
   const router = useRouter();
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signup');
+  const { user } = useFirebaseAuth();
 
   const openDialog = (mode: 'signin' | 'signup') => {
     setAuthMode(mode);
     setIsAuthDialogOpen(true);
   };
 
+  // Rediriger vers /analyze dès que l'utilisateur est connecté
+  if (user) {
+    router.push('/analyze');
+    return null;
+  }
 
   const handleContinue = () => {
     if (currentStep < onboardingSteps.length - 1) {
