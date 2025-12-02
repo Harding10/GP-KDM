@@ -9,6 +9,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import AuthRedirect from "@/components/auth-redirect";
 import { PwaInstallProvider } from "@/components/pwa-install-provider";
 import InstallPwaToast from "@/components/InstallPwaToast";
+import { OfflineIndicator } from "@/components/offline-indicator";
 
 export const metadata: Metadata = {
   title: "AgriAide",
@@ -29,6 +30,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#16a34a" />
       </head>
       <body className={cn("font-body antialiased h-full flex flex-col")}>
+        <OfflineIndicator />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

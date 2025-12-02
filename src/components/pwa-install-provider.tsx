@@ -50,7 +50,27 @@ export function PwaInstallProvider({ children }: { children: ReactNode }) {
 
     window.addEventListener('appinstalled', handleAppInstalled);
 
+    // Simulate install prompt in development on mobile
+    const handleDevelopmentMode = () => {
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      const isDevelopment = process.env.NODE_ENV === 'development';
+      
+      if (isMobile && isDevelopment) {
+        // Create a mock event for development testing
+        const mockEvent: Partial<BeforeInstallPromptEvent> = {
+          platforms: ['web'],
+          prompt: async () => {},
+          userChoice: Promise.resolve({ outcome: 'dismissed' as const, platform: 'web' }),
+        };
+        setInstallPromptEvent(mockEvent as BeforeInstallPromptEvent);
+      }
+    };
+
+    // Trigger simulation after a short delay to ensure DOM is ready
+    const timer = setTimeout(handleDevelopmentMode, 500);
+
     return () => {
+      clearTimeout(timer);
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       window.removeEventListener('appinstalled', handleAppInstalled);
     };

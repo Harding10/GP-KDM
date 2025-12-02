@@ -15,5 +15,15 @@ export function useIsMobile() {
     return () => mql.removeEventListener("change", onChange)
   }, [])
 
+  // Return true on first render if window.innerWidth is less than breakpoint (for SSR compatibility)
+  if (typeof window === 'undefined') {
+    return false
+  }
+  
+  // If state hasn't been set yet, calculate on the client
+  if (isMobile === undefined) {
+    return window.innerWidth < MOBILE_BREAKPOINT
+  }
+  
   return !!isMobile
 }

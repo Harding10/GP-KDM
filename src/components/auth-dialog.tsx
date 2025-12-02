@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useFirebaseAuth } from '@/firebase/auth';
 import { Button } from '@/components/ui/button';
 import {
@@ -42,13 +42,14 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-export default function AuthDialog({ open, onOpenChange, initialTab = 'signup' }: AuthDialogProps) {
+export default function AuthDialog({ open, onOpenChange, initialTab = 'signin' }: AuthDialogProps) {
   const { signInWithGoogle, signUpWithEmail, signInWithEmail, sendPasswordResetEmail } = useFirebaseAuth();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState(initialTab);
-
+  const [activeTab, setActiveTab] = useState<'signin' | 'signup'>(initialTab);
+  
+  
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -56,7 +57,7 @@ export default function AuthDialog({ open, onOpenChange, initialTab = 'signup' }
       password: '',
     },
   });
-
+  
   useEffect(() => {
     setActiveTab(initialTab);
   }, [initialTab]);
@@ -159,7 +160,13 @@ export default function AuthDialog({ open, onOpenChange, initialTab = 'signup' }
               <FormControl>
                 <div className="relative">
                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                   <Input placeholder="nom@exemple.com" {...field} className="pl-9" disabled={isLoading} />
+                   <Input
+                     {...field}
+                     autoFocus={open}
+                     placeholder="nom@exemple.com"
+                     className="pl-9"
+                     disabled={isLoading}
+                   />
                 </div>
               </FormControl>
               <FormMessage />
@@ -172,10 +179,16 @@ export default function AuthDialog({ open, onOpenChange, initialTab = 'signup' }
           render={({ field }) => (
             <FormItem>
               <FormLabel>Mot de passe</FormLabel>
-               <FormControl>
+              <FormControl>
                 <div className="relative">
-                   <Key className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input type="password" placeholder="********" {...field} className="pl-9" disabled={isLoading} />
+                  <Key className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    {...field}
+                    type="password"
+                    placeholder="Votre mot de passe"
+                    className="pl-9"
+                    disabled={isLoading}
+                  />
                 </div>
               </FormControl>
               <FormMessage />
@@ -183,13 +196,13 @@ export default function AuthDialog({ open, onOpenChange, initialTab = 'signup' }
           )}
         />
         {!isSignUp && (
-            <div className="text-right">
-                <Button type="button" variant="link" className="p-0 h-auto text-xs" onClick={handlePasswordReset} disabled={isLoading}>
-                    Mot de passe oublié ?
-                </Button>
-            </div>
+          <div className="text-right">
+            <Button type="button" variant="link" className="p-0 h-auto text-xs" onClick={handlePasswordReset} disabled={isLoading}>
+              Mot de passe oublié ?
+            </Button>
+          </div>
         )}
-         {error && <p className="text-sm text-destructive">{error}</p>}
+        {error && <p className="text-sm text-destructive">{error}</p>}
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading && <Loader className="mr-2 h-4 w-4 animate-spin" />}
           {isSignUp ? "Créer un compte" : "Se connecter"}
@@ -233,13 +246,13 @@ export default function AuthDialog({ open, onOpenChange, initialTab = 'signup' }
 
           <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isLoading}>
             {isLoading && <Loader className="mr-2 h-4 w-4 animate-spin" />}
-            <Image 
-                src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png" 
-                width={18} 
-                height={18} 
-                alt="Google logo"
-                className="mr-2"
-              />
+            <Image
+              src="/google_icon.png"
+              width={18}
+              height={18}
+              alt="Google logo"
+              className="mr-2"
+            />
             Google
           </Button>
         </div>

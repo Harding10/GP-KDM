@@ -36,12 +36,12 @@ export default function AuthRedirect({ children }: { children: React.ReactNode }
 
   if (isUserLoading || (!user && APP_PAGES.some(page => pathname.startsWith(page)))) {
     return (
-      <div className="flex flex-col items-center justify-center h-full min-h-screen bg-primary text-primary-foreground">
+      <div className="flex flex-col items-center justify-center h-full min-h-[100dvh] bg-primary text-primary-foreground">
         <div className="flex flex-col items-center justify-center flex-grow">
           <SplashLogo className="h-24 w-24 text-white" />
           <h1 className="text-4xl font-bold mt-4 text-white">AgriAide</h1>
         </div>
-        <div className="mb-12">
+        <div className="mb-40">
           <Loader className="h-12 w-12 animate-spin text-white" />
         </div>
       </div>

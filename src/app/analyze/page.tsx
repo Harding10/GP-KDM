@@ -6,13 +6,14 @@ import ImageUploader from '@/components/image-uploader';
 import AnalysisDisplay from '@/components/analysis-display';
 import { Button } from '@/components/ui/button';
 import { analyzePlantImageAndDetectDisease, AnalyzePlantImageAndDetectDiseaseOutput } from '@/ai/flows/analyze-plant-image-and-detect-disease';
-import { Loader, X, Camera } from 'lucide-react';
+import { Loader, X, Camera, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { useUser, useFirestore } from '@/firebase';
 import { collection, addDoc } from 'firebase/firestore';
+import { useOnlineStatus } from '@/hooks/use-online-status';
 
 export default function AnalyzePage() {
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -27,6 +28,7 @@ export default function AnalyzePage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { user } = useUser();
   const firestore = useFirestore();
+  const isOnline = useOnlineStatus();
 
   useEffect(() => {
     let stream: MediaStream | null = null;
@@ -131,6 +133,17 @@ export default function AnalyzePage() {
 
   const handleAnalyze = async () => {
     if (!imagePreview || !imageFile) return;
+    
+    // Vérifier la connexion internet
+    if (!isOnline) {
+      toast({
+        variant: 'destructive',
+        title: 'Pas de connexion Internet',
+        description: 'Une connexion Internet est requise pour analyser les images. Veuillez vous reconnecter.',
+      });
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
     try {
