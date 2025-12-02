@@ -118,10 +118,10 @@ export default function OnboardingPage() {
           </div>
 
           <div className="grid grid-cols-2 gap-4 sm:gap-6">
-            <Button variant="secondary" onClick={handleSkip} className="h-14 text-base font-bold sm:text-lg">
+            <Button variant="secondary" onClick={handleSkip} className="h-10 sm:h-14 text-base font-bold sm:text-lg">
               Passer
             </Button>
-            <Button onClick={handleContinue} className="h-14 text-base font-bold sm:text-lg">
+            <Button onClick={handleContinue} className="h-10 sm:h-14 text-base font-bold sm:text-lg">
               Continuer
             </Button>
           </div>
