@@ -55,7 +55,7 @@ export default function InstallPwaToast() {
       <div className="bg-background border rounded-lg shadow-lg p-4">
         <div className="flex items-start gap-4">
           <div className="flex-shrink-0">
-            <img src="https://play-lh.googleusercontent.com/OocMG8bjiq6hNmg2LMNrdcSlZgBfqc6b-0erv4IE8wlR88MgCWPZS_Te42iR5UV7sA" alt="App Logo" className="h-10 w-10 rounded-md" />
+            <img src="/icon192x192.png" alt="App Logo" className="h-10 w-10 rounded-md" />
           </div>
           <div className="flex-1">
             <p className="font-semibold">Installer AgriAide</p>

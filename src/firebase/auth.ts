@@ -2,11 +2,6 @@
 'use client';
 import {
   signInWithPopup,
-  signInWithRedirect,
-  getRedirectResult,
-  setPersistence,
-  browserLocalPersistence,
-  inMemoryPersistence,
   GoogleAuthProvider,
   signOut as firebaseSignOut,
   User,
@@ -16,7 +11,7 @@ import {
   updateProfile,
 } from 'firebase/auth';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
-import { useEffect } from 'react';
+
 import { useAuth, useFirestore } from '.';
 
 export function useFirebaseAuth() {
@@ -25,46 +20,11 @@ export function useFirebaseAuth() {
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
-    // Détection mobile ou PWA standalone
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-    const isMobile = window.innerWidth < 768;
-    if (isStandalone || isMobile) {
-      // Par défaut Firebase utilise sessionStorage pour stocker l'état de redirection.
-      // Sur certains navigateurs mobiles, sessionStorage peut être inaccessible
-      // ou effacé pendant la redirection. On préfère utiliser localStorage
-      // quand c'est possible, avec un fallback vers inMemory.
-      try {
-        await setPersistence(auth, browserLocalPersistence);
-      } catch (e) {
-        // Si localStorage est indisponible (ex: mode privé iOS), fallback
-        try {
-          await setPersistence(auth, inMemoryPersistence);
-        } catch (err) {
-          // Rien à faire, on continue avec la persistence par défaut
-        }
-      }
-      await signInWithRedirect(auth, provider);
-      // Le résultat sera traité après redirection
-    } else {
-      const result = await signInWithPopup(auth, provider);
-      await createUserProfile(result.user);
-    }
+    const result = await signInWithPopup(auth, provider);
+    await createUserProfile(result.user);
   };
 
-  // Gérer le résultat de la redirection Google après retour
-  useEffect(() => {
-    (async () => {
-      try {
-        const result = await getRedirectResult(auth);
-        if (result && result.user) {
-          await createUserProfile(result.user);
-        }
-      } catch (e) {
-        // Optionnel : gérer l'erreur
-      }
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+
 
   const signUpWithEmail = async (email: string, password: string) => {
     const result = await createUserWithEmailAndPassword(auth, email, password);
@@ -86,11 +46,11 @@ export function useFirebaseAuth() {
   const sendPasswordReset = async (email: string) => {
     await sendPasswordResetEmail(auth, email);
   }
-  
+
   const createUserProfile = async (user: User, additionalData: any = {}) => {
     if (!user || !firestore) return;
     const userRef = doc(firestore, `users/${user.uid}`);
-    
+
     const userProfile: { [key: string]: any } = {
       id: user.uid,
       name: user.displayName,
@@ -108,20 +68,20 @@ export function useFirebaseAuth() {
 
     const docSnap = await getDoc(userRef);
     if (docSnap.exists()) {
-        // Document exists, perform an update
-        await updateDoc(userRef, userProfile);
+      // Document exists, perform an update
+      await updateDoc(userRef, userProfile);
     } else {
-        // Document doesn't exist, create it
-        await setDoc(userRef, userProfile);
+      // Document doesn't exist, create it
+      await setDoc(userRef, userProfile);
     }
   };
 
-  return { 
+  return {
     auth,
-    signInWithGoogle, 
-    signOut, 
-    signUpWithEmail, 
-    signInWithEmail, 
+    signInWithGoogle,
+    signOut,
+    signUpWithEmail,
+    signInWithEmail,
     sendPasswordResetEmail: sendPasswordReset,
-   };
+  };
 }

@@ -25,8 +25,9 @@ export default function RootLayout({
   return (
     <html lang="fr" className="h-full" suppressHydrationWarning>
       <head>
-        <link rel="apple-touch-icon" href="https://play-lh.googleusercontent.com/OocMG8bjiq6hNmg2LMNrdcSlZgBfqc6b-0erv4IE8wlR88MgCWPZS_Te42iR5UV7sA" />
-        <link rel="icon" href="https://play-lh.googleusercontent.com/OocMG8bjiq6hNmg2LMNrdcSlZgBfqc6b-0erv4IE8wlR88MgCWPZS_Te42iR5UV7sA" sizes="any" />
+        <link rel="apple-touch-icon" href="/icon192x192.png" />
+        <link rel="icon" href="/icon512x512.png" type="image/png" />
+        <link rel="shortcut icon" href="/icon512x512.png" type="image/png" />
         <meta name="theme-color" content="#16a34a" />
       </head>
       <body className={cn("font-body antialiased h-full flex flex-col")}>

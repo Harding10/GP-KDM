@@ -15,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { z } from 'zod';
-import { useForm } from 'react-hook-form';
+import { useForm, UseFormReturn } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Form,
@@ -42,14 +42,95 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
+interface EmailPasswordFormProps {
+  isSignUp: boolean;
+  form: UseFormReturn<FormData>;
+  onSubmit: (data: FormData) => Promise<void>;
+  isLoading: boolean;
+  error: string | null;
+  onPasswordReset: () => void;
+  autoFocus: boolean;
+}
+
+const EmailPasswordForm = ({
+  isSignUp,
+  form,
+  onSubmit,
+  isLoading,
+  error,
+  onPasswordReset,
+  autoFocus,
+}: EmailPasswordFormProps) => (
+  <Form {...form}>
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <FormField
+        control={form.control}
+        name="email"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>E-mail</FormLabel>
+            <FormControl>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  {...field}
+                  autoFocus={autoFocus}
+                  placeholder="nom@exemple.com"
+                  className="pl-9"
+                  disabled={isLoading}
+                />
+              </div>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="password"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Mot de passe</FormLabel>
+            <FormControl>
+              <div className="relative">
+                <Key className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  {...field}
+                  type="password"
+                  placeholder="Votre mot de passe"
+                  className="pl-9"
+                  disabled={isLoading}
+                />
+              </div>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      {!isSignUp && (
+        <div className="text-right">
+          <Button type="button" variant="link" className="p-0 h-auto text-xs" onClick={onPasswordReset} disabled={isLoading}>
+            Mot de passe oublié ?
+          </Button>
+        </div>
+      )}
+      {error && <p className="text-sm text-destructive">{error}</p>}
+      <Button type="submit" className="w-full" disabled={isLoading}>
+        {isLoading && <Loader className="mr-2 h-4 w-4 animate-spin" />}
+        {isSignUp ? "Créer un compte" : "Se connecter"}
+      </Button>
+    </form>
+  </Form>
+);
+
 export default function AuthDialog({ open, onOpenChange, initialTab = 'signin' }: AuthDialogProps) {
   const { signInWithGoogle, signUpWithEmail, signInWithEmail, sendPasswordResetEmail } = useFirebaseAuth();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<'signin' | 'signup'>(initialTab);
-  
-  
+
+
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -57,11 +138,11 @@ export default function AuthDialog({ open, onOpenChange, initialTab = 'signin' }
       password: '',
     },
   });
-  
+
   useEffect(() => {
     setActiveTab(initialTab);
   }, [initialTab]);
-  
+
   useEffect(() => {
     if (!open) {
       setError(null);
@@ -111,18 +192,18 @@ export default function AuthDialog({ open, onOpenChange, initialTab = 'signin' }
       setIsLoading(false);
     }
   };
-  
+
   const handlePasswordReset = async () => {
     setError(null);
     const email = form.getValues('email');
     if (!email) {
-        form.setError('email', { type: 'manual', message: 'Veuillez entrer votre e-mail pour réinitialiser le mot de passe.' });
-        return;
+      form.setError('email', { type: 'manual', message: 'Veuillez entrer votre e-mail pour réinitialiser le mot de passe.' });
+      return;
     }
     const emailValidation = z.string().email().safeParse(email);
     if (!emailValidation.success) {
-        form.setError('email', { type: 'manual', message: 'Veuillez entrer une adresse e-mail valide.' });
-        return;
+      form.setError('email', { type: 'manual', message: 'Veuillez entrer une adresse e-mail valide.' });
+      return;
     }
 
     setIsLoading(true);
@@ -144,72 +225,7 @@ export default function AuthDialog({ open, onOpenChange, initialTab = 'signin' }
     }
   };
 
-  const EmailPasswordForm = ({
-    isSignUp,
-  }: {
-    isSignUp: boolean;
-  }) => (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(isSignUp ? handleEmailSignUp : handleEmailSignIn)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>E-mail</FormLabel>
-              <FormControl>
-                <div className="relative">
-                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                   <Input
-                     {...field}
-                     autoFocus={open}
-                     placeholder="nom@exemple.com"
-                     className="pl-9"
-                     disabled={isLoading}
-                   />
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Mot de passe</FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <Key className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    {...field}
-                    type="password"
-                    placeholder="Votre mot de passe"
-                    className="pl-9"
-                    disabled={isLoading}
-                  />
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        {!isSignUp && (
-          <div className="text-right">
-            <Button type="button" variant="link" className="p-0 h-auto text-xs" onClick={handlePasswordReset} disabled={isLoading}>
-              Mot de passe oublié ?
-            </Button>
-          </div>
-        )}
-        {error && <p className="text-sm text-destructive">{error}</p>}
-        <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading && <Loader className="mr-2 h-4 w-4 animate-spin" />}
-          {isSignUp ? "Créer un compte" : "Se connecter"}
-        </Button>
-      </form>
-    </Form>
-  );
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -226,10 +242,26 @@ export default function AuthDialog({ open, onOpenChange, initialTab = 'signin' }
               <TabsTrigger value="signup" disabled={isLoading}>S'inscrire</TabsTrigger>
             </TabsList>
             <TabsContent value="signin" className="pt-4">
-              <EmailPasswordForm isSignUp={false} />
+              <EmailPasswordForm
+                isSignUp={false}
+                form={form}
+                onSubmit={handleEmailSignIn}
+                isLoading={isLoading}
+                error={error}
+                onPasswordReset={handlePasswordReset}
+                autoFocus={open}
+              />
             </TabsContent>
             <TabsContent value="signup" className="pt-4">
-              <EmailPasswordForm isSignUp={true} />
+              <EmailPasswordForm
+                isSignUp={true}
+                form={form}
+                onSubmit={handleEmailSignUp}
+                isLoading={isLoading}
+                error={error}
+                onPasswordReset={handlePasswordReset}
+                autoFocus={open}
+              />
             </TabsContent>
           </Tabs>
 

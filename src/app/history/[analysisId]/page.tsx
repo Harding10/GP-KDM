@@ -39,7 +39,7 @@ export default function AnalysisDetailPage() {
   useEffect(() => {
     // Ensure window is defined (runs only on client)
     if (typeof window !== 'undefined') {
-      setCurrentUrl(window.location.href);
+      setCurrentUrl(window.location.origin);
     }
   }, []);
 
@@ -95,7 +95,7 @@ export default function AnalysisDetailPage() {
       </div>
     );
   }
-  
+
   const handleReset = () => {
     router.push('/analyze');
   }
@@ -103,24 +103,24 @@ export default function AnalysisDetailPage() {
   return (
     <>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 animate-fade-in">
-          <div className="flex flex-wrap gap-4 items-center justify-between mb-8">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Détail de l'analyse</h1>
-              <p className="mt-2 text-base text-muted-foreground sm:text-lg">Voici le rapport complet pour votre plante.</p>
-            </div>
-            <div className="flex gap-2 w-full sm:w-auto">
-               <Button asChild variant="outline" className="flex-1 sm:flex-none">
-                  <Link href="/history">
-                      <ArrowLeft className="mr-2 h-4 w-4" />
-                      Retour
-                  </Link>
-              </Button>
-              <Button variant="destructive" onClick={() => setIsDeleteDialogOpen(true)} disabled={isDeleting} className="flex-1 sm:flex-none">
-                <Trash2 className="mr-2 h-4 w-4" />
-                Supprimer
-              </Button>
-            </div>
+        <div className="flex flex-wrap gap-4 items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Détail de l'analyse</h1>
+            <p className="mt-2 text-base text-muted-foreground sm:text-lg">Voici le rapport complet pour votre plante.</p>
           </div>
+          <div className="flex gap-2 w-full sm:w-auto">
+            <Button asChild variant="outline" className="flex-1 sm:flex-none">
+              <Link href="/history">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Retour
+              </Link>
+            </Button>
+            <Button variant="destructive" onClick={() => setIsDeleteDialogOpen(true)} disabled={isDeleting} className="flex-1 sm:flex-none">
+              <Trash2 className="mr-2 h-4 w-4" />
+              Supprimer
+            </Button>
+          </div>
+        </div>
         <AnalysisDisplay result={analysis} imagePreview={analysis.imageUri} onReset={handleReset} shareUrl={currentUrl} />
       </div>
 

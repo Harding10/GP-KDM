@@ -25,7 +25,7 @@ export default function AnalysisDisplay({ result, imagePreview, onReset, shareUr
   const handleShare = async () => {
     const shareData = {
       title: 'Résultat d\'analyse AgriAide',
-      text: `Mon diagnostic pour un(e) ${plantType}: ${diseaseDetected}. Découvrez AgriAide !`,
+      text: `J'ai analysé ma plante (${plantType}) avec AgriAide et voici le diagnostic : ${diseaseDetected}. Essayez l'application ici :`,
       url: shareUrl || window.location.origin,
     };
 
@@ -62,49 +62,49 @@ export default function AnalysisDisplay({ result, imagePreview, onReset, shareUr
 
   const AccordionCard = ({ value, title, icon, content }: { value: string, title: string, icon: React.ReactNode, content: string | undefined }) => (
     content ? (
-        <Card className="rounded-xl bg-background/50">
-            <AccordionItem value={value} className="border-b-0">
-                <AccordionTrigger className="p-4 font-bold text-base hover:no-underline md:p-6 md:text-lg">
-                    <div className="flex items-center gap-3">
-                        {icon} {title}
-                    </div>
-                </AccordionTrigger>
-                <AccordionContent className="px-6 pb-6 text-base">
-                    <p>{content}</p>
-                </AccordionContent>
-            </AccordionItem>
-        </Card>
+      <Card className="rounded-xl bg-background/50">
+        <AccordionItem value={value} className="border-b-0">
+          <AccordionTrigger className="p-4 font-bold text-sm xs:text-base hover:no-underline md:p-6 md:text-lg">
+            <div className="flex items-center gap-3">
+              {icon} {title}
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="px-6 pb-6 text-sm xs:text-base">
+            <p>{content}</p>
+          </AccordionContent>
+        </AccordionItem>
+      </Card>
     ) : null
   );
 
   return (
     <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-in">
       <div className="flex flex-col gap-6">
-         <Card className="overflow-hidden rounded-2xl shadow-lg">
-            <CardContent className="p-0">
-                <Image src={imagePreview} alt="Feuille de plante analysée" width={600} height={600} className="object-contain w-full max-h-[60vh]" />
-            </CardContent>
-         </Card>
-         
+        <Card className="overflow-hidden rounded-2xl shadow-lg">
+          <CardContent className="p-0">
+            <Image src={imagePreview} alt="Feuille de plante analysée" width={600} height={600} className="object-contain w-full max-h-[60vh]" />
+          </CardContent>
+        </Card>
+
         <div className="flex flex-col sm:flex-row gap-4">
-             <Button onClick={onReset} variant="outline" size="lg" className="rounded-full flex-1">
-                <RefreshCcw className="mr-2 h-4 w-4" />
-                Nouvelle analyse
-             </Button>
-             <Button asChild size="lg" className="rounded-full flex-1">
-                 <Link href="/history">
-                    Voir l'historique
-                 </Link>
-             </Button>
+          <Button onClick={onReset} variant="outline" size="lg" className="rounded-full flex-1">
+            <RefreshCcw className="mr-2 h-4 w-4" />
+            Nouvelle analyse
+          </Button>
+          <Button asChild size="lg" className="rounded-full flex-1">
+            <Link href="/history">
+              Voir l'historique
+            </Link>
+          </Button>
         </div>
       </div>
 
       <div className="flex flex-col gap-6">
         <Card className="shadow-lg rounded-2xl">
           <CardHeader className="flex flex-row items-center justify-between p-4 sm:p-6">
-            <CardTitle className="flex items-center gap-3 font-bold text-xl sm:text-2xl">
-                {isHealthy ? <CheckCircle className="h-8 w-8 text-primary" /> : <AlertTriangle className="h-8 w-8 text-destructive" />}
-                Résultat
+            <CardTitle className="flex items-center gap-3 font-bold text-lg xs:text-xl sm:text-2xl">
+              {isHealthy ? <CheckCircle className="h-8 w-8 text-primary" /> : <AlertTriangle className="h-8 w-8 text-destructive" />}
+              Résultat
             </CardTitle>
             {shareUrl && (
               <Button onClick={handleShare} variant="outline" size="icon" className="rounded-full">
@@ -114,27 +114,27 @@ export default function AnalysisDisplay({ result, imagePreview, onReset, shareUr
             )}
           </CardHeader>
           <CardContent className="space-y-4 px-4 sm:px-6 pb-4 sm:pb-6">
-                <div className="flex items-center gap-3 text-lg">
-                    <Leaf className="h-6 w-6 text-muted-foreground" />
-                    <p className="font-semibold">Plante :</p>
-                    <span className="font-bold text-primary">{plantType}</span>
-                </div>
-                 <div className="flex items-center gap-3 text-lg">
-                    {isHealthy ? <CheckCircle className="h-6 w-6 text-primary" /> : <AlertTriangle className="h-6 w-6 text-destructive" />}
-                    <p className="font-semibold">Diagnostic :</p>
-                    <Badge variant={isHealthy ? "default" : "destructive"} className="px-4 py-1.5 rounded-full text-sm font-bold sm:text-base">
-                        {diseaseDetected}
-                    </Badge>
-                </div>
+            <div className="flex flex-wrap items-center gap-2 xs:gap-3 text-sm xs:text-lg">
+              <Leaf className="h-5 w-5 xs:h-6 xs:w-6 text-muted-foreground shrink-0" />
+              <p className="font-semibold">Plante :</p>
+              <span className="font-bold text-primary break-words">{plantType}</span>
+            </div>
+            <div className="flex flex-wrap items-center gap-2 xs:gap-3 text-sm xs:text-lg">
+              {isHealthy ? <CheckCircle className="h-5 w-5 xs:h-6 xs:w-6 text-primary shrink-0" /> : <AlertTriangle className="h-5 w-5 xs:h-6 xs:w-6 text-destructive shrink-0" />}
+              <p className="font-semibold">Diagnostic :</p>
+              <Badge variant={isHealthy ? "default" : "destructive"} className="px-3 py-1 xs:px-4 xs:py-1.5 rounded-full text-xs xs:text-sm font-bold sm:text-base whitespace-normal text-center h-auto">
+                {diseaseDetected}
+              </Badge>
+            </div>
           </CardContent>
         </Card>
 
         {!isHealthy && (
           <Accordion type="single" collapsible defaultValue="item-1" className="w-full space-y-4">
-            <AccordionCard value="item-1" title="Cause Probable" icon={<Info className="h-6 w-6 text-primary"/>} content={probableCause} />
-            <AccordionCard value="item-2" title="Conseils de Prévention" icon={<Shield className="h-6 w-6 text-primary"/>} content={preventionAdvice} />
-            <AccordionCard value="item-3" title="Traitement Biologique" icon={<Bug className="h-6 w-6 text-primary"/>} content={biologicalTreatment} />
-            <AccordionCard value="item-4" title="Traitement Chimique" icon={<FlaskConical className="h-6 w-6 text-primary"/>} content={chemicalTreatment} />
+            <AccordionCard value="item-1" title="Cause Probable" icon={<Info className="h-6 w-6 text-primary" />} content={probableCause} />
+            <AccordionCard value="item-2" title="Conseils de Prévention" icon={<Shield className="h-6 w-6 text-primary" />} content={preventionAdvice} />
+            <AccordionCard value="item-3" title="Traitement Biologique" icon={<Bug className="h-6 w-6 text-primary" />} content={biologicalTreatment} />
+            <AccordionCard value="item-4" title="Traitement Chimique" icon={<FlaskConical className="h-6 w-6 text-primary" />} content={chemicalTreatment} />
           </Accordion>
         )}
       </div>

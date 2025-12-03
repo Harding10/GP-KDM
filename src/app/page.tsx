@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import AuthDialog from '@/components/auth-dialog';
 import { useFirebaseAuth } from '@/firebase/auth';
+import { Loader } from 'lucide-react';
 
 const onboardingSteps = [
   {
@@ -43,9 +44,14 @@ export default function OnboardingPage() {
   };
 
   // Rediriger vers /analyze dès que l'utilisateur est connecté
+  // Rediriger vers /analyze dès que l'utilisateur est connecté
   if (user) {
     router.push('/analyze');
-    return null;
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-background">
+        <Loader className="h-10 w-10 animate-spin text-primary" />
+      </div>
+    );
   }
 
   const handleContinue = () => {
@@ -87,10 +93,11 @@ export default function OnboardingPage() {
 
         <div className="relative z-10 flex-1 flex flex-col justify-start sm:justify-between p-4 sm:p-8 pt-4 bg-background gap-12 sm:gap-0">
           <div className="text-center">
-            <h1 className="text-lg font-bold mb-4 tracking-tight leading-tight sm:text-3xl">{step.title}</h1>
+            {/* pour b ient positionner les bouton Passer et continuer  text-2xl*/}
+            <h1 className="text-2xl font-bold mb-4 tracking-tight leading-tight sm:text-3xl">{step.title}</h1>
             <p className="text-muted-foreground text-sm sm:text-base leading-relaxed max-w-sm mx-auto">{step.description}</p>
 
-            <div className="flex justify-center items-center gap-2 mt-4 sm:hidden">
+            <div className="flex justify-center items-center gap-2 mt-6 xs:mt-6 sm:hidden">
               {onboardingSteps.map((_, index) => (
                 <button
                   key={index}
@@ -117,11 +124,11 @@ export default function OnboardingPage() {
             ))}
           </div>
 
-          <div className="grid grid-cols-2 gap-4 sm:gap-6">
-            <Button variant="secondary" onClick={handleSkip} className="h-10 sm:h-14 text-base font-bold sm:text-lg">
+          <div className="grid grid-cols-2 gap-4 sm:gap-6 xs:mt-3 ">
+            <Button variant="secondary" onClick={handleSkip} className="h-14 sm:h-14 text-base font-bold sm:text-lg">
               Passer
             </Button>
-            <Button onClick={handleContinue} className="h-10 sm:h-14 text-base font-bold sm:text-lg">
+            <Button onClick={handleContinue} className="h-14 sm:h-14 text-base font-bold sm:text-lg">
               Continuer
             </Button>
           </div>
