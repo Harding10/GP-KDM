@@ -93,7 +93,7 @@ export default function OnboardingPage() {
 
         <div className="relative z-10 flex-1 flex flex-col justify-start sm:justify-between p-4 sm:p-8 pt-4 bg-background gap-12 sm:gap-0">
           <div className="text-center">
-            {/* pour b ient positionner les bouton Passer et continuer  text-2xl*/}
+            {/* pour b ient positionner les bouton Passer et continuer  text-lg*/}
             <h1 className="text-lg font-bold mb-4 tracking-tight leading-tight sm:text-3xl">{step.title}</h1>
             <p className="text-muted-foreground text-sm sm:text-base leading-relaxed max-w-sm mx-auto">{step.description}</p>
 
